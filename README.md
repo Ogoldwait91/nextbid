@@ -35,6 +35,43 @@ Our mission: give every pilot confidence in their bid — and better work-life b
 - **Infra:** Supabase/Neon (Postgres), Render/Railway (API), Redis (broker)  
 - **Observability:** Sentry + UptimeRobot
 
+
 ---
+
+## 🔐 Privacy & Trust
+- BA login: staff number, crew code, BA email
+- Consent-driven anonymised insights
+- No personal information ever shared
+- Opt-out anytime with "Delete my data"
+
+---
+
+## 🚦 Development Roadmap
+- Oct–Nov 2025: MVP (end-to-end loop with Nov PDFs)
+- Dec 2025: Internal test (December bids)
+- Jan 2026: AI enhancements (Top-3 smarter, competitiveness chips)
+- Feb–Mar 2026: Beta rollout (£4.99)
+- Apr 2026: Public launch (£9.99)
+
+---
+
+## ✅ Acceptance Tests
+- JSS bid validation (≤15 groups, ≤40 rows/group, correct grammar)
+- Bank Protection toggle (injected line ON; omitted OFF)
+- Calendar countdowns match JSS PDF
+- Credit ranges match BidInfo front sheet
+- Export = CRLF, UTF-8, correct order
+- Upload stores exported text + receipt
+- Privacy: consent toggle + anonymised cohorts only if k≥25
+
+---
+
+## 👥 For Testers
+- Upload monthly BA PDFs (Calendar, BidInfo1/2, Status List, Pairings, Reserves)
+- Build a bid in-app
+- Preview Top-3 likely rosters
+- Submit via CrewBid (receipt saved)
+- Report feedback via WhatsApp/TestFlight notes
+
 
 ## 📂 Repo Structure
