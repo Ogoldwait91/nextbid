@@ -1,0 +1,10 @@
+C:/nextbid/nextbid_app/build/windows/x64/CMakeFiles/INSTALL.dir
+C:/nextbid/nextbid_app/build/windows/x64/CMakeFiles/ALL_BUILD.dir
+C:/nextbid/nextbid_app/build/windows/x64/CMakeFiles/ZERO_CHECK.dir
+C:/nextbid/nextbid_app/build/windows/x64/flutter/CMakeFiles/flutter_wrapper_plugin.dir
+C:/nextbid/nextbid_app/build/windows/x64/flutter/CMakeFiles/flutter_wrapper_app.dir
+C:/nextbid/nextbid_app/build/windows/x64/flutter/CMakeFiles/flutter_assemble.dir
+C:/nextbid/nextbid_app/build/windows/x64/flutter/CMakeFiles/INSTALL.dir
+C:/nextbid/nextbid_app/build/windows/x64/runner/CMakeFiles/nextbid_app.dir
+C:/nextbid/nextbid_app/build/windows/x64/runner/CMakeFiles/INSTALL.dir
+C:/nextbid/nextbid_app/build/windows/x64/runner/CMakeFiles/ALL_BUILD.dir

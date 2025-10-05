@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme.dart';
 import '../../ui/ui_kit.dart';
 import '../profile/profile_edit_page.dart';
+import 'package:nextbid_app/services/api.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -9,6 +10,7 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const profile = _UserProfile(
+      avatarUrl: '',
       name: "Oliver \"Oli\" Goldwait",
       rank: "Senior First Officer",
       fleet: "B777",
@@ -25,27 +27,55 @@ class DashboardPage extends StatelessWidget {
         const _ProfileHeader(profile: profile),
         const SizedBox(height: 16),
 
-        // Quick actions
+                // Quick actions
         SectionCard(
           child: Row(
             children: [
               Expanded(
-                  child: FilledButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.tune),
-                      label: const Text("Build Bid"))),
+                child: FilledButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.tune),
+                  label: const Text("Build Bid"),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
-                  child: FilledButton.tonalIcon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.assignment),
-                      label: const Text("View Roster"))),
+                child: FilledButton.tonalIcon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.assignment),
+                  label: const Text("View Roster"),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
-                  child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.beach_access),
-                      label: const Text("Leave Planner"))),
+                child: OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.beach_access),
+                  label: const Text("Leave Planner"),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    const api = NextBidApi(base: "http://127.0.0.1:8000");
+                    try {
+                      final data = await api.getCalendar(2025, 11);
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Fetched: - ( blocks)")),
+                      );
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Fetch failed: $e)),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.cloud_download),
+                  label: const Text("Fetch Calendar Test"),
+                ),
+              ),
             ],
           ),
         ),
@@ -95,7 +125,7 @@ class DashboardPage extends StatelessWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .surfaceContainerHighest
-                      .withValues(alpha: 0.5),
+                      .withOpacity(0.5),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,7 +170,7 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-// Small progress row like the mock's â€œTop Layover Preferencesâ€
+// Small progress row like the mock's ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œTop Layover PreferencesÃƒÂ¢Ã¢â€šÂ¬Ã‚Â
 class _PreferenceRow extends StatelessWidget {
   final String city;
   final double percent; // 0..1
@@ -191,11 +221,12 @@ class _UserProfile {
   final String base;
   final int seniority;
   final String? staffNo;
-  final String? avatarUrl;
+  final String avatarUrl;
   final double? credit;
   final int? leaveDays;
 
   const _UserProfile({
+    this.avatarUrl = '',
     required this.name,
     required this.rank,
     required this.fleet,
@@ -461,9 +492,9 @@ class _Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    if ((profile.avatarUrl ?? "").isNotEmpty) {
+    if (profile.avatarUrl.isNotEmpty) {
       return CircleAvatar(
-          radius: 28, backgroundImage: NetworkImage(profile.avatarUrl!));
+          radius: 28, backgroundImage: NetworkImage(profile.avatarUrl));
     }
     final parts = profile.name.trim().split(RegExp(r"\s+"));
     final initials = (parts.isNotEmpty ? parts.first[0] : "") +
@@ -477,3 +508,4 @@ class _Avatar extends StatelessWidget {
     );
   }
 }
+

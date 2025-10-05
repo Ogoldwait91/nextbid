@@ -1,13 +1,15 @@
-﻿from fastapi import APIRouter, UploadFile
-from fastapi.responses import JSONResponse
-from typing import Dict
-from app.models.common import BidRequest, BidValidationResult
+﻿from typing import Dict
+
 from app.models.bids import BidSimulationResult
+from app.models.common import BidRequest, BidValidationResult
 from app.services.simulate import simulate_bid
+from fastapi import APIRouter, UploadFile
+from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/bids", tags=["bids"])
 
-REQUIRED_PREF_KEYS = {"credit_bias","longhaul_bias","weekend_off","leave_days_delta"}
+REQUIRED_PREF_KEYS = {"credit_bias", "longhaul_bias", "weekend_off", "leave_days_delta"}
+
 
 @router.post("/validate", response_model=BidValidationResult)
 def validate_bid(req: BidRequest):
@@ -18,16 +20,23 @@ def validate_bid(req: BidRequest):
         errors.append(f"Missing preference keys: {', '.join(sorted(missing))}")
     if req.seniority < 1:
         errors.append("Seniority must be >= 1")
-    return BidValidationResult(ok=len(errors)==0, errors=errors)
+    return BidValidationResult(ok=len(errors) == 0, errors=errors)
+
 
 @router.post("/simulate", response_model=BidSimulationResult)
 def simulate(req: BidRequest):
     return simulate_bid(req)
 
+
 @router.get("/export")
 def export_simulation():
-    sample = {"export":"pending","format":"json","hint":"call /bids/simulate first to get options"}
+    sample = {
+        "export": "pending",
+        "format": "json",
+        "hint": "call /bids/simulate first to get options",
+    }
     return JSONResponse(content=sample)
+
 
 @router.post("/upload")
 async def upload(file: UploadFile):

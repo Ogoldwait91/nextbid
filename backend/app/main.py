@@ -1,6 +1,15 @@
-from fastapi import FastAPI
 from app.core.config import settings
-from app.routes import health, calendars, credits, pairings, reserve, bids, privacy, cohorts
+from app.routes import (
+    bids,
+    calendars,
+    cohorts,
+    credits,
+    health,
+    pairings,
+    privacy,
+    reserve,
+)
+from fastapi import FastAPI
 
 app = FastAPI(title=settings.app_name, version=settings.version)
 
@@ -17,12 +26,10 @@ app.include_router(cohorts.router)
 # --- CORS (added by setup script) ---
 try:
     from fastapi.middleware.cors import CORSMiddleware
+
     app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"]
+        CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
     )
-except Exception as _e:
+except Exception:
     pass
 # --- /CORS ---

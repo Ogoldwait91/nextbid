@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\nextbid\nextbid_app\build\windows\x64\CMakeFiles\f04bd21748c80084d56ba1432384eae1\flutter_windows.dll.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\nextbid\nextbid_app\build\windows\x64\CMakeFiles\c2c9be739ba3923a79004150e17b2bda\flutter_assemble.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\nextbid\nextbid_app\windows\flutter\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\nextbid\nextbid_app\build\windows\x64\flutter\CMakeFiles\flutter_assemble" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{922D6B00-8549-3F79-96BC-B78A597B3B13}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,107 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:nextbid_app/services/profile_store.dart';
 
 class ProfileEditPage extends StatefulWidget {
-  const ProfileEditPage({super.key});
+  final UserProfile initial;
+  const ProfileEditPage({super.key, UserProfile? initial})
+      : initial = initial ?? const UserProfile();
 
   @override
   State<ProfileEditPage> createState() => _ProfileEditPageState();
 }
 
 class _ProfileEditPageState extends State<ProfileEditPage> {
-  final _form = GlobalKey<FormState>();
-  final _name = TextEditingController(text: 'Oliver "Oli" Goldwait');
-  final _rank = TextEditingController(text: 'Senior First Officer');
-  final _fleet = TextEditingController(text: 'B777');
-  final _base = TextEditingController(text: 'LHR');
-  final _seniority = TextEditingController(text: '231');
-  final _staffNo = TextEditingController(text: 'BA123456');
-  final _credit = TextEditingController(text: '54.7');
-  final _leaveDays = TextEditingController(text: '18');
-  final _avatarUrl = TextEditingController(text: '');
+  late TextEditingController _name;
+  late TextEditingController _email;
+  late TextEditingController _fleet;
+  late TextEditingController _base;
+  late TextEditingController _rank;
+
+  @override
+  void initState() {
+    super.initState();
+    _name = TextEditingController(text: widget.initial.name);
+    _email = TextEditingController(text: widget.initial.email);
+    _fleet = TextEditingController(text: widget.initial.fleet);
+    _base = TextEditingController(text: widget.initial.base);
+    _rank = TextEditingController(text: widget.initial.rank);
+  }
 
   @override
   void dispose() {
     _name.dispose();
-    _rank.dispose();
+    _email.dispose();
     _fleet.dispose();
     _base.dispose();
-    _seniority.dispose();
-    _staffNo.dispose();
-    _credit.dispose();
-    _leaveDays.dispose();
-    _avatarUrl.dispose();
+    _rank.dispose();
     super.dispose();
   }
 
-  void _save() {
-    if (!_form.currentState!.validate()) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text('Saved (placeholder) — wire persistence next')),
+  Future<void> _save() async {
+    final updated = UserProfile(
+      name: _name.text.trim(),
+      email: _email.text.trim(),
+      fleet: _fleet.text.trim(),
+      base: _base.text.trim(),
+      rank: _rank.text.trim(),
     );
-    Navigator.pop(context);
+    await ProfileStore.save(updated);
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Profile saved')));
+      Navigator.of(context).pop<UserProfile>(updated);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit profile')),
-      body: Form(
-        key: _form,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            TextFormField(
-                controller: _name,
-                decoration: const InputDecoration(labelText: 'Name')),
-            const SizedBox(height: 12),
-            TextFormField(
-                controller: _rank,
-                decoration: const InputDecoration(labelText: 'Rank')),
-            const SizedBox(height: 12),
-            TextFormField(
-                controller: _fleet,
-                decoration: const InputDecoration(labelText: 'Fleet')),
-            const SizedBox(height: 12),
-            TextFormField(
-                controller: _base,
-                decoration: const InputDecoration(labelText: 'Base')),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _seniority,
-              decoration: const InputDecoration(labelText: 'Seniority #'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-                controller: _staffNo,
-                decoration: const InputDecoration(labelText: 'Staff No')),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _credit,
-              decoration: const InputDecoration(labelText: 'Credit (h)'),
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _leaveDays,
-              decoration: const InputDecoration(labelText: 'Leave days'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _avatarUrl,
+      appBar: AppBar(title: const Text('Edit Profile')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          TextField(
+              controller: _name,
+              decoration: const InputDecoration(labelText: 'Name')),
+          const SizedBox(height: 12),
+          TextField(
+              controller: _email,
+              decoration: const InputDecoration(labelText: 'Email')),
+          const SizedBox(height: 12),
+          TextField(
+              controller: _fleet,
               decoration:
-                  const InputDecoration(labelText: 'Avatar URL (optional)'),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(onPressed: _save, child: const Text('Save')),
-            ),
-          ],
-        ),
+                  const InputDecoration(labelText: 'Fleet (e.g., A350)')),
+          const SizedBox(height: 12),
+          TextField(
+              controller: _base,
+              decoration: const InputDecoration(labelText: 'Base (e.g., LHR)')),
+          const SizedBox(height: 12),
+          TextField(
+              controller: _rank,
+              decoration:
+                  const InputDecoration(labelText: 'Rank (e.g., FO/Capt)')),
+          const SizedBox(height: 24),
+          ElevatedButton(onPressed: _save, child: const Text('Save')),
+        ],
       ),
     );
   }
