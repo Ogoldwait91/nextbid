@@ -6,13 +6,13 @@ class ApiClient {
 
   static Future<Map<String, dynamic>> getJson(String path) async {
     final r = await http.get(Uri.parse('\\'));
-    if (r.statusCode != 200) { throw Exception('GET ' + path + ' failed: ' + r.statusCode.toString()); }
+    if (r.statusCode != 200) { throw Exception('GET \C:\nextbid\nextbid_app\lib\main.dart failed: \'); }
     return json.decode(r.body) as Map<String, dynamic>;
   }
 
   static Future<List<dynamic>> getList(String path) async {
     final r = await http.get(Uri.parse('\\'));
-    if (r.statusCode != 200) { throw Exception('GET ' + path + ' failed: ' + r.statusCode.toString()); }
+    if (r.statusCode != 200) { throw Exception('GET \C:\nextbid\nextbid_app\lib\main.dart failed: \'); }
     return json.decode(r.body) as List<dynamic>;
   }
 
@@ -21,7 +21,8 @@ class ApiClient {
       headers: {'Content-Type':'application/json'},
       body: json.encode(body),
     );
-    if (r.statusCode < 200 || r.statusCode >= 300) { throw Exception('POST ' + path + ' failed: ' + r.statusCode.toString() + ' ' + r.body); }
+    if (r.statusCode < 200 || r.statusCode >= 300) { throw Exception('POST \C:\nextbid\nextbid_app\lib\main.dart failed: \ \'); }
     return json.decode(r.body) as Map<String, dynamic>;
   }
 }
+

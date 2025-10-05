@@ -7,16 +7,32 @@ class UserProfile {
   final String fleet;
   final String base;
   final String rank;
+  final String avatarUrl;
 
-  const UserProfile({ this.name = '', this.email = '', this.fleet = '', this.base = '', this.rank = '' });
+  const UserProfile({
+    this.name = '',
+    this.email = '',
+    this.fleet = '',
+    this.base = '',
+    this.rank = '',
+    this.avatarUrl = '',
+  });
 
-  UserProfile copyWith({String? name, String? email, String? fleet, String? base, String? rank}) {
+  UserProfile copyWith({
+    String? name,
+    String? email,
+    String? fleet,
+    String? base,
+    String? rank,
+    String? avatarUrl,
+  }) {
     return UserProfile(
       name: name ?? this.name,
       email: email ?? this.email,
       fleet: fleet ?? this.fleet,
       base: base ?? this.base,
       rank: rank ?? this.rank,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
 
@@ -26,6 +42,7 @@ class UserProfile {
     'fleet': fleet,
     'base': base,
     'rank': rank,
+    'avatarUrl': avatarUrl,
   };
 
   static UserProfile fromJson(Map<String, dynamic> j) => UserProfile(
@@ -34,6 +51,7 @@ class UserProfile {
     fleet: (j['fleet'] ?? '') as String,
     base: (j['base'] ?? '') as String,
     rank: (j['rank'] ?? '') as String,
+    avatarUrl: (j['avatarUrl'] ?? '') as String,
   );
 }
 
@@ -53,7 +71,6 @@ class ProfileStore {
     await prefs.setString(_kKey, json.encode(profile.toJson()));
   }
 
-  // Optional: clear
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kKey);

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'pages/auth/login_screen.dart';
 import 'app/theme.dart';
 import 'services/profile_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ProfileStore.instance.load();
+  await ProfileStore.load();
   runApp(const NextBidApp());
 }
 
@@ -24,3 +24,4 @@ class NextBidApp extends StatelessWidget {
     );
   }
 }
+

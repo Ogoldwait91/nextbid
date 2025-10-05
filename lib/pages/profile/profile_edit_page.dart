@@ -3,7 +3,7 @@ import 'package:nextbid_app/services/profile_store.dart';
 
 class ProfileEditPage extends StatefulWidget {
   final UserProfile initial;
-  const ProfileEditPage({super.key, required this.initial});
+  const ProfileEditPage({super.key, UserProfile? initial}) : initial = initial ?? const UserProfile();
 
   @override
   State<ProfileEditPage> createState() => _ProfileEditPageState();
@@ -70,3 +70,4 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 }
+
