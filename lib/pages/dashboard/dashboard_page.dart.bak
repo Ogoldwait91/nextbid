@@ -28,7 +28,7 @@ class _DashboardPageState extends State<DashboardPage> {
         // Map only the fields that actually exist on your saved UserProfile.
         // Provide defaults for the rest (so we don't reference non-existent getters).
         _profile = _UserProfile(
-          avatarUrl: saved.avatarUrl,
+          avatarUrl: saved.avatarUrl ?? '',
           name: saved.name,
           rank: saved.rank,
           fleet: saved.fleet,
@@ -104,10 +104,16 @@ class _DashboardPageState extends State<DashboardPage> {
                   onPressed: () async {
                     const api = NextBidApi(base: "http://127.0.0.1:8000");
                     try {
-                      final _ = await api.getCalendar(2025, 11);
+                      final result = await api.getCalendar(2025, 11);
                       if (!context.mounted) return;
+                      int count = 0; // ignore: unused_local_variable
+                      if (result is List) {
+                        count = result.length;
+                      } else if (result['blocks'] is List) {
+                        count = (result['blocks'] as List).length;
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Fetched: - (blocks)")),
+                        const SnackBar(content: Text('Fetched  item(s)')),
                       );
                     } catch (e) {
                       if (!context.mounted) return;
@@ -116,7 +122,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       );
                     }
                   },
-                  icon: const Icon(Icons.cloud_download),
                   label: const Text("Fetch Calendar Test"),
                 ),
               ),

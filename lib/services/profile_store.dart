@@ -7,7 +7,12 @@ class UserProfile {
   final String fleet;
   final String base;
   final String rank;
-  final String avatarUrl;
+
+  final String? avatarUrl;
+  final String? staffNo;
+  final int? seniority;
+  final double? credit;
+  final int? leaveDays;
 
   const UserProfile({
     this.name = '',
@@ -15,26 +20,12 @@ class UserProfile {
     this.fleet = '',
     this.base = '',
     this.rank = '',
-    this.avatarUrl = '',
+    this.avatarUrl,
+    this.staffNo,
+    this.seniority,
+    this.credit,
+    this.leaveDays,
   });
-
-  UserProfile copyWith({
-    String? name,
-    String? email,
-    String? fleet,
-    String? base,
-    String? rank,
-    String? avatarUrl,
-  }) {
-    return UserProfile(
-      name: name ?? this.name,
-      email: email ?? this.email,
-      fleet: fleet ?? this.fleet,
-      base: base ?? this.base,
-      rank: rank ?? this.rank,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-    );
-  }
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -43,39 +34,39 @@ class UserProfile {
         'base': base,
         'rank': rank,
         'avatarUrl': avatarUrl,
+        'staffNo': staffNo,
+        'seniority': seniority,
+        'credit': credit,
+        'leaveDays': leaveDays,
       };
 
-  static UserProfile fromJson(Map<String, dynamic> j) => UserProfile(
-        name: (j['name'] ?? '') as String,
-        email: (j['email'] ?? '') as String,
-        fleet: (j['fleet'] ?? '') as String,
-        base: (j['base'] ?? '') as String,
-        rank: (j['rank'] ?? '') as String,
-        avatarUrl: (j['avatarUrl'] ?? '') as String,
+  static UserProfile fromJson(Map<String, dynamic> m) => UserProfile(
+        name: (m['name'] ?? '') as String,
+        email: (m['email'] ?? '') as String,
+        fleet: (m['fleet'] ?? '') as String,
+        base: (m['base'] ?? '') as String,
+        rank: (m['rank'] ?? '') as String,
+        avatarUrl: m['avatarUrl'] as String?,
+        staffNo: m['staffNo'] as String?,
+        seniority: (m['seniority'] as num?)?.toInt(),
+        credit: (m['credit'] as num?)?.toDouble(),
+        leaveDays: (m['leaveDays'] as num?)?.toInt(),
       );
 }
 
 class ProfileStore {
-  static const _kKey = 'user_profile_v1';
+  static const _k = 'user_profile_v1';
 
-  static Future<UserProfile> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_kKey);
-    if (raw == null || raw.isEmpty) return const UserProfile();
-    try {
-      return UserProfile.fromJson(json.decode(raw) as Map<String, dynamic>);
-    } catch (_) {
-      return const UserProfile();
-    }
+  static Future<void> save(UserProfile p) async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.setString(_k, jsonEncode(p.toJson()));
   }
 
-  static Future<void> save(UserProfile profile) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kKey, json.encode(profile.toJson()));
-  }
-
-  static Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_kKey);
+  static Future<UserProfile?> load() async {
+    final sp = await SharedPreferences.getInstance();
+    final raw = sp.getString(_k);
+    if (raw == null) return null;
+    final map = jsonDecode(raw) as Map<String, dynamic>;
+    return UserProfile.fromJson(map);
   }
 }

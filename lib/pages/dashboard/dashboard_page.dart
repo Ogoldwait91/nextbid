@@ -22,40 +22,25 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _load() async {
-    try {
-      final saved = await ProfileStore.load();
-      setState(() {
-        // Map only the fields that actually exist on your saved UserProfile.
-        // Provide defaults for the rest (so we don't reference non-existent getters).
-        _profile = _UserProfile(
-          avatarUrl: saved.avatarUrl,
-          name: saved.name,
-          rank: saved.rank,
-          fleet: saved.fleet,
-          base: saved.base,
-          seniority: 231, // default until you add this field to storage
-          staffNo: null, // default until you add this field to storage
-          credit: null, // default until you add this field to storage
-          leaveDays: null, // default until you add this field to storage
-        );
-        _loading = false;
-      });
-    } catch (_) {
-      setState(() {
-        _profile = const _UserProfile(
-          avatarUrl: '',
-          name: 'Oliver "Oli" Goldwait',
-          rank: 'Senior First Officer',
-          fleet: 'B777',
-          base: 'LHR',
-          seniority: 231,
-          staffNo: null,
-          credit: null,
-          leaveDays: null,
-        );
-        _loading = false;
-      });
-    }
+    final saved = await ProfileStore.load();
+    // Make a non-null local 's' so we never touch a nullable object.
+    // Constructor defaults (we set earlier) ensure empty strings for core fields.
+    final s = saved ?? const UserProfile();
+
+    setState(() {
+      _profile = _UserProfile(
+        avatarUrl: s.avatarUrl ?? '',
+        name: s.name,
+        rank: s.rank,
+        fleet: s.fleet,
+        base: s.base,
+        seniority: 231, // default until you store it
+        staffNo: s.staffNo, // now supported in ProfileStore
+        credit: s.credit,
+        leaveDays: s.leaveDays,
+      );
+      _loading = false;
+    });
   }
 
   @override
@@ -106,7 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     try {
                       final result = await api.getCalendar(2025, 11);
                       if (!context.mounted) return;
-                      int count = 0;
+                      int count = 0; // ignore: unused_local_variable
                       if (result is List) {
                         count = result.length;
                       } else if (result['blocks'] is List) {
