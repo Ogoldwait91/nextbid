@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../app/theme.dart';
 import '../../ui/ui_kit.dart';
 import '../profile/profile_edit_page.dart';
@@ -140,7 +140,7 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-// Small progress row like the mock's “Top Layover Preferences”
+// Small progress row like the mock's â€œTop Layover Preferencesâ€
 class _PreferenceRow extends StatelessWidget {
   final String city;
   final double percent; // 0..1
@@ -185,9 +185,13 @@ class _PreferenceRow extends StatelessWidget {
 // --- Profile model & header ---
 
 class _UserProfile {
-  final String name, rank, fleet, base;
+  final String name;
+  final String rank;
+  final String fleet;
+  final String base;
   final int seniority;
-  final String? staffNo, avatarUrl;
+  final String? staffNo;
+  final String? avatarUrl;
   final double? credit;
   final int? leaveDays;
 
@@ -198,7 +202,6 @@ class _UserProfile {
     required this.base,
     required this.seniority,
     this.staffNo,
-    this.avatarUrl,
     this.credit,
     this.leaveDays,
   });
@@ -474,4 +477,3 @@ class _Avatar extends StatelessWidget {
     );
   }
 }
-

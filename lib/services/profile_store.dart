@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfile {
@@ -37,22 +37,22 @@ class UserProfile {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'email': email,
-    'fleet': fleet,
-    'base': base,
-    'rank': rank,
-    'avatarUrl': avatarUrl,
-  };
+        'name': name,
+        'email': email,
+        'fleet': fleet,
+        'base': base,
+        'rank': rank,
+        'avatarUrl': avatarUrl,
+      };
 
   static UserProfile fromJson(Map<String, dynamic> j) => UserProfile(
-    name: (j['name'] ?? '') as String,
-    email: (j['email'] ?? '') as String,
-    fleet: (j['fleet'] ?? '') as String,
-    base: (j['base'] ?? '') as String,
-    rank: (j['rank'] ?? '') as String,
-    avatarUrl: (j['avatarUrl'] ?? '') as String,
-  );
+        name: (j['name'] ?? '') as String,
+        email: (j['email'] ?? '') as String,
+        fleet: (j['fleet'] ?? '') as String,
+        base: (j['base'] ?? '') as String,
+        rank: (j['rank'] ?? '') as String,
+        avatarUrl: (j['avatarUrl'] ?? '') as String,
+      );
 }
 
 class ProfileStore {
@@ -62,8 +62,11 @@ class ProfileStore {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_kKey);
     if (raw == null || raw.isEmpty) return const UserProfile();
-    try { return UserProfile.fromJson(json.decode(raw) as Map<String, dynamic>); }
-    catch (_) { return const UserProfile(); }
+    try {
+      return UserProfile.fromJson(json.decode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return const UserProfile();
+    }
   }
 
   static Future<void> save(UserProfile profile) async {

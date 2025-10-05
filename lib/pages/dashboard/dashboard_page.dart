@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../app/theme.dart';
 import '../../ui/ui_kit.dart';
 import '../profile/profile_edit_page.dart';
@@ -140,7 +140,7 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-// Small progress row like the mock's “Top Layover Preferences”
+// Small progress row like the mock's Ã¢â‚¬Å“Top Layover PreferencesÃ¢â‚¬Â
 class _PreferenceRow extends StatelessWidget {
   final String city;
   final double percent; // 0..1
@@ -198,11 +198,11 @@ class _UserProfile {
   const _UserProfile({
     required this.name,
     required this.rank,
+    this.avatarUrl,
     required this.fleet,
     required this.base,
     required this.seniority,
     this.staffNo,
-    this.avatarUrl,
     this.credit,
     this.leaveDays,
   });
@@ -478,7 +478,3 @@ class _Avatar extends StatelessWidget {
     );
   }
 }
-
-
-
-

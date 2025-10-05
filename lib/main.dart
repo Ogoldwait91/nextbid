@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'pages/auth/login_screen.dart';
 import 'app/theme.dart';
 import 'services/profile_store.dart';
@@ -24,4 +24,3 @@ class NextBidApp extends StatelessWidget {
     );
   }
 }
-

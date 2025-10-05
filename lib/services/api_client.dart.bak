@@ -1,15 +1,10 @@
-// lib/services/api_client.dart
-// ignore_for_file: unused_element  // remove later once you start calling all methods
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-/// Tiny HTTP helper for your FastAPI backend.
-/// Set a custom base via: --dart-define=API_BASE_URL=http://127.0.0.1:8000
 class ApiClient {
   ApiClient._();
 
-  static final String _base = const String.fromEnvironment(
+  static const String _base = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: 'http://127.0.0.1:8000',
   );
