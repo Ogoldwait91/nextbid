@@ -1,127 +1,61 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nextbid_demo/app/state.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
-
-  @override
-  State<SignupPage> createState() => _SignupPageState();
+  @override State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController();
-  final _crewCode = TextEditingController();
-  final _password = TextEditingController();
-  final _confirm = TextEditingController();
-  bool _obscure = true;
+  final _form = GlobalKey<FormState>();
+  String _email = '', _password = '';
+  bool _busy = false;
 
-  @override
-  void dispose() {
-    _email.dispose();
-    _crewCode.dispose();
-    _password.dispose();
-    _confirm.dispose();
-    super.dispose();
+  Future<void> _submit() async {
+    if (!(_form.currentState?.validate() ?? false)) return;
+    _form.currentState!.save();
+    setState(() => _busy = true);
+    await Future.delayed(const Duration(milliseconds: 400)); // TODO: real signup
+    if (mounted) context.go('/dashboard');
   }
-
-  String? _emailV(String? v) {
-    if (v == null || v.isEmpty) return 'Enter your email';
-    if (!v.contains('@') || !v.contains('.')) return 'Enter a valid email';
-    return null;
-  }
-
-  String? _crewV(String? v) =>
-      (v == null || v.isEmpty)
-          ? 'Enter your crew code'
-          : (v.length < 4 ? 'Crew code too short' : null);
-  String? _pwdV(String? v) =>
-      (v == null || v.isEmpty)
-          ? 'Enter a password'
-          : (v.length < 6 ? 'Use at least 6 characters' : null);
-  String? _confV(String? v) =>
-      (v == null || v.isEmpty)
-          ? 'Confirm your password'
-          : (v != _password.text ? 'Passwords do not match' : null);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create your account'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/login'),
-        ),
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Card(
-            margin: const EdgeInsets.all(16),
+      appBar: AppBar(title: const Text('Create account')),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               child: Form(
-                key: _formKey,
+                key: _form,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextFormField(
-                      controller: _email,
-                      decoration: const InputDecoration(labelText: 'Email'),
+                      decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email_outlined)),
                       keyboardType: TextInputType.emailAddress,
-                      validator: _emailV,
+                      validator: (v) => (v==null || !v.contains('@')) ? 'Enter a valid email' : null,
+                      onSaved: (v) => _email = v!.trim(),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _crewCode,
-                      decoration: const InputDecoration(labelText: 'Crew code'),
-                      textCapitalization: TextCapitalization.characters,
-                      validator: _crewV,
+                      decoration: const InputDecoration(labelText: 'Password', prefixIcon: Icon(Icons.lock_outline)),
+                      obscureText: true,
+                      validator: (v) => (v==null || v.length < 6) ? 'Min 6 characters' : null,
+                      onSaved: (v) => _password = v!,
                     ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _password,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        suffixIcon: IconButton(
-                          onPressed: () => setState(() => _obscure = !_obscure),
-                          icon: Icon(
-                            _obscure ? Icons.visibility : Icons.visibility_off,
-                          ),
-                        ),
-                      ),
-                      obscureText: _obscure,
-                      validator: _pwdV,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _confirm,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm password',
-                      ),
-                      obscureText: _obscure,
-                      validator: _confV,
-                    ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            // later: real signup
-                            AppState.instance.login();
-                            context.go('/dashboard');
-                          }
-                        },
-                        child: const Text('Create account'),
+                        onPressed: _busy ? null : _submit,
+                        child: _busy
+                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Text('Sign up'),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextButton(
-                      onPressed: () => context.go('/login'),
-                      child: const Text('Already have an account? Log in'),
                     ),
                   ],
                 ),

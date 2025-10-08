@@ -1,89 +1,110 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nextbid_demo/common/widgets/nb_logo.dart';
-import 'package:nextbid_demo/app/state.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-  @override
-  State<LoginPage> createState() => _LoginPageState();
+  @override State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController();
-  final _password = TextEditingController();
+  final _form = GlobalKey<FormState>();
+  String _email = '', _password = '';
+  bool _busy = false;
 
-  @override
-  void dispose() { _email.dispose(); _password.dispose(); super.dispose(); }
+  Future<void> _submit() async {
+    if (!(_form.currentState?.validate() ?? false)) return;
+    _form.currentState!.save();
+    setState(() => _busy = true);
+    await Future.delayed(const Duration(milliseconds: 400)); // TODO: replace with real auth
+    // After "login", go to dashboard (root shell)
+    if (mounted) context.go('/dashboard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    final logo = Image.asset(
+      'assets/images/logo.png',
+      height: 64,
+      errorBuilder: (_, __, ___) => const FlutterLogo(size: 64), // fallback if logo missing
+    );
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A2342),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: Card(
-            margin: const EdgeInsets.all(24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const SizedBox(height: 4),
-                  const NBLogo(size: 96),
-                  const SizedBox(height: 10),
-                  Text(
-                    "smarter bidding, better rosters.",
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: const Color(0xFF33415C),
-                          fontWeight: FontWeight.w600,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  logo,
+                  const SizedBox(height: 16),
+                  Text('NextBid', style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: 24),
+                  Card(
+                    elevation: 0,
+                    clipBehavior: Clip.antiAlias,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Form(
+                        key: _form,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Email',
+                                prefixIcon: Icon(Icons.email_outlined),
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (v) => (v==null || !v.contains('@')) ? 'Enter a valid email' : null,
+                              onSaved: (v) => _email = v!.trim(),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon: Icon(Icons.lock_outline),
+                              ),
+                              obscureText: true,
+                              validator: (v) => (v==null || v.length < 6) ? 'Min 6 characters' : null,
+                              onSaved: (v) => _password = v!,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: _busy ? null : _submit,
+                                child: _busy
+                                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : const Text('Sign in'),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: const Text('Forgot password?'),
+                              ),
+                            ),
+                            const Divider(height: 32),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("New here?"),
+                                TextButton(
+                                  onPressed: () => context.go('/signup'),
+                                  child: const Text('Create an account'),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(width: 64, height: 3,
-                    decoration: BoxDecoration(color: const Color(0xFFE4002B), borderRadius: BorderRadius.circular(2))),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _email,
-                    decoration: const InputDecoration(labelText: "Email"),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (v) => (v==null||v.isEmpty) ? "Enter your email" : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _password,
-                    decoration: const InputDecoration(labelText: "Password"),
-                    obscureText: true,
-                    validator: (v) => (v==null||v.isEmpty) ? "Enter your password" : null,
-                  ),
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          AppState.instance.login();
-                          context.go("/dashboard");
-                        }
-                      },
-                      child: const Text("Log in"),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () { context.go('/signup'); },
-                      child: const Text("Sign up"),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  TextButton(onPressed: () {}, child: const Text("Forgot password?")),
-                ]),
+                ],
               ),
             ),
           ),
