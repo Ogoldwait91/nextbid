@@ -4,7 +4,8 @@ import "../../shared/services/auth_state.dart";
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
-  @override State<SignupPage> createState() => _SignupPageState();
+  @override
+  State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
@@ -23,7 +24,9 @@ class _SignupPageState extends State<SignupPage> {
   Future<void> _submit() async {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
-    await Future.delayed(const Duration(milliseconds: 400)); // TODO: real signup
+    await Future.delayed(
+      const Duration(milliseconds: 400),
+    ); // note: real signup
     if (!mounted) return;
     authState.value = true;
     context.go("/dashboard");
@@ -41,16 +44,21 @@ class _SignupPageState extends State<SignupPage> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 480),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         "Create account",
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       const SizedBox(height: 24),
                       Container(
@@ -58,10 +66,19 @@ class _SignupPageState extends State<SignupPage> {
                         decoration: BoxDecoration(
                           color: Colors.white.withAlpha(28),
                           borderRadius: BorderRadius.circular(28),
-                          boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 24, offset: Offset(0, 12))],
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 24,
+                              offset: Offset(0, 12),
+                            ),
+                          ],
                         ),
                         child: Container(
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22)),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(22),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(20),
                             child: Form(
@@ -77,7 +94,11 @@ class _SignupPageState extends State<SignupPage> {
                                       filled: true,
                                     ),
                                     keyboardType: TextInputType.emailAddress,
-                                    validator: (v) => (v == null || !v.contains("@")) ? "Enter a valid email" : null,
+                                    validator:
+                                        (v) =>
+                                            (v == null || !v.contains("@"))
+                                                ? "Enter a valid email"
+                                                : null,
                                   ),
                                   const SizedBox(height: 12),
                                   TextFormField(
@@ -88,16 +109,28 @@ class _SignupPageState extends State<SignupPage> {
                                       filled: true,
                                     ),
                                     obscureText: true,
-                                    validator: (v) => (v == null || v.length < 6) ? "Min 6 characters" : null,
+                                    validator:
+                                        (v) =>
+                                            (v == null || v.length < 6)
+                                                ? "Min 6 characters"
+                                                : null,
                                   ),
                                   const SizedBox(height: 16),
                                   SizedBox(
                                     width: double.infinity,
                                     child: FilledButton(
                                       onPressed: _busy ? null : _submit,
-                                      child: _busy
-                                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                                          : const Text("Sign up"),
+                                      child:
+                                          _busy
+                                              ? const SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              )
+                                              : const Text("Sign up"),
                                     ),
                                   ),
                                 ],
