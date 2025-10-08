@@ -1,5 +1,5 @@
-﻿import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+﻿import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -23,19 +23,18 @@ class _SignupPageState extends State<SignupPage> {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
     final email = _emailCtrl.text.trim();
-    final password = _passwordCtrl.text;
     await Future.delayed(const Duration(milliseconds: 400)); // TODO: real signup
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Account created for \')),
+      SnackBar(content: Text("Account created for $email")),
     );
-    context.go('/dashboard');
+    context.go("/dashboard");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create account')),
+      appBar: AppBar(title: const Text("Create account")),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -49,16 +48,16 @@ class _SignupPageState extends State<SignupPage> {
                   children: [
                     TextFormField(
                       controller: _emailCtrl,
-                      decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email_outlined)),
+                      decoration: const InputDecoration(labelText: "Email", prefixIcon: Icon(Icons.email_outlined)),
                       keyboardType: TextInputType.emailAddress,
-                      validator: (v) => (v==null || !v.contains('@')) ? 'Enter a valid email' : null,
+                      validator: (v) => (v == null || !v.contains("@")) ? "Enter a valid email" : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _passwordCtrl,
-                      decoration: const InputDecoration(labelText: 'Password', prefixIcon: Icon(Icons.lock_outline)),
+                      decoration: const InputDecoration(labelText: "Password", prefixIcon: Icon(Icons.lock_outline)),
                       obscureText: true,
-                      validator: (v) => (v==null || v.length < 6) ? 'Min 6 characters' : null,
+                      validator: (v) => (v == null || v.length < 6) ? "Min 6 characters" : null,
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -67,7 +66,7 @@ class _SignupPageState extends State<SignupPage> {
                         onPressed: _busy ? null : _submit,
                         child: _busy
                           ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Text('Sign up'),
+                          : const Text("Sign up"),
                       ),
                     ),
                   ],

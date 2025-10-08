@@ -1,5 +1,5 @@
-﻿import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+﻿import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,19 +23,18 @@ class _LoginPageState extends State<LoginPage> {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
     final email = _emailCtrl.text.trim();
-    final password = _passwordCtrl.text;
     await Future.delayed(const Duration(milliseconds: 400)); // TODO: real auth
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Signed in as \')),
+      SnackBar(content: Text("Signed in as $email")),
     );
-    context.go('/dashboard');
+    context.go("/dashboard");
   }
 
   @override
   Widget build(BuildContext context) {
     final logo = Image.asset(
-      'assets/images/logo.png',
+      "assets/images/logo.png",
       height: 64,
       errorBuilder: (_, __, ___) => const FlutterLogo(size: 64),
     );
@@ -52,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   logo,
                   const SizedBox(height: 16),
-                  Text('NextBid', style: Theme.of(context).textTheme.headlineMedium),
+                  Text("NextBid", style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 24),
                   Card(
                     elevation: 0,
@@ -66,21 +65,21 @@ class _LoginPageState extends State<LoginPage> {
                             TextFormField(
                               controller: _emailCtrl,
                               decoration: const InputDecoration(
-                                labelText: 'Email',
+                                labelText: "Email",
                                 prefixIcon: Icon(Icons.email_outlined),
                               ),
                               keyboardType: TextInputType.emailAddress,
-                              validator: (v) => (v==null || !v.contains('@')) ? 'Enter a valid email' : null,
+                              validator: (v) => (v == null || !v.contains("@")) ? "Enter a valid email" : null,
                             ),
                             const SizedBox(height: 12),
                             TextFormField(
                               controller: _passwordCtrl,
                               decoration: const InputDecoration(
-                                labelText: 'Password',
+                                labelText: "Password",
                                 prefixIcon: Icon(Icons.lock_outline),
                               ),
                               obscureText: true,
-                              validator: (v) => (v==null || v.length < 6) ? 'Min 6 characters' : null,
+                              validator: (v) => (v == null || v.length < 6) ? "Min 6 characters" : null,
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
@@ -89,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                                 onPressed: _busy ? null : _submit,
                                 child: _busy
                                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                                  : const Text('Sign in'),
+                                  : const Text("Sign in"),
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -97,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                               alignment: Alignment.centerRight,
                               child: TextButton(
                                 onPressed: () {},
-                                child: const Text('Forgot password?'),
+                                child: const Text("Forgot password?"),
                               ),
                             ),
                             const Divider(height: 32),
@@ -106,8 +105,8 @@ class _LoginPageState extends State<LoginPage> {
                               children: [
                                 const Text("New here?"),
                                 TextButton(
-                                  onPressed: () => context.go('/signup'),
-                                  child: const Text('Create an account'),
+                                  onPressed: () => context.go("/signup"),
+                                  child: const Text("Create an account"),
                                 ),
                               ],
                             ),
