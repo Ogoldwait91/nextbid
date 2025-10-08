@@ -8,15 +8,28 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _form = GlobalKey<FormState>();
-  String _email = '', _password = '';
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
   bool _busy = false;
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _submit() async {
     if (!(_form.currentState?.validate() ?? false)) return;
-    _form.currentState!.save();
     setState(() => _busy = true);
+    final email = _emailCtrl.text.trim();
+    final password = _passwordCtrl.text;
     await Future.delayed(const Duration(milliseconds: 400)); // TODO: real signup
-    if (mounted) context.go('/dashboard');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Account created for \')),
+    );
+    context.go('/dashboard');
   }
 
   @override
@@ -35,17 +48,17 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextFormField(
+                      controller: _emailCtrl,
                       decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email_outlined)),
                       keyboardType: TextInputType.emailAddress,
                       validator: (v) => (v==null || !v.contains('@')) ? 'Enter a valid email' : null,
-                      onSaved: (v) => _email = v!.trim(),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
+                      controller: _passwordCtrl,
                       decoration: const InputDecoration(labelText: 'Password', prefixIcon: Icon(Icons.lock_outline)),
                       obscureText: true,
                       validator: (v) => (v==null || v.length < 6) ? 'Min 6 characters' : null,
-                      onSaved: (v) => _password = v!,
                     ),
                     const SizedBox(height: 16),
                     SizedBox(

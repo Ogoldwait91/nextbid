@@ -1,0 +1,10 @@
+﻿# Keep LF in repo; let Git handle conversion on Windows
+* text=auto eol=lf
+
+# Be explicit for common text types
+*.dart text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.gitignore text eol=lf
