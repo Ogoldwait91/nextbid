@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.10), // subtle glow around the card
+                        color: Colors.white.withValues(alpha: 0.10), // subtle glow around the card
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: const [
                           BoxShadow(
@@ -191,3 +191,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
