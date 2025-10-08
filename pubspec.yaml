@@ -4,7 +4,7 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.7.0 <4.0.0"   # works with Flutter 3.19+ (Dart 3.x)
+  sdk: ">=3.7.0 <4.0.0"   # Dart 3.x
 
 dependencies:
   flutter:
@@ -21,9 +21,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/logo.png
-
-flutter:
-  assets:
+    # include the whole images directory (includes logo.png)
     - assets/images/
-
