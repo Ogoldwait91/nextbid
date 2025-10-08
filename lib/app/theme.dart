@@ -10,45 +10,51 @@ final lightTheme = ThemeData(
     seedColor: baNavy,
     brightness: Brightness.light,
   ),
-  scaffoldBackgroundColor: const Color(0xFFF7F7FA),
-  appBarTheme: const AppBarTheme(
+  scaffoldBackgroundColor: Color(0xFFF7F7FA),
+  appBarTheme: AppBarTheme(
     backgroundColor: Colors.white,
     elevation: 0,
     foregroundColor: baNavy,
     centerTitle: false,
-    titleTextStyle: TextStyle(
-      color: baNavy, fontWeight: FontWeight.w600, fontSize: 20,
+    titleTextStyle: const TextStyle(
+      color: baNavy,
+      fontWeight: FontWeight.w600,
+      fontSize: 20,
     ),
   ),
-  cardTheme: CardTheme(
+  // NEW: CardThemeData (not CardTheme)
+  cardTheme: const CardThemeData(
     color: Colors.white,
     elevation: 0,
-    margin: const EdgeInsets.only(bottom: 12),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    margin: EdgeInsets.only(bottom: 12),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(16)),
+    ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     isDense: true,
     filled: true,
-    fillColor: const Color(0xFFF1F3F6),
+    fillColor: Color(0xFFF1F3F6),
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.all(Radius.circular(12)),
       borderSide: BorderSide.none,
     ),
   ),
   filledButtonTheme: FilledButtonThemeData(
     style: ButtonStyle(
-      shape: MaterialStatePropertyAll(
+      shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      padding: const MaterialStatePropertyAll(
+      padding: WidgetStatePropertyAll(
         EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
     ),
   ),
-  navigationBarTheme: NavigationBarThemeData(
+  // Make indicatorColor const by using ARGB (≈20% alpha BA navy)
+  navigationBarTheme: const NavigationBarThemeData(
     backgroundColor: Colors.white,
-    indicatorColor: baNavy.withAlpha(20), // subtle highlight
-    labelTextStyle: const MaterialStatePropertyAll(
+    indicatorColor: Color(0x330E1A2B),
+    labelTextStyle: WidgetStatePropertyAll(
       TextStyle(fontWeight: FontWeight.w600),
     ),
   ),
