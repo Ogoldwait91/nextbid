@@ -16,6 +16,14 @@ class ProfileChip extends StatelessWidget {
                 : n.split(RegExp(r"\\s+")).where((w) => w.isNotEmpty).map((w) => w[0]).take(2).join())
             .toUpperCase();
 
+        final line2 = () {
+          final base = "${profileState.rank} • ${profileState.crewCode}";
+          if (profileState.seniority != null && profileState.cohortSize != null) {
+            return "$base • SNR ${profileState.seniority}/${profileState.cohortSize}";
+          }
+          return base;
+        }();
+
         return InkWell(
           onTap: () => context.go("/profile"),
           borderRadius: BorderRadius.circular(999),
@@ -32,8 +40,7 @@ class ProfileChip extends StatelessWidget {
                 children: [
                   Text(n.isEmpty ? "Unnamed Pilot" : n,
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                  Text("${profileState.rank} • ${profileState.crewCode}",
-                      style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                  Text(line2, style: const TextStyle(fontSize: 12, color: Colors.black54)),
                 ],
               ),
             ],

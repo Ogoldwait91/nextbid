@@ -36,3 +36,22 @@ CALENDAR_BY_MONTH = {
 def calendar(month: str):
     stages = CALENDAR_BY_MONTH.get(month, [])
     return {"month": month, "stages": stages}
+# --- status resolver stub ---
+import hashlib
+
+def _hash_to_range(s: str, max_value: int) -> int:
+    h = hashlib.sha256(s.encode("utf-8")).hexdigest()[:8]
+    return (int(h, 16) % max_value) + 1
+
+@app.get("/status/resolve")
+def status_resolve(staff_no: str, crew_code: str):
+    crew = crew_code.strip().upper()
+    cohort_size = 5000
+    seed = f"{staff_no.strip()}|{crew}"
+    seniority = _hash_to_range(seed, cohort_size)
+    return {
+        "staff_no": staff_no,
+        "crew_code": crew,
+        "seniority": seniority,
+        "cohort_size": cohort_size,
+    }

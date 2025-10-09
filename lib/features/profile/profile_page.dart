@@ -6,6 +6,7 @@ import "../../shared/services/privacy_state.dart";
 import "../../shared/widgets/logout_leading.dart";
 import "../../shared/widgets/faq_accordion.dart";
 import "../../shared/utils/input_formatters.dart";
+import "../../shared/services/api_client.dart";
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,9 +14,15 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final _api = const ApiClient();
+
   late final TextEditingController _nameCtrl;
   late final TextEditingController _rankCtrl;
   late final TextEditingController _crewCtrl;
+  late final TextEditingController _staffCtrl;
+
+  bool _resolving = false;
+  String? _resolveErr;
 
   @override
   void initState() {
@@ -23,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _nameCtrl = TextEditingController(text: profileState.name);
     _rankCtrl = TextEditingController(text: profileState.rank);
     _crewCtrl = TextEditingController(text: profileState.crewCode);
+    _staffCtrl = TextEditingController(text: profileState.staffNo);
   }
 
   @override
@@ -30,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _nameCtrl.dispose();
     _rankCtrl.dispose();
     _crewCtrl.dispose();
+    _staffCtrl.dispose();
     super.dispose();
   }
 
@@ -38,46 +47,48 @@ class _ProfilePageState extends State<ProfilePage> {
       name: _nameCtrl.text.trim(),
       rank: _rankCtrl.text.trim(),
       crewCode: _crewCtrl.text.trim(),
+      staffNo: _staffCtrl.text.trim(),
     );
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Profile updated")));
   }
 
-  void _showPrivacyInfo(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (_) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: const [
-              Text("Privacy & Cohort Insights", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-              SizedBox(height: 12),
-              FAQAccordion(items: [
-                FAQItem("What is anonymised cohort data?",
-                        "Aggregated stats across many pilots (minimum k-anonymity of 25). No personal roster data is shown."),
-                FAQItem("Why enable this?",
-                        "It unlocks anonymised demand signals (e.g., where the crowd is bidding) to help guide your own strategy."),
-                FAQItem("Can I download or delete my data?",
-                        "Yes. These options will appear here once backend endpoints are live. For now, nothing is stored."),
-              ]),
-            ],
-          ),
-        ),
-      ),
-    );
+  Future<void> _resolveStatus() async {
+    setState(() { _resolving = true; _resolveErr = null; });
+    try {
+      final staff = _staffCtrl.text.trim();
+      final crew  = _crewCtrl.text.trim();
+      if (staff.isEmpty || crew.isEmpty) {
+        throw Exception("Enter Staff No and Crew code first");
+      }
+      final data = await _api.statusResolve(staff, crew);
+      final seniority = (data["seniority"] as num).toInt();
+      final cohort = (data["cohort_size"] as num).toInt();
+      profileState.update(staffNo: staff, crewCode: crew.toUpperCase());
+      profileState.setStatus(seniority: seniority, cohortSize: cohort);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Seniority: $seniority / $cohort")),
+        );
+      }
+    } catch (e) {
+      _resolveErr = e.toString();
+    } finally {
+      if (mounted) setState(() => _resolving = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final statusText = (profileState.seniority != null && profileState.cohortSize != null)
+        ? "Seniority: ${profileState.seniority} / ${profileState.cohortSize}"
+        : "Not resolved yet";
+
     return Scaffold(
       appBar: AppBar(leading: const LogoutLeading(), title: const Text("Profile")),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Personal details
+          // Personal details + status resolve
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -94,10 +105,34 @@ class _ProfilePageState extends State<ProfilePage> {
                   inputFormatters: [UpperCaseTextFormatter(), crewCodeFilter],
                   decoration: const InputDecoration(labelText: "Crew code", prefixIcon: Icon(Icons.badge_outlined)),
                 ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _staffCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: "Staff number", prefixIcon: Icon(Icons.numbers)),
+                ),
                 const SizedBox(height: 16),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FilledButton.icon(onPressed: _save, icon: const Icon(Icons.save_outlined), label: const Text("Save")),
+                Row(
+                  children: [
+                    FilledButton.icon(onPressed: _save, icon: const Icon(Icons.save_outlined), label: const Text("Save")),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      onPressed: _resolving ? null : _resolveStatus,
+                      icon: _resolving ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.search),
+                      label: const Text("Resolve status"),
+                    ),
+                  ],
+                ),
+                if (_resolveErr != null) ...[
+                  const SizedBox(height: 8),
+                  Text(_resolveErr!, style: const TextStyle(color: Colors.red)),
+                ],
+                const SizedBox(height: 12),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.insights_outlined),
+                  title: const Text("Status"),
+                  subtitle: Text(statusText),
                 ),
               ]),
             ),
@@ -105,14 +140,40 @@ class _ProfilePageState extends State<ProfilePage> {
 
           const SizedBox(height: 8),
 
-          // Privacy + FAQ
+          // Privacy + FAQ (unchanged)
           Card(
             child: SwitchListTile(
               title: const Text("Share anonymised insights"),
               subtitle: const Text("Enable cohort analytics (k-anon 25+)"),
               value: privacyConsent.value,
               onChanged: (v) => setState(() => privacyConsent.value = v),
-              secondary: IconButton(icon: const Icon(Icons.info_outline), tooltip: "More info", onPressed: () => _showPrivacyInfo(context)),
+              secondary: IconButton(icon: const Icon(Icons.info_outline), tooltip: "More info", onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  showDragHandle: true,
+                  builder: (_) => const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text("Privacy & Cohort Insights", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                          SizedBox(height: 12),
+                          FAQAccordion(items: [
+                            FAQItem("What is anonymised cohort data?",
+                                    "Aggregated stats across many pilots (minimum k-anonymity of 25). No personal roster data is shown."),
+                            FAQItem("Why enable this?",
+                                    "It unlocks anonymised demand signals (e.g., where the crowd is bidding) to help guide your own strategy."),
+                            FAQItem("Can I download or delete my data?",
+                                    "Yes. These options will appear here once backend endpoints are live. For now, nothing is stored."),
+                          ]),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ),
           ),
 

@@ -15,4 +15,6 @@ class ApiClient {
 
   Future<Map<String, dynamic>> credit(String month) => getJson("/credit/$month");
   Future<Map<String, dynamic>> calendar(String month) => getJson("/calendar/$month");
+  Future<Map<String, dynamic>> statusResolve(String staffNo, String crewCode) =>
+      getJson("/status/resolve?staff_no=$staffNo&crew_code=$crewCode");
 }
