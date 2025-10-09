@@ -61,14 +61,16 @@ class BidGroupEditor extends StatelessWidget {
                               onChanged: (s) => appState.renameGroup(gi, s),
                             ),
                           ),
-                          IconButton(
-                            tooltip: "Delete group",
-                            onPressed: () async {
-                              if (await _confirmDeleteGroup(context, g.name)) {
-                                appState.removeGroup(gi);
-                              }
+                          PopupMenuButton<String>(
+                            tooltip: "More",
+                            onSelected: (v) async {
+                              if (v == "dup") appState.duplicateGroup(gi);
+                              if (v == "del" && await _confirmDeleteGroup(context, g.name)) appState.removeGroup(gi);
                             },
-                            icon: const Icon(Icons.delete_outline),
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(value: "dup", child: ListTile(leading: Icon(Icons.copy), title: Text("Duplicate"))),
+                              PopupMenuItem(value: "del", child: ListTile(leading: Icon(Icons.delete_outline), title: Text("Delete"))),
+                            ],
                           ),
                         ],
                       ),
