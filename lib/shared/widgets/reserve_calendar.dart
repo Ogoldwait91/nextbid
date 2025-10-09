@@ -81,7 +81,7 @@ class ReserveBlocksCalendar extends StatelessWidget {
                 icon: const Icon(Icons.chevron_left),
               ),
               if (blocks.isNotEmpty)
-                Chip(label: Text("${codes[inx]}"), visualDensity: VisualDensity.compact),
+                Chip(label: Text(codes[inx]), visualDensity: VisualDensity.compact),
               IconButton(
                 tooltip: "Next block",
                 onPressed: blocks.isEmpty ? null : () {
@@ -134,8 +134,8 @@ class ReserveBlocksCalendar extends StatelessWidget {
               final isDay = day != null;
               final isMarked = isDay && days.contains(day);
 
-              final bg = isMarked ? theme.colorScheme.primary.withOpacity(0.15) : theme.colorScheme.surface;
-              final br = isMarked ? Border.all(color: theme.colorScheme.primary, width: 1.5) : Border.all(color: theme.dividerColor.withOpacity(0.3));
+              final bg = isMarked ? theme.colorScheme.primary.withValues(alpha: 0.15) : theme.colorScheme.surface;
+              final br = isMarked ? Border.all(color: theme.colorScheme.primary, width: 1.5) : Border.all(color: theme.dividerColor.withValues(alpha: 0.3));
               final txtStyle = isMarked
                   ? theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: theme.colorScheme.primary)
                   : theme.textTheme.bodyMedium;
@@ -169,3 +169,4 @@ class _Dow extends StatelessWidget {
     );
   }
 }
+

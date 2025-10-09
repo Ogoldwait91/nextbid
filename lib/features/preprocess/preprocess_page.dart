@@ -284,3 +284,4 @@ class _SummaryCard extends StatelessWidget {
     subtitle: Text("Credit: $_creditLabel  Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"}  Reserve: ${reserve ? "Yes" : "No"}"),
   ));
 }
+
