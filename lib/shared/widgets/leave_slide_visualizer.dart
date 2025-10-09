@@ -3,10 +3,23 @@
 class LeaveSlideVisualizer extends StatelessWidget {
   final int value; // -3..+3
   final ValueChanged<int> onChanged;
-  const LeaveSlideVisualizer({super.key, required this.value, required this.onChanged});
+  final bool enabled;
+  const LeaveSlideVisualizer({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final slider = Slider(
+      min: -3, max: 3, divisions: 6,
+      label: value.toString(),
+      value: value.toDouble(),
+      onChanged: enabled ? (d) => onChanged(d.round()) : null,
+    );
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -18,18 +31,14 @@ class LeaveSlideVisualizer extends StatelessWidget {
             Row(
               children: [
                 const Text("-3"),
-                Expanded(
-                  child: Slider(
-                    min: -3, max: 3, divisions: 6,
-                    label: value.toString(),
-                    value: value.toDouble(),
-                    onChanged: (d) => onChanged(d.round()),
-                  ),
-                ),
+                Expanded(child: slider),
                 const Text("+3"),
               ],
             ),
-            Text("Selected: ${value >= 0 ? "+" : ""}$value day(s)"),
+            Text(
+              enabled ? "Selected: ${value >= 0 ? "+" : ""}$value day(s)" : "Leave slide is OFF",
+              style: TextStyle(color: enabled ? null : Colors.black45),
+            ),
           ],
         ),
       ),

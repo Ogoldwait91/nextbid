@@ -4,10 +4,24 @@ import "../services/app_state.dart";
 class CreditRangeSelector extends StatelessWidget {
   final CreditPref value;
   final ValueChanged<CreditPref> onChanged;
-  const CreditRangeSelector({super.key, required this.value, required this.onChanged});
+  final int? min;
+  final int? max;
+  final int? def;
+  const CreditRangeSelector({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.min,
+    this.max,
+    this.def,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final rangeText = (min != null && max != null)
+        ? "Range: $min–$max${def != null ? "  •  default $def" : ""}"
+        : null;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -25,6 +39,10 @@ class CreditRangeSelector extends StatelessWidget {
               selected: {value},
               onSelectionChanged: (set) => onChanged(set.first),
             ),
+            if (rangeText != null) ...[
+              const SizedBox(height: 8),
+              Text(rangeText, style: const TextStyle(color: Colors.black54)),
+            ],
           ],
         ),
       ),
