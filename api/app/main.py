@@ -128,3 +128,25 @@ def bid_export(payload: ExportText):
     ts = datetime.now(timezone.utc).isoformat()
     # (Later: persist to DB or filesystem)
     return {"ok": True, "size": size, "ts": ts}
+# --- pairings stub ---
+from typing import List, Dict
+
+PAIRINGS_BY_MONTH: Dict[str, List[Dict]] = {
+    "2025-11": [
+        {"id": "TI7L11-001", "credit": 52, "nights": 3, "region": "LHR-LH", "type": "Long-haul"},
+        {"id": "TI7L11-002", "credit": 48, "nights": 2, "region": "LHR-SH", "type": "Short-haul"},
+        {"id": "TI7L11-003", "credit": 60, "nights": 4, "region": "LHR-LH", "type": "Long-haul"},
+        {"id": "TI7L11-004", "credit": 40, "nights": 2, "region": "LHR-SH", "type": "Short-haul"},
+        {"id": "TI7L11-005", "credit": 55, "nights": 3, "region": "LHR-LH", "type": "Long-haul"},
+        {"id": "TI7L11-006", "credit": 35, "nights": 1, "region": "LHR-SH", "type": "Short-haul"},
+    ],
+}
+
+@app.get("/pairings/{month}")
+def pairings(month: str, limit: int | None = None):
+    items = PAIRINGS_BY_MONTH.get(month, [])
+    if limit is not None and limit >= 0:
+        items = items[:limit]
+    total = len(items)
+    avg_credit = round(sum(int(p.get("credit", 0)) for p in items) / total, 1) if total else 0.0
+    return {"month": month, "pairings": items, "stats": {"count": total, "avg_credit": avg_credit}}

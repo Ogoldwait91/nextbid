@@ -33,4 +33,6 @@ class ApiClient {
       postJson("/bid/validate", {"text": text});
   Future<Map<String, dynamic>> exportBidServer(String text) =>
       postJson("/bid/export", {"text": text});
+  Future<Map<String, dynamic>> pairings(String month) =>
+      getJson("/pairings/$month");
 }
