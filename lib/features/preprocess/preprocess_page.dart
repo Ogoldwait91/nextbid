@@ -6,6 +6,7 @@ import "../../shared/widgets/credit_range_selector.dart";
 import "../../shared/widgets/leave_slide_visualizer.dart";
 import "../../shared/widgets/reserve_selector.dart";
 import "../../shared/widgets/logout_leading.dart";
+import "../../shared/widgets/reserve_calendar.dart";
 
 class PreProcessPage extends StatefulWidget {
   const PreProcessPage({super.key});
@@ -26,6 +27,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
   bool _loadingRes = false;
   String? _resErr;
   List<Map<String, dynamic>> _resBlocks = const [];
+  int _resIndex = 0;
 
   late CreditPref _credit = appState.creditPref;
   late bool _useLeave = appState.useLeaveSlide;
@@ -70,7 +72,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
   }
 
   Future<void> _fetchReserves() async {
-    setState(() { _loadingRes = true; _resErr = null; _resBlocks = const []; });
+    setState(() { _loadingRes = true; _resErr = null; _resBlocks = const []; _resIndex = 0; });
     try {
       final data = await _api.reserves(_month);
       _resBlocks = (data["blocks"] as List).cast<Map<String, dynamic>>();
@@ -129,7 +131,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Stage dates • ${_monthLabel(_month)}", style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text("Stage dates  ${_monthLabel(_month)}", style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           if (_stages.isEmpty) const Text("No stages available"),
           ..._stages.map((s) => Padding(
@@ -148,7 +150,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
     );
   }
 
-  Widget _reserveBlocksCard() {
+  Widget _reserveCalendarSection() {
     if (!_reserve) return const SizedBox.shrink();
     if (_loadingRes) {
       return const Card(child: ListTile(title: Text("Reserve blocks"), trailing: SizedBox(width: 20, height: 20, child: CircularProgressIndicator())));
@@ -162,26 +164,11 @@ class _PreProcessPageState extends State<PreProcessPage> {
         ),
       );
     }
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text("Reserve blocks", style: TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 6),
-          if (_resBlocks.isEmpty) const Text("No reserve blocks published")
-          else Wrap(
-            spacing: 8, runSpacing: -8,
-            children: _resBlocks.map((b) {
-              final code = (b["code"] ?? "R").toString();
-              final days = (b["days"] as List?)?.cast<num>().map((n) => n.toInt()).toList() ?? const <int>[];
-              return Chip(
-                label: Text("$code: ${days.join(", ")}"),
-                visualDensity: VisualDensity.compact,
-              );
-            }).toList(),
-          ),
-        ]),
-      ),
+    return ReserveBlocksCalendar(
+      month: _month,
+      blocks: _resBlocks,
+      index: _resIndex,
+      onIndexChanged: (i) => setState(() => _resIndex = i),
     );
   }
 
@@ -222,6 +209,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
                 _leave = 0;
                 _reserve = false;
                 _resBlocks = const [];
+                _resIndex = 0;
               });
               _syncState();
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Reset to defaults")));
@@ -235,7 +223,22 @@ class _PreProcessPageState extends State<PreProcessPage> {
         children: [
           _stageDatesCard(),
           const SizedBox(height: 8),
-          _reserveBlocksCard(),     // only visible when Reserve ON
+
+          // Reserve calendar (appears under the toggle when ON)
+          Card(
+            child: SwitchListTile(
+              title: const Text("Prefer Reserve"),
+              subtitle: const Text("Show reserve blocks for this month"),
+              value: _reserve,
+              onChanged: (v) {
+                setState(() { _reserve = v; _syncState(); });
+                if (v) _fetchReserves();
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          _reserveCalendarSection(),
+
           const SizedBox(height: 8),
           CreditRangeSelector(
             value: _credit,
@@ -257,13 +260,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
             enabled: _useLeave,
             onChanged: (v) => setState(() { _leave = v; _syncState(); }),
           ),
-          ReserveSelector(
-            value: _reserve,
-            onChanged: (v) {
-              setState(() { _reserve = v; _syncState(); });
-              if (v) _fetchReserves();
-            },
-          ),
+
           const SizedBox(height: 8),
           _SummaryCard(credit: _credit, useLeave: _useLeave, leave: _leave, reserve: _reserve),
           const SizedBox(height: 12),
@@ -284,6 +281,6 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(child: ListTile(
     title: const Text("Summary"),
-    subtitle: Text("Credit: $_creditLabel • Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"} • Reserve: ${reserve ? "Yes" : "No"}"),
+    subtitle: Text("Credit: $_creditLabel  Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"}  Reserve: ${reserve ? "Yes" : "No"}"),
   ));
 }
