@@ -55,3 +55,63 @@ def status_resolve(staff_no: str, crew_code: str):
         "seniority": seniority,
         "cohort_size": cohort_size,
     }
+# --- bid validator stub ---
+import re
+from typing import List, Dict
+from pydantic import BaseModel
+
+ROW_RE  = re.compile(r'^[A-Z0-9 _+\-.,/:()#=\\]{1,80}$')
+BANK_RE = re.compile(r'^BANK_PROTECTION(?:\s+(ON|OFF))?$')
+
+class BidText(BaseModel):
+    text: str
+
+@app.post("/bid/validate")
+def bid_validate(payload: BidText):
+    # Normalise line endings and split
+    text = payload.text.replace("\r\n", "\n").replace("\r", "\n")
+    lines = [ln.strip() for ln in text.split("\n")]
+
+    errors: List[str] = []
+    groups = 0
+    rows = 0
+    seen: set[str] = set()
+
+    for i, ln in enumerate(lines, start=1):
+        if not ln:
+            continue
+        up = ln.upper()
+        if up.startswith(";"):       # group boundary/comment
+            groups += 1
+            continue
+
+        # Global directives (allowed at top)
+        if up.startswith("CREDIT_PREFERENCE ") \
+           or up.startswith("PREFER_RESERVE ") \
+           or up.startswith("LEAVE_SLIDE"):
+            continue
+
+        # Disallow BANK_PROTECTION rows (handled by Pre-Process)
+        if BANK_RE.match(up):
+            errors.append(f"Line {i}: Remove BANK_PROTECTION; it is controlled by Pre-Process.")
+            continue
+
+        # Regular bid row
+        rows += 1
+        if not ROW_RE.match(up):
+            errors.append(f"Line {i}: invalid row '{ln}'")
+        elif up in seen:
+            errors.append(f"Line {i}: duplicate row '{ln}'")
+        else:
+            seen.add(up)
+
+    if groups > 15:
+        errors.append("Too many groups (max 15).")
+    if rows > 40:
+        errors.append("Too many rows across groups (max 40).")
+
+    return {
+        "ok": len(errors) == 0,
+        "errors": errors,
+        "stats": {"groups": groups, "rows": rows, "unique_rows": len(seen)},
+    }

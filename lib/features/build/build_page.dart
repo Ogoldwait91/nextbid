@@ -6,6 +6,7 @@ import "../../shared/services/jss_composer.dart";
 import "../../shared/widgets/logout_leading.dart";
 import "../../shared/widgets/bid_group_editor.dart";
 import "../../shared/widgets/validation_banner.dart";
+import "../../shared/services/api_client.dart";
 
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
@@ -63,6 +64,46 @@ class BuildBidPage extends StatelessWidget {
     }
   }
 
+  Future<void> _serverCheck(BuildContext context) async {
+    final api = const ApiClient();
+    final text = composeJssText(windowsEol: true);
+    try {
+      final res = await api.validateBidServer(text);
+      final ok = res["ok"] == true;
+      final List errs = (res["errors"] as List?) ?? [];
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(ok ? "Server validation passed" : "Server found issues"),
+          content: SizedBox(
+            width: 420,
+            child: SingleChildScrollView(
+              child: ok
+                  ? const Text("Looks good! Export is safe.")
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: errs.map((e) => Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Text("• $e"),
+                      )).toList(),
+                    ),
+            ),
+          ),
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+        ),
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Server validation failed"),
+          content: Text(e.toString()),
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final lines = composeJssLines();
@@ -81,7 +122,7 @@ class BuildBidPage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const BidGroupEditor(),
-          const SizedBox(height: 80), // leave space for bottom bar
+          const SizedBox(height: 80),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -93,6 +134,8 @@ class BuildBidPage extends StatelessWidget {
               FilledButton.icon(onPressed: () => _copy(context),   icon: const Icon(Icons.copy),              label: const Text("Copy")),
               const SizedBox(width: 8),
               OutlinedButton.icon(onPressed: () => _export(context), icon: const Icon(Icons.download_outlined), label: const Text("Export .txt")),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(onPressed: () => _serverCheck(context), icon: const Icon(Icons.shield_outlined), label: const Text("Server check")),
             ],
           ),
         ),
