@@ -115,3 +115,16 @@ def bid_validate(payload: BidText):
         "errors": errors,
         "stats": {"groups": groups, "rows": rows, "unique_rows": len(seen)},
     }
+# --- bid export stub ---
+from pydantic import BaseModel
+from datetime import datetime, timezone
+
+class ExportText(BaseModel):
+    text: str
+
+@app.post("/bid/export")
+def bid_export(payload: ExportText):
+    size = len(payload.text.encode("utf-8"))
+    ts = datetime.now(timezone.utc).isoformat()
+    # (Later: persist to DB or filesystem)
+    return {"ok": True, "size": size, "ts": ts}

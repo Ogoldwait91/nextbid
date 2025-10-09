@@ -65,14 +65,16 @@ class BuildBidPage extends StatelessWidget {
   }
 
   Future<void> _serverCheck(BuildContext context) async {
+    final navigator = Navigator.of(context);
     final api = const ApiClient();
     final text = composeJssText(windowsEol: true);
     try {
       final res = await api.validateBidServer(text);
+      if (!navigator.mounted) return;
       final ok = res["ok"] == true;
       final List errs = (res["errors"] as List?) ?? [];
       showDialog(
-        context: context,
+        context: navigator.context,
         builder: (_) => AlertDialog(
           title: Text(ok ? "Server validation passed" : "Server found issues"),
           content: SizedBox(
@@ -89,16 +91,45 @@ class BuildBidPage extends StatelessWidget {
                     ),
             ),
           ),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
         ),
       );
     } catch (e) {
+      if (!navigator.mounted) return;
       showDialog(
-        context: context,
+        context: navigator.context,
         builder: (_) => AlertDialog(
           title: const Text("Server validation failed"),
           content: Text(e.toString()),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
+        ),
+      );
+    }
+  }
+
+  Future<void> _serverExport(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final api = const ApiClient();
+    final text = composeJssText(windowsEol: true);
+    try {
+      final res = await api.exportBidServer(text);
+      if (!navigator.mounted) return;
+      showDialog(
+        context: navigator.context,
+        builder: (_) => AlertDialog(
+          title: const Text("Server export complete"),
+          content: Text("Saved on server (stub)\nBytes: ${res["size"]}\nWhen: ${res["ts"]}"),
+          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
+        ),
+      );
+    } catch (e) {
+      if (!navigator.mounted) return;
+      showDialog(
+        context: navigator.context,
+        builder: (_) => AlertDialog(
+          title: const Text("Server export failed"),
+          content: Text(e.toString()),
+          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
         ),
       );
     }
@@ -131,11 +162,13 @@ class BuildBidPage extends StatelessWidget {
           decoration: const BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, -2))]),
           child: Row(
             children: [
-              FilledButton.icon(onPressed: () => _copy(context),   icon: const Icon(Icons.copy),              label: const Text("Copy")),
+              FilledButton.icon(onPressed: () => _copy(context),        icon: const Icon(Icons.copy),              label: const Text("Copy")),
               const SizedBox(width: 8),
-              OutlinedButton.icon(onPressed: () => _export(context), icon: const Icon(Icons.download_outlined), label: const Text("Export .txt")),
+              OutlinedButton.icon(onPressed: () => _export(context),     icon: const Icon(Icons.download_outlined), label: const Text("Export .txt")),
               const SizedBox(width: 8),
-              OutlinedButton.icon(onPressed: () => _serverCheck(context), icon: const Icon(Icons.shield_outlined), label: const Text("Server check")),
+              OutlinedButton.icon(onPressed: () => _serverCheck(context), icon: const Icon(Icons.shield_outlined),  label: const Text("Server check")),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(onPressed: () => _serverExport(context), icon: const Icon(Icons.cloud_upload_outlined), label: const Text("Server export")),
             ],
           ),
         ),

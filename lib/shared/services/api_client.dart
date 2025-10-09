@@ -29,7 +29,8 @@ class ApiClient {
   Future<Map<String, dynamic>> calendar(String month) => getJson("/calendar/$month");
   Future<Map<String, dynamic>> statusResolve(String staffNo, String crewCode) =>
       getJson("/status/resolve?staff_no=$staffNo&crew_code=$crewCode");
-
   Future<Map<String, dynamic>> validateBidServer(String text) =>
       postJson("/bid/validate", {"text": text});
+  Future<Map<String, dynamic>> exportBidServer(String text) =>
+      postJson("/bid/export", {"text": text});
 }
