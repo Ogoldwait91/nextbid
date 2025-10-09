@@ -150,3 +150,60 @@ def pairings(month: str, limit: int | None = None):
     total = len(items)
     avg_credit = round(sum(int(p.get("credit", 0)) for p in items) / total, 1) if total else 0.0
     return {"month": month, "pairings": items, "stats": {"count": total, "avg_credit": avg_credit}}
+# Enforce core limits and bank protection position
+MAX_GROUPS = 15
+MAX_ROWS = 40
+BANK_PREFIX = "AWARD WORK CONTAINED WITHIN"
+BANK_POOL   = "L--"
+
+def _is_bank_protection(line: str) -> bool:
+    up = line.strip().upper()
+    return up.startswith(BANK_PREFIX) and f" {BANK_POOL}" in up
+
+def _check_bank_protection(groups: list[list[str]], errors: list[str]) -> None:
+    hits: list[tuple[int,int]] = []
+    for gi, g in enumerate(groups):
+        for ri, ln in enumerate(g):
+            if _is_bank_protection(ln):
+                hits.append((gi, ri))
+    if not hits:
+        return
+    if len(hits) > 1:
+        errors.append("Bank protection command must appear only once (final group, first line).")
+        return
+    gi, ri = hits[0]
+    if gi != len(groups) - 1 or ri != 0:
+        errors.append("Bank protection must be the FIRST line of your FINAL bid group.")
+# --- privacy stubs ---
+from pydantic import BaseModel
+from datetime import datetime, timezone
+
+@app.get("/privacy/data")
+def privacy_data():
+    # Stub: echo a tiny snapshot; later load from DB/files
+    now = datetime.now(timezone.utc).isoformat()
+    return {
+        "generated_at": now,
+        "profile": {"name": "Your Name", "rank": "FO", "crew_code": "XXXX", "staff_no": ""},
+        "preferences": {"credit": "NEUTRAL", "leave_slide": 0, "prefer_reserve": False},
+        "bid": {"groups": ["Group 1"], "rows": []}
+    }
+
+@app.delete("/privacy/data")
+def privacy_delete():
+    # Stub: pretend we deleted stored data
+    return {"ok": True, "deleted": True}
+# --- reserves stub ---
+RESERVES_BY_MONTH = {
+    "2025-11": [
+        {"code": "R1", "days": [2, 9, 16, 23, 30]},
+        {"code": "R2", "days": [5, 12, 19, 26]},
+        {"code": "R3", "days": [7, 14, 21, 28]},
+    ],
+}
+
+@app.get("/reserves/{month}")
+def reserves(month: str):
+    items = RESERVES_BY_MONTH.get(month, [])
+    total = sum(len(r.get("days", [])) for r in items)
+    return {"month": month, "blocks": items, "stats": {"count": len(items), "total_days": total}}

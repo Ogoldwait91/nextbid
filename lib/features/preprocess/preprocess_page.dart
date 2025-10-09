@@ -23,6 +23,10 @@ class _PreProcessPageState extends State<PreProcessPage> {
   String? _calendarErr;
   List<Map<String, dynamic>> _stages = const [];
 
+  bool _loadingRes = false;
+  String? _resErr;
+  List<Map<String, dynamic>> _resBlocks = const [];
+
   late CreditPref _credit = appState.creditPref;
   late bool _useLeave = appState.useLeaveSlide;
   late int _leave = appState.leaveDeltaDays;
@@ -33,6 +37,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
     super.initState();
     _fetchCredit();
     _fetchCalendar();
+    if (_reserve) _fetchReserves();
   }
 
   // --- API fetches ---
@@ -61,6 +66,18 @@ class _PreProcessPageState extends State<PreProcessPage> {
       _calendarErr = e.toString();
     } finally {
       if (mounted) setState(() => _loadingCalendar = false);
+    }
+  }
+
+  Future<void> _fetchReserves() async {
+    setState(() { _loadingRes = true; _resErr = null; _resBlocks = const []; });
+    try {
+      final data = await _api.reserves(_month);
+      _resBlocks = (data["blocks"] as List).cast<Map<String, dynamic>>();
+    } catch (e) {
+      _resErr = e.toString();
+    } finally {
+      if (mounted) setState(() => _loadingRes = false);
     }
   }
 
@@ -131,6 +148,43 @@ class _PreProcessPageState extends State<PreProcessPage> {
     );
   }
 
+  Widget _reserveBlocksCard() {
+    if (!_reserve) return const SizedBox.shrink();
+    if (_loadingRes) {
+      return const Card(child: ListTile(title: Text("Reserve blocks"), trailing: SizedBox(width: 20, height: 20, child: CircularProgressIndicator())));
+    }
+    if (_resErr != null) {
+      return Card(
+        child: ListTile(
+          title: const Text("Reserve blocks"),
+          subtitle: Text("Failed to load: $_resErr"),
+          trailing: OutlinedButton(onPressed: _fetchReserves, child: const Text("Retry")),
+        ),
+      );
+    }
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text("Reserve blocks", style: TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          if (_resBlocks.isEmpty) const Text("No reserve blocks published")
+          else Wrap(
+            spacing: 8, runSpacing: -8,
+            children: _resBlocks.map((b) {
+              final code = (b["code"] ?? "R").toString();
+              final days = (b["days"] as List?)?.cast<num>().map((n) => n.toInt()).toList() ?? const <int>[];
+              return Chip(
+                label: Text("$code: ${days.join(", ")}"),
+                visualDensity: VisualDensity.compact,
+              );
+            }).toList(),
+          ),
+        ]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loadingCredit) {
@@ -154,23 +208,34 @@ class _PreProcessPageState extends State<PreProcessPage> {
         leading: const LogoutLeading(),
         title: const Text("Pre-Process"),
         actions: [
-          IconButton(tooltip: "Refresh data", onPressed: () { _fetchCredit(); _fetchCalendar(); }, icon: const Icon(Icons.cloud_sync_outlined)),
-          IconButton(tooltip: "Reset", onPressed: () {
-            setState(() {
-              _credit = CreditPref.neutral;
-              _useLeave = false;
-              _leave = 0;
-              _reserve = false;
-            });
-            _syncState();
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Reset to defaults")));
-          }, icon: const Icon(Icons.refresh)),
+          IconButton(
+            tooltip: "Refresh data",
+            onPressed: () { _fetchCredit(); _fetchCalendar(); if (_reserve) _fetchReserves(); },
+            icon: const Icon(Icons.cloud_sync_outlined),
+          ),
+          IconButton(
+            tooltip: "Reset",
+            onPressed: () {
+              setState(() {
+                _credit = CreditPref.neutral;
+                _useLeave = false;
+                _leave = 0;
+                _reserve = false;
+                _resBlocks = const [];
+              });
+              _syncState();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Reset to defaults")));
+            },
+            icon: const Icon(Icons.refresh),
+          ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _stageDatesCard(),
+          const SizedBox(height: 8),
+          _reserveBlocksCard(),     // only visible when Reserve ON
           const SizedBox(height: 8),
           CreditRangeSelector(
             value: _credit,
@@ -194,7 +259,10 @@ class _PreProcessPageState extends State<PreProcessPage> {
           ),
           ReserveSelector(
             value: _reserve,
-            onChanged: (v) => setState(() { _reserve = v; _syncState(); }),
+            onChanged: (v) {
+              setState(() { _reserve = v; _syncState(); });
+              if (v) _fetchReserves();
+            },
           ),
           const SizedBox(height: 8),
           _SummaryCard(credit: _credit, useLeave: _useLeave, leave: _leave, reserve: _reserve),

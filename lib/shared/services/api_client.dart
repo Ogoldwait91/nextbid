@@ -33,6 +33,16 @@ class ApiClient {
       postJson("/bid/validate", {"text": text});
   Future<Map<String, dynamic>> exportBidServer(String text) =>
       postJson("/bid/export", {"text": text});
-  Future<Map<String, dynamic>> pairings(String month) =>
-      getJson("/pairings/$month");
+  Future<Map<String, dynamic>> privacyDownload() => getJson("/privacy/data");
+  Future<Map<String, dynamic>> privacyDelete() => deleteJson("/privacy/data");
+
+  Future<Map<String, dynamic>> deleteJson(String path) async {
+    final r = await http.delete(Uri.parse("$base$path"));
+    if (r.statusCode >= 200 && r.statusCode < 300) {
+      return json.decode(r.body) as Map<String, dynamic>;
+    }
+    throw Exception("DELETE $path failed: ${r.statusCode}");
+  }
+
+  Future<Map<String, dynamic>> reserves(String month) => getJson("/reserves/$month");
 }
