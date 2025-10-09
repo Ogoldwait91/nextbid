@@ -1,23 +1,178 @@
 ﻿import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 import "../../shared/services/auth_state.dart";
+import "../../shared/services/profile_state.dart";
+import "../../shared/services/privacy_state.dart";
 import "../../shared/widgets/logout_leading.dart";
+import "../../shared/widgets/faq_accordion.dart";
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _rankCtrl;
+  late final TextEditingController _crewCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(text: profileState.name);
+    _rankCtrl = TextEditingController(text: profileState.rank);
+    _crewCtrl = TextEditingController(text: profileState.crewCode);
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _rankCtrl.dispose();
+    _crewCtrl.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    profileState.update(
+      name: _nameCtrl.text.trim(),
+      rank: _rankCtrl.text.trim(),
+      crewCode: _crewCtrl.text.trim(),
+    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Profile updated")));
+  }
+
+  void _showPrivacyInfo(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder:
+          (_) => Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: const [
+                  Text(
+                    "Privacy & Cohort Insights",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(height: 12),
+                  FAQAccordion(
+                    items: [
+                      FAQItem(
+                        "What is anonymised cohort data?",
+                        "Aggregated stats across many pilots (minimum k-anonymity of 25). No personal roster data is shown.",
+                      ),
+                      FAQItem(
+                        "Why enable this?",
+                        "It unlocks anonymised demand signals (e.g., where the crowd is bidding) to help guide your own strategy.",
+                      ),
+                      FAQItem(
+                        "Can I download or delete my data?",
+                        "Yes. These options will appear here once backend endpoints are live. For now, nothing is stored.",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: const LogoutLeading(), title: const Text("Profile")),
-      body: Center(
-        child: FilledButton.icon(
-          icon: const Icon(Icons.logout),
-          label: const Text("Sign out"),
-          onPressed: () {
-            authState.value = false;
-            context.go("/login");
-          },
-        ),
+      appBar: AppBar(
+        leading: const LogoutLeading(),
+        title: const Text("Profile"),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Personal details
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Personal details",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _nameCtrl,
+                    decoration: const InputDecoration(
+                      labelText: "Name",
+                      prefixIcon: Icon(Icons.person_outline),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _rankCtrl,
+                    decoration: const InputDecoration(
+                      labelText: "Rank (e.g., FO/Capt)",
+                      prefixIcon: Icon(Icons.workspace_premium_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _crewCtrl,
+                    decoration: const InputDecoration(
+                      labelText: "Crew code",
+                      prefixIcon: Icon(Icons.badge_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: FilledButton.icon(
+                      onPressed: _save,
+                      icon: const Icon(Icons.save_outlined),
+                      label: const Text("Save"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // Privacy + FAQ
+          Card(
+            child: SwitchListTile(
+              title: const Text("Share anonymised insights"),
+              subtitle: const Text("Enable cohort analytics (k-anon 25+)"),
+              value: privacyConsent.value,
+              onChanged: (v) => setState(() => privacyConsent.value = v),
+              secondary: IconButton(
+                icon: const Icon(Icons.info_outline),
+                tooltip: "More info",
+                onPressed: () => _showPrivacyInfo(context),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          Center(
+            child: FilledButton.icon(
+              icon: const Icon(Icons.logout),
+              label: const Text("Sign out"),
+              onPressed: () {
+                authState.value = false;
+                context.go("/login");
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
