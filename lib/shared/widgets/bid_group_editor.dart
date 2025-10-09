@@ -84,11 +84,11 @@ class BidGroupEditor extends StatelessWidget {
                                   initialValue: row.text,
                                   textInputAction: TextInputAction.next,
                                   maxLength: 80,
-                                  inputFormatters: const [UpperCaseTextFormatter(), jssRowFilter],
+                                  inputFormatters: [UpperCaseTextFormatter(), jssRowFilter],
                                   decoration: const InputDecoration(
                                     labelText: "Row",
                                     helperText: "Allowed: A–Z 0–9 _ + - . , / : \\ (≤80)",
-                                    counterText: "", // keep layout compact
+                                    counterText: "",
                                   ),
                                   onChanged: (s) => appState.updateRow(gi, ri, s),
                                 ),
