@@ -6,7 +6,6 @@ import "../../shared/widgets/credit_range_selector.dart";
 import "../../shared/widgets/leave_slide_visualizer.dart";
 import "../../shared/widgets/reserve_selector.dart";
 import "../../shared/widgets/logout_leading.dart";
-import "../../shared/widgets/pairings_overview.dart";
 
 class PreProcessPage extends StatefulWidget {
   const PreProcessPage({super.key});
@@ -24,11 +23,6 @@ class _PreProcessPageState extends State<PreProcessPage> {
   String? _calendarErr;
   List<Map<String, dynamic>> _stages = const [];
 
-  bool _loadingPairings = true;
-  String? _pairingsErr;
-  List<Map<String, dynamic>> _pairings = const [];
-  double _avgCredit = 0.0;
-
   late CreditPref _credit = appState.creditPref;
   late bool _useLeave = appState.useLeaveSlide;
   late int _leave = appState.leaveDeltaDays;
@@ -39,7 +33,6 @@ class _PreProcessPageState extends State<PreProcessPage> {
     super.initState();
     _fetchCredit();
     _fetchCalendar();
-    _fetchPairings();
   }
 
   // --- API fetches ---
@@ -68,21 +61,6 @@ class _PreProcessPageState extends State<PreProcessPage> {
       _calendarErr = e.toString();
     } finally {
       if (mounted) setState(() => _loadingCalendar = false);
-    }
-  }
-
-  Future<void> _fetchPairings() async {
-    setState(() { _loadingPairings = true; _pairingsErr = null; });
-    try {
-      final data = await _api.pairings(_month);
-      final list = (data["pairings"] as List).cast<Map<String, dynamic>>();
-      _pairings = list;
-      final stats = data["stats"] as Map<String, dynamic>? ?? {};
-      _avgCredit = (stats["avg_credit"] as num?)?.toDouble() ?? 0.0;
-    } catch (e) {
-      _pairingsErr = e.toString();
-    } finally {
-      if (mounted) setState(() => _loadingPairings = false);
     }
   }
 
@@ -155,7 +133,6 @@ class _PreProcessPageState extends State<PreProcessPage> {
 
   @override
   Widget build(BuildContext context) {
-    // keep the original credit fetch gate simple
     if (_loadingCredit) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -177,7 +154,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
         leading: const LogoutLeading(),
         title: const Text("Pre-Process"),
         actions: [
-          IconButton(tooltip: "Refresh data", onPressed: () { _fetchCredit(); _fetchCalendar(); _fetchPairings(); }, icon: const Icon(Icons.cloud_sync_outlined)),
+          IconButton(tooltip: "Refresh data", onPressed: () { _fetchCredit(); _fetchCalendar(); }, icon: const Icon(Icons.cloud_sync_outlined)),
           IconButton(tooltip: "Reset", onPressed: () {
             setState(() {
               _credit = CreditPref.neutral;
@@ -195,22 +172,6 @@ class _PreProcessPageState extends State<PreProcessPage> {
         children: [
           _stageDatesCard(),
           const SizedBox(height: 8),
-
-          // Pairings overview (loading/error states inline)
-          if (_loadingPairings)
-            const Card(child: ListTile(title: Text("Pairings overview"), trailing: SizedBox(width: 20, height: 20, child: CircularProgressIndicator())))
-          else if (_pairingsErr != null)
-            Card(
-              child: ListTile(
-                title: const Text("Pairings overview"),
-                subtitle: Text("Failed to load: $_pairingsErr"),
-                trailing: OutlinedButton(onPressed: _fetchPairings, child: const Text("Retry")),
-              ),
-            )
-          else
-            PairingsOverview(pairings: _pairings, avgCredit: _avgCredit),
-
-          const SizedBox(height: 8),
           CreditRangeSelector(
             value: _credit,
             onChanged: (v) => setState(() { _credit = v; _syncState(); }),
@@ -218,7 +179,6 @@ class _PreProcessPageState extends State<PreProcessPage> {
             max: appState.creditMax,
             def: appState.creditDefault,
           ),
-
           Card(
             child: SwitchListTile(
               title: const Text("Use Leave Slide"),
