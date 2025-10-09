@@ -5,11 +5,38 @@ import "package:path_provider/path_provider.dart";
 import "../../shared/services/jss_composer.dart";
 import "../../shared/widgets/logout_leading.dart";
 import "../../shared/widgets/bid_group_editor.dart";
+import "../../shared/widgets/validation_banner.dart";
 
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
 
+  bool _preflight(BuildContext context) {
+    final v = validateBid();
+    if (v.ok) return true;
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Cannot export yet"),
+        content: SizedBox(
+          width: 420,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: v.errors.map((e) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text("• $e"),
+              )).toList(),
+            ),
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+      ),
+    );
+    return false;
+  }
+
   Future<void> _copy(BuildContext context) async {
+    if (!_preflight(context)) return;
     final text = composeJssText(windowsEol: true);
     await Clipboard.setData(ClipboardData(text: text));
     if (context.mounted) {
@@ -18,13 +45,14 @@ class BuildBidPage extends StatelessWidget {
   }
 
   Future<void> _export(BuildContext context) async {
+    if (!_preflight(context)) return;
     final text = composeJssText(windowsEol: true);
     try {
       Directory? dir = await getDownloadsDirectory();
       dir ??= await getApplicationDocumentsDirectory();
       final ts = DateTime.now().toIso8601String().replaceAll(":", "-");
       final file = File("${dir.path}${Platform.pathSeparator}nextbid_commands_$ts.txt");
-      await file.writeAsString(text); // UTF-8 by default
+      await file.writeAsString(text); // UTF-8 + CRLF already from composer
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Saved to ${file.path}")));
       }
@@ -43,6 +71,8 @@ class BuildBidPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          const ValidationBanner(),
+          const SizedBox(height: 12),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(12),
