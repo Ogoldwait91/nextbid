@@ -1,6 +1,7 @@
-﻿import "../services/app_state.dart";
+﻿import "package:nextbid_demo/shared/spec/jss_spec.dart";
+import "package:nextbid_demo/shared/services/app_state.dart";
 
-/// Simple row grammar (placeholder): A–Z, 0–9, space, _ + - . , / : ( ) # = and backslash
+/// Allowed row grammar: A–Z, 0–9, space, _ + - . , / : ( ) # = and backslash
 final RegExp _rowRe = RegExp(r'^[A-Z0-9 _+\-.,/:()#=\\]{1,80}$');
 
 class BidValidation {
@@ -11,13 +12,20 @@ class BidValidation {
   bool get ok => errors.isEmpty;
 }
 
+/// Validate current in-memory bid (uses [appState]).
 BidValidation validateBid() {
-  final errs = <String>[];
-  if (appState.groups.length > 15) errs.add("Too many groups (max 15).");
-  final total = appState.totalRows;
-  if (total > 40) errs.add("Too many rows across groups (max 40).");
+  final errors = <String>[];
 
-  // duplicates & invalids
+  // Hard limits
+  if (appState.groups.length > JssSpec.maxGroups) {
+    errors.add("Too many groups (max ${JssSpec.maxGroups}).");
+  }
+  final totalRows = appState.totalRows;
+  if (totalRows > JssSpec.maxRows) {
+    errors.add("Too many rows across groups (max ${JssSpec.maxRows}).");
+  }
+
+  // Validate each row + global de-dupe
   final seen = <String>{};
   for (var gi = 0; gi < appState.groups.length; gi++) {
     final g = appState.groups[gi];
@@ -25,20 +33,33 @@ BidValidation validateBid() {
       final t = g.rows[ri].text.trim().toUpperCase();
       if (t.isEmpty) continue;
       if (!_rowRe.hasMatch(t)) {
-        errs.add("Invalid row in ${g.name} #${ri + 1}: '$t'");
+        errors.add("Invalid row in ${g.name} #${ri + 1}: '$t'");
       } else if (seen.contains(t)) {
-        errs.add("Duplicate row (will be de-duped on export): '$t'");
+        errors.add("Duplicate row (will be de-duped on export): '$t'");
       } else {
         seen.add(t);
       }
     }
   }
-  return BidValidation(appState.groups.length, total, errs);
+
+  // Build a simple groups structure of row lines for bank-protection rule
+  final groups = <List<String>>[];
+  for (final g in appState.groups) {
+    final lines = <String>[];
+    for (final r in g.rows) {
+      final u = r.text.trim().toUpperCase();
+      if (u.isNotEmpty) lines.add(u);
+    }
+    groups.add(lines);
+  }
+  _checkBankProtectionRule(groups, errors);
+
+  return BidValidation(appState.groups.length, totalRows, errors);
 }
 
-/// Global (from Pre-Process) followed by group rows (order preserved), de-duping duplicates.
+/// Compose to JSS lines: globals first, then groups (with de-dupe across all lines).
 List<String> composeJssLines() {
-  // Global directives (always first)
+  // Global directives
   final credit = switch (appState.creditPref) {
     CreditPref.low     => "CREDIT_PREFERENCE LOW",
     CreditPref.neutral => "CREDIT_PREFERENCE NEUTRAL",
@@ -47,14 +68,13 @@ List<String> composeJssLines() {
   final lines = <String>[credit];
 
   if (appState.useLeaveSlide) {
-    final leave = "LEAVE_SLIDE ${appState.leaveDeltaDays >= 0 ? "+" : ""}${appState.leaveDeltaDays}";
-    lines.add(leave);
+    final sign = appState.leaveDeltaDays >= 0 ? "+" : "";
+    lines.add("LEAVE_SLIDE $sign${appState.leaveDeltaDays}");
   }
 
-  final reserve = "PREFER_RESERVE ${appState.preferReserve ? "ON" : "OFF"}";
-  lines.add(reserve);
+  lines.add("PREFER_RESERVE ${appState.preferReserve ? "ON" : "OFF"}");
 
-  // Track duplicates across all rows
+  // De-duplication across everything
   final seen = <String>{...lines.map((s) => s.toUpperCase())};
 
   for (final g in appState.groups) {
@@ -76,4 +96,37 @@ List<String> composeJssLines() {
 String composeJssText({bool windowsEol = true}) {
   final eol = windowsEol ? "\r\n" : "\n";
   return composeJssLines().join(eol) + eol;
+}
+
+// -------- Bank protection helper (used inside validateBid) --------
+
+bool _isBankProtection(String line) {
+  final up = line.trim().toUpperCase();
+  return up.startsWith(JssSpec.bankProtectionPrefix) &&
+         up.contains(" ${JssSpec.bankProtectionPool}");
+}
+
+/// Bank protection (if present) must be the FIRST line of the FINAL group.
+void _checkBankProtectionRule(List<List<String>> groups, List<String> errors) {
+  // Collect occurrences
+  final hits = <Map<String,int>>[];
+  for (var gi = 0; gi < groups.length; gi++) {
+    final g = groups[gi];
+    for (var ri = 0; ri < g.length; ri++) {
+      if (_isBankProtection(g[ri])) {
+        hits.add({"g": gi, "r": ri});
+      }
+    }
+  }
+  if (hits.isEmpty) return; // optional command
+
+  if (hits.length > 1) {
+    errors.add("Bank protection must appear only once (final group, first line).");
+    return;
+  }
+  final gi = hits.first["g"]!;
+  final ri = hits.first["r"]!;
+  if (gi != groups.length - 1 || ri != 0) {
+    errors.add("Bank protection must be the FIRST line of your FINAL bid group.");
+  }
 }
