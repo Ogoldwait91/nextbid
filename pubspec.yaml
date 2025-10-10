@@ -1,4 +1,4 @@
-name: nextbid_demo
+﻿name: nextbid_demo
 description: "A new Flutter project."
 publish_to: "none"
 version: 1.0.0+1
@@ -26,3 +26,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+# --- NextBid additions ---

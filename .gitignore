@@ -58,3 +58,77 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+# VS Code
+.vscode/
+.history/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+ios/Pods/
+android/.gradle/
+android/app/release/
+windows/flutter/ephemeral/
+linux/flutter/ephemeral/
+macos/Flutter/ephemeral/
+
+# Node
+node_modules/
+dist/
+.tmp/
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+.env
+.venv
+venv/
+
+# OS / misc
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+# VS Code
+.vscode/
+.history/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+ios/Pods/
+android/.gradle/
+android/app/release/
+windows/flutter/ephemeral/
+linux/flutter/ephemeral/
+macos/Flutter/ephemeral/
+
+# Node
+node_modules/
+dist/
+.tmp/
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+.env
+.venv
+venv/
+
+# OS / misc
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
