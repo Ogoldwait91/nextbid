@@ -317,3 +317,7 @@ def calendar(month: str):
 print("[boot] api main loaded")
 print("[paths] FIXDIR", FIXDIR)
 print("[paths] CALDIR", CALDIR)
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
