@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class NBHeatmap extends StatelessWidget {
   final List<List<int>> data; // 0..4 intensity
@@ -7,8 +7,8 @@ class NBHeatmap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final days = const ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    final cols = const ['M','T','W','T','F','S','S'];
+    final days = const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final cols = const ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
     Color cell(int v) {
       // BA gold-ish scale on surface; tweak to taste
@@ -24,10 +24,15 @@ class NBHeatmap extends StatelessWidget {
         Row(
           children: [
             const SizedBox(width: 36), // space for row labels
-            ...cols.map((c) => Expanded(
-              child: Text(c, textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.labelSmall),
-            )),
+            ...cols.map(
+              (c) => Expanded(
+                child: Text(
+                  c,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -38,18 +43,26 @@ class NBHeatmap extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 3),
               child: Row(
                 children: [
-                  SizedBox(width: 36,
-                    child: Text(days[r], style: Theme.of(context).textTheme.labelSmall)),
-                  ...List.generate(data[r].length, (c) => Expanded(
-                    child: Container(
-                      height: 18,
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      decoration: BoxDecoration(
-                        color: cell(data[r][c]),
-                        borderRadius: BorderRadius.circular(4),
+                  SizedBox(
+                    width: 36,
+                    child: Text(
+                      days[r],
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ),
+                  ...List.generate(
+                    data[r].length,
+                    (c) => Expanded(
+                      child: Container(
+                        height: 18,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          color: cell(data[r][c]),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
                     ),
-                  )),
+                  ),
                 ],
               ),
             );

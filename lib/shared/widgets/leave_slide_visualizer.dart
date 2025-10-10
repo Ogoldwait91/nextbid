@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 class LeaveSlideVisualizer extends StatelessWidget {
   final int value; // -3..+3
@@ -14,7 +14,9 @@ class LeaveSlideVisualizer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final slider = Slider(
-      min: -3, max: 3, divisions: 6,
+      min: -3,
+      max: 3,
+      divisions: 6,
       label: value.toString(),
       value: value.toDouble(),
       onChanged: enabled ? (d) => onChanged(d.round()) : null,
@@ -36,7 +38,9 @@ class LeaveSlideVisualizer extends StatelessWidget {
               ],
             ),
             Text(
-              enabled ? "Selected: ${value >= 0 ? "+" : ""}$value day(s)" : "Leave slide is OFF",
+              enabled
+                  ? "Selected: ${value >= 0 ? "+" : ""}$value day(s)"
+                  : "Leave slide is OFF",
               style: TextStyle(color: enabled ? null : Colors.black45),
             ),
           ],

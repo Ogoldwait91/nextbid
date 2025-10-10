@@ -1,9 +1,4 @@
-import "dart:convert";
-import "dart:io";
-import "package:http/http.dart" as http;
-import "package:http_parser/http_parser.dart" as http_parser;
-
-class ApiClient {
+﻿ param($m) $m.Groups[1].Value + "`r`nimport 'package:http_parser/http_parser.dart';`r`n" class ApiClient {
   final String base;
   const ApiClient({this.base = "http://127.0.0.1:8000"});
 
@@ -80,22 +75,24 @@ class ApiClient {
       postJson("/bid/simulate", {"text": text});
 
   /// Multipart upload of a bid .txt file
-  Future<Map<String, dynamic>> uploadBidFile(File file) async {
-    final uri = Uri.parse("$base/bid/upload");
-    final req = http.MultipartRequest("POST", uri);
-    // Use MediaType from http_parser (aliased as http_parser)
-    req.files.add(
-      await http.MultipartFile.fromPath(
-        "file",
-        file.path,
-        contentType: http_parser.MediaType("text", "plain"),
-      ),
-    );
-    final streamed = await req.send();
-    final resp = await http.Response.fromStream(streamed);
-    if (resp.statusCode >= 200 && resp.statusCode < 300) {
-      return json.decode(resp.body) as Map<String, dynamic>;
-    }
-    throw Exception("POST /bid/upload failed: ${resp.statusCode}");
+  
+@"
+Future<Map<String, dynamic>> uploadBidFile(File file) async {
+  final uri = Uri.parse("\$base/bid/upload");
+  final req = http.MultipartRequest("POST", uri);
+  // Use MediaType from package:http_parser
+  req.files.add(await http.MultipartFile.fromPath("file", file.path, contentType: MediaType("text","plain")));
+  final streamed = await req.send();
+  final resp = await http.Response.fromStream(streamed);
+  if (resp.statusCode >= 200 && resp.statusCode < 300) {
+    return json.decode(resp.body) as Map<String, dynamic>;
   }
+  throw Exception("POST /bid/upload failed: \${resp.statusCode}");
 }
+"@
+
+
+// Small helper so MultipartFile can set contentType without importing http_parser everywhere.
+
+}
+

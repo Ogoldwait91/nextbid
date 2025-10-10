@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 import "../../shared/services/auth_state.dart";
@@ -69,7 +69,9 @@ class _ProfilePageState extends State<ProfilePage> {
         builder:
             (ctx) => AlertDialog(
               title: const Text("Your data (stub)"),
-              content: SingleChildScrollView(child: Text((const JsonEncoder.withIndent('  ')).convert(data))),
+              content: SingleChildScrollView(
+                child: Text((const JsonEncoder.withIndent('  ')).convert(data)),
+              ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -305,6 +307,3 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
-
-
-

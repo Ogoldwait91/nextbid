@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI, HTTPException
+﻿from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict
 from pathlib import Path
@@ -52,12 +52,24 @@ def status_resolve(staff_no: str, crew_code: str):
 # -------------------- BID VALIDATE --------------------
 ROW_RE  = re.compile(r'^[A-Z0-9 _+\-.,/:()#=\\]{1,80}$')
 BANK_RE = re.compile(r'^BANK_PROTECTION(?:\s+(ON|OFF))?$')
+# Added: pattern for JSS bank-protection first command in final group
+BANK_PROTECT_CMD_RE = re.compile(
+    r'^\s*AWARD\s+WORK\s+CONTAINED\s+WITHIN\s+L-{2}\s*$', re.IGNORECASE
+)
 
 class BidText(BaseModel):
     text: str
 
 @app.post("/bid/validate")
 def bid_validate(payload: BidText):
+    """
+    Validates bid text:
+      - Groups start at lines beginning with ';'
+      - Disallows explicit BANK_PROTECTION lines (pre-process owns it)
+      - Enforces <=15 groups and <=40 rows
+      - NEW: Warns if the final bid group does NOT start with
+             'AWARD WORK CONTAINED WITHIN L--' (JSS bank-protection rule).
+    """
     text = payload.text.replace("\r\n", "\n").replace("\r", "\n")
     lines = [ln.strip() for ln in text.split("\n")]
 
@@ -66,12 +78,16 @@ def bid_validate(payload: BidText):
     rows = 0
     seen: set[str] = set()
 
+    # track group starts (line indices)
+    group_starts: List[int] = []
+
     for i, ln in enumerate(lines, start=1):
         if not ln:
             continue
         up = ln.upper()
         if up.startswith(";"):       # group boundary/comment
             groups += 1
+            group_starts.append(i-1)  # store zero-based index in 'lines'
             continue
 
         # Global directives (allowed at top)
@@ -99,6 +115,22 @@ def bid_validate(payload: BidText):
     if rows > 40:
         errors.append("Too many rows across groups (max 40).")
 
+    # ---- NEW: Bank-protection check on final group ----
+    # Find start of final group: last index in group_starts, else start of file (-1)
+    last_start_idx = (group_starts[-1] if group_starts else -1)
+    # Find first non-empty, non-comment line AFTER that
+    first_cmd = None
+    for ln in lines[last_start_idx + 1:]:
+        if not ln or ln.startswith(";"):
+            continue
+        first_cmd = ln
+        break
+    if first_cmd and not BANK_PROTECT_CMD_RE.match(first_cmd):
+        errors.append(
+            "Final bid group should start with “AWARD WORK CONTAINED WITHIN L--” "
+            "(required for JSS bank protection)."
+        )
+
     return {
         "ok": len(errors) == 0,
         "errors": errors,
@@ -114,6 +146,33 @@ def bid_export(payload: ExportText):
     size = len(payload.text.encode("utf-8"))
     ts = datetime.now(timezone.utc).isoformat()
     return {"ok": True, "size": size, "ts": ts}
+
+# -------------------- NEW: BID SIMULATE & UPLOAD --------------------
+class BidCmds(BaseModel):
+    text: str
+
+@app.post("/bid/simulate")
+def bid_simulate(payload: BidCmds):
+    """
+    Lightweight 'feel' for a bid: counts distinct non-comment lines as a proxy.
+    Returns a pseudo score and rank estimate (stub).
+    """
+    txt = payload.text.replace("\r", "")
+    rows = [ln.strip() for ln in txt.split("\n") if ln.strip() and not ln.strip().startswith(";")]
+    uniq = len(set(r.upper() for r in rows))
+    score = min(0.95, 0.35 + 0.01 * min(40, uniq))
+    rank_estimate = max(1, int((1.0 - score) * 5000))
+    return {"ok": True, "score": round(score, 3), "rank_estimate": rank_estimate}
+
+@app.post("/bid/upload")
+def bid_upload(file: UploadFile = File(...)):
+    """
+    Accepts a .txt file upload for future import logic. Returns file size now.
+    """
+    if not (file.filename or "").lower().endswith(".txt"):
+        raise HTTPException(status_code=400, detail="Please upload a .txt file.")
+    content = file.file.read() or b""
+    return {"ok": True, "filename": file.filename, "bytes": len(content)}
 
 # -------------------- PAIRINGS --------------------
 PAIRINGS_BY_MONTH: Dict[str, List[Dict]] = {
@@ -133,10 +192,10 @@ def pairings(month: str, limit: int | None = None):
     if limit is not None and limit >= 0:
         items = items[:limit]
     total = len(items)
-    avg_credit = round(sum(int(p.get("credit", 0)) for p in items) / total, 1) if total else 0.0
+    avg_credit = round(sum(int(p.get("credit", 0) ) for p in items) / total, 1) if total else 0.0
     return {"month": month, "pairings": items, "stats": {"count": total, "avg_credit": avg_credit}}
 
-# -------------------- PRIVACY --------------------
+# -------------------- PRIVACY (existing) --------------------
 @app.get("/privacy/data")
 def privacy_data():
     now = datetime.now(timezone.utc).isoformat()
@@ -150,6 +209,37 @@ def privacy_data():
 @app.delete("/privacy/data")
 def privacy_delete():
     return {"ok": True, "deleted": True}
+
+# -------------------- NEW: PRIVACY CONSENT + COHORT METRICS --------------------
+class ConsentFlag(BaseModel):
+    consent: bool
+
+# in-memory consent store (per-process)
+_privacy_consent = {"consent": False}
+
+@app.post("/privacy/consent")
+def set_privacy_consent(payload: ConsentFlag):
+    _privacy_consent["consent"] = bool(payload.consent)
+    return {"ok": True, "consent": _privacy_consent["consent"]}
+
+@app.get("/privacy/consent")
+def get_privacy_consent():
+    return {"ok": True, "consent": _privacy_consent["consent"]}
+
+@app.get("/cohort/competitiveness")
+def cohort_competitiveness(month: str):
+    """
+    Returns anonymised cohort percentiles. Requires consent ON.
+    """
+    if not _privacy_consent["consent"]:
+        return {"ok": False, "reason": "consent_required"}
+    # Stubbed values for now
+    return {
+        "ok": True,
+        "month": month,
+        "percentiles": {"p20": 0.42, "p50": 0.61, "p80": 0.78},
+        "bid_count": 742
+    }
 
 # -------------------- RESERVES --------------------
 RESERVES_BY_MONTH = {
@@ -227,4 +317,3 @@ def calendar(month: str):
 print("[boot] api main loaded")
 print("[paths] FIXDIR", FIXDIR)
 print("[paths] CALDIR", CALDIR)
-

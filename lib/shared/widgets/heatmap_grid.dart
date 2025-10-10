@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 class HeatmapGrid extends StatelessWidget {
   final List<List<double>> values; // 7 columns (Mon..Sun) x N rows
@@ -11,34 +11,54 @@ class HeatmapGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const dayLabels = ["M","T","W","T","F","S","S"];
+    const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          children: dayLabels.map((d)=>Expanded(
-            child: Text(d, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, color: Colors.black54)),
-          )).toList(),
+          children:
+              dayLabels
+                  .map(
+                    (d) => Expanded(
+                      child: Text(
+                        d,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
         ),
         const SizedBox(height: 6),
         Column(
-          children: values.map((row) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Row(
-                children: row.map((v) => Expanded(
-                  child: Container(
-                    height: 18,
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    decoration: BoxDecoration(
-                      color: _cellColor(context, v),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+          children:
+              values.map((row) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Row(
+                    children:
+                        row
+                            .map(
+                              (v) => Expanded(
+                                child: Container(
+                                  height: 18,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _cellColor(context, v),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
-                )).toList(),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
       ],
     );

@@ -1,4 +1,4 @@
-﻿import "package:nextbid_demo/shared/spec/jss_spec.dart";
+import "package:nextbid_demo/shared/spec/jss_spec.dart";
 import "package:nextbid_demo/shared/services/app_state.dart";
 
 /// Allowed row grammar: A–Z, 0–9, space, _ + - . , / : ( ) # = and backslash
@@ -61,9 +61,9 @@ BidValidation validateBid() {
 List<String> composeJssLines() {
   // Global directives
   final credit = switch (appState.creditPref) {
-    CreditPref.low     => "CREDIT_PREFERENCE LOW",
+    CreditPref.low => "CREDIT_PREFERENCE LOW",
     CreditPref.neutral => "CREDIT_PREFERENCE NEUTRAL",
-    CreditPref.high    => "CREDIT_PREFERENCE HIGH",
+    CreditPref.high => "CREDIT_PREFERENCE HIGH",
   };
   final lines = <String>[credit];
 
@@ -103,13 +103,13 @@ String composeJssText({bool windowsEol = true}) {
 bool _isBankProtection(String line) {
   final up = line.trim().toUpperCase();
   return up.startsWith(JssSpec.bankProtectionPrefix) &&
-         up.contains(" ${JssSpec.bankProtectionPool}");
+      up.contains(" ${JssSpec.bankProtectionPool}");
 }
 
 /// Bank protection (if present) must be the FIRST line of the FINAL group.
 void _checkBankProtectionRule(List<List<String>> groups, List<String> errors) {
   // Collect occurrences
-  final hits = <Map<String,int>>[];
+  final hits = <Map<String, int>>[];
   for (var gi = 0; gi < groups.length; gi++) {
     final g = groups[gi];
     for (var ri = 0; ri < g.length; ri++) {
@@ -121,12 +121,16 @@ void _checkBankProtectionRule(List<List<String>> groups, List<String> errors) {
   if (hits.isEmpty) return; // optional command
 
   if (hits.length > 1) {
-    errors.add("Bank protection must appear only once (final group, first line).");
+    errors.add(
+      "Bank protection must appear only once (final group, first line).",
+    );
     return;
   }
   final gi = hits.first["g"]!;
   final ri = hits.first["r"]!;
   if (gi != groups.length - 1 || ri != 0) {
-    errors.add("Bank protection must be the FIRST line of your FINAL bid group.");
+    errors.add(
+      "Bank protection must be the FIRST line of your FINAL bid group.",
+    );
   }
 }
