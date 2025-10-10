@@ -1,5 +1,5 @@
 ﻿import "package:flutter/material.dart";
-import "../services/jss_composer.dart";
+import "package:nextbid_demo/shared/services/jss_composer.dart";
 import "../services/app_state.dart";
 
 class ValidationBanner extends StatelessWidget {

@@ -207,3 +207,108 @@ def reserves(month: str):
     items = RESERVES_BY_MONTH.get(month, [])
     total = sum(len(r.get("days", [])) for r in items)
     return {"month": month, "blocks": items, "stats": {"count": len(items), "total_days": total}}
+import json
+from pathlib import Path
+from fastapi import HTTPException
+
+FIXTURES = Path(__file__).resolve().parent.parent.parent / "docs" / "fixtures"
+
+def _calendar_from_fixture(month: str) -> dict:
+    # expected path like docs/fixtures/nov2025/calendar_2025-11.json
+    ym = month
+    y, m = ym.split("-")
+    # choose folder by human month name (e.g., nov2025)
+    month_names = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"]
+    idx = int(m) - 1
+    folder = f"{month_names[idx]}{y}"
+    p = FIXTURES / folder / f"calendar_{ym}.json"
+    if not p.exists():
+      raise FileNotFoundError(str(p))
+    with p.open("r", encoding="utf-8") as f:
+      return json.load(f)
+
+@app.get("/calendar/{month}")
+def calendar(month: str):
+    try:
+        data = _calendar_from_fixture(month)
+        # normalize shape
+        stages = data.get("stages", [])
+        return {"month": month, "stages": stages}
+    except FileNotFoundError:
+        # fallback to empty list if missing
+        return {"month": month, "stages": []}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"calendar load failed: {e}")
+# ---------- Calendar override from year JSON (preferred) ----------
+import json
+from pathlib import Path
+from fastapi import HTTPException
+
+CALDIR = Path(__file__).resolve().parents[2] / "docs" / "calendar"
+
+def _calendar_from_year_json(month: str) -> dict | None:
+    try:
+        year = int(month.split("-")[0])
+    except Exception:
+        return None
+    p = CALDIR / f"calendar_{year}.json"
+    if not p.exists():
+        return None
+    try:
+        obj = json.loads(p.read_text(encoding="utf-8"))
+        months = obj.get("months", {})
+        m = months.get(month)
+        if not m:
+            return {"month": month, "stages": []}
+        stages = []
+        # Only include non-empty values
+        if m.get("opens"):   stages.append({"name": "Bidding opens",    "date": m["opens"]})
+        if m.get("closes"):  stages.append({"name": "Bidding closes",   "date": m["closes"]})
+        if m.get("awards"):  stages.append({"name": "Awards published", "date": m["awards"]})
+        if m.get("swap"):    stages.append({"name": "Swap window",      "date": m["swap"]})
+        return {"month": month, "stages": stages}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"calendar override failed: {e}")
+
+# Patch the existing /calendar handler to prefer the override
+orig_calendar = None
+try:
+    orig_calendar = calendar  # type: ignore  # keep a handle to the old function
+except NameError:
+    pass  # if not defined yet (depends where this block is appended)
+
+@app.get("/calendar/{month}")
+def calendar(month: str):  # type: ignore[override]
+    # 1) Prefer the year JSON override if present
+    ov = _calendar_from_year_json(month)
+    if ov is not None:
+        return ov
+    # 2) Else try the fixture-based loader defined above
+    try:
+        data = _calendar_from_fixture(month)  # existing function
+        stages = data.get("stages", [])
+        return {"month": month, "stages": stages}
+    except FileNotFoundError:
+        return {"month": month, "stages": []}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"calendar load failed: {e}")
+# ---- Definitive calendar handler (logs source) ----
+@app.get("/calendar/{month}")
+def calendar(month: str):  # type: ignore[override]
+    # 1) Prefer year JSON override
+    ov = _calendar_from_year_json(month)
+    if ov is not None:
+        print(f"[calendar] {month} -> year-json ({len(ov.get('stages', []))} stages)")
+        return ov
+    # 2) Fallback to per-month fixture
+    try:
+        data = _calendar_from_fixture(month)
+        stages = data.get("stages", [])
+        print(f"[calendar] {month} -> fixture ({len(stages)} stages)")
+        return {"month": month, "stages": stages}
+    except FileNotFoundError:
+        print(f"[calendar] {month} -> empty (no file)")
+        return {"month": month, "stages": []}
+    except Exception as e:
+        print(f"[calendar] {month} -> error: {e}")
+        raise HTTPException(status_code=500, detail=f"calendar load failed: {e}")

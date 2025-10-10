@@ -2,7 +2,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
-import "../../shared/services/jss_composer.dart";
+import "package:nextbid_demo/shared/services/jss_composer.dart";
 import "../../shared/widgets/logout_leading.dart";
 
 class PreviewPage extends StatelessWidget {

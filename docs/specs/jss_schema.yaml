@@ -1,0 +1,41 @@
+﻿meta:
+  source: ["Bidline Rules Feb 2025", "JSS Aide Memoire", "Bank Protection guide"]
+  month: "2025-11"
+  limits:
+    max_groups: 15        # per pilot per month
+    max_rows: 40          # award/avoid rows total across groups
+globals:
+  - name: CREDIT_PREFERENCE
+    kind: enum
+    values: [LOW, NEUTRAL, HIGH]
+    phase: preprocess
+  - name: LEAVE_SLIDE
+    kind: int
+    range: {min: -3, max: 3}   # doc says ±1 initially; leave 3 for future-proof, we can clamp to ±1 now
+    phase: preprocess
+  - name: PREFER_RESERVE
+    kind: enum
+    values: [ON, OFF]
+    phase: preprocess
+groups:
+  bank_protection:
+    required_position:
+      group: "last"                 # must be final bid group
+      order_in_group: 1             # must be first line
+    command: "AWARD WORK CONTAINED WITHIN"
+    pool: "L--"                     # required for recognition
+    date_range: ["FULL_MONTH", "BLANK_OK"]  # blank allows carry-out
+    disallow:
+      - "LIMIT_BID"
+rows:
+  award_avoid:
+    award:
+      effect: "move/promote_to_pool"
+    avoid:
+      effect: "freeze_in_place"
+    trip_pools: ["L--","L-","L","+/-","H","H+","H++"]  # canonical order TBD
+ui:
+  enforce:
+    - "≤ 15 groups"
+    - "≤ 40 award/avoid rows"
+    - "Bank protection rule (final group, first line)"

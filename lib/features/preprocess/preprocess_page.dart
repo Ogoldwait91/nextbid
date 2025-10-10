@@ -9,7 +9,8 @@ import "../../shared/widgets/reserve_calendar.dart";
 
 class PreProcessPage extends StatefulWidget {
   const PreProcessPage({super.key});
-  @override State<PreProcessPage> createState() => _PreProcessPageState();
+  @override
+  State<PreProcessPage> createState() => _PreProcessPageState();
 }
 
 class _PreProcessPageState extends State<PreProcessPage> {
@@ -45,7 +46,10 @@ class _PreProcessPageState extends State<PreProcessPage> {
 
   // ---------------- API fetches ----------------
   Future<void> _fetchCredit() async {
-    setState(() { _loadingCredit = true; _creditErr = null; });
+    setState(() {
+      _loadingCredit = true;
+      _creditErr = null;
+    });
     try {
       final data = await _api.credit(_month);
       final min = (data["min"] as num).toInt();
@@ -60,7 +64,10 @@ class _PreProcessPageState extends State<PreProcessPage> {
   }
 
   Future<void> _fetchCalendar() async {
-    setState(() { _loadingCalendar = true; _calendarErr = null; });
+    setState(() {
+      _loadingCalendar = true;
+      _calendarErr = null;
+    });
     try {
       final data = await _api.calendar(_month);
       final list = (data["stages"] as List).cast<Map<String, dynamic>>();
@@ -73,7 +80,12 @@ class _PreProcessPageState extends State<PreProcessPage> {
   }
 
   Future<void> _fetchReserves() async {
-    setState(() { _loadingRes = true; _resErr = null; _resBlocks = const []; _resIndex = 0; });
+    setState(() {
+      _loadingRes = true;
+      _resErr = null;
+      _resBlocks = const [];
+      _resIndex = 0;
+    });
     try {
       final data = await _api.reserves(_month);
       _resBlocks = (data["blocks"] as List).cast<Map<String, dynamic>>();
@@ -94,7 +106,9 @@ class _PreProcessPageState extends State<PreProcessPage> {
 
   void _submit() {
     _syncState();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Preferences saved")));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Preferences saved")));
     context.go("/build");
   }
 
@@ -104,15 +118,41 @@ class _PreProcessPageState extends State<PreProcessPage> {
     if (parts.length != 2) return ym;
     final year = parts[0];
     final m = int.tryParse(parts[1]) ?? 1;
-    const names = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-    return "${names[(m-1).clamp(0, 11)]} $year";
+    const names = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return "${names[(m - 1).clamp(0, 11)]} $year";
   }
 
   String _formatDate(String iso) {
     final dt = DateTime.tryParse(iso);
     if (dt == null) return iso;
-    const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return "${dt.day} ${m[dt.month-1]}";
+    const m = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return "${dt.day} ${m[dt.month - 1]}";
   }
 
   String _ymAdd(String ym, int deltaMonths) {
@@ -131,7 +171,9 @@ class _PreProcessPageState extends State<PreProcessPage> {
       _stages = const [];
       _resBlocks = const [];
       _resIndex = 0;
-      _creditErr = null; _calendarErr = null; _resErr = null;
+      _creditErr = null;
+      _calendarErr = null;
+      _resErr = null;
     });
     _fetchCredit();
     _fetchCalendar();
@@ -151,7 +193,10 @@ class _PreProcessPageState extends State<PreProcessPage> {
             ),
             Expanded(
               child: Center(
-                child: Text(_monthLabel(_month), style: const TextStyle(fontWeight: FontWeight.w700)),
+                child: Text(
+                  _monthLabel(_month),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
               ),
             ),
             IconButton(
@@ -168,36 +213,56 @@ class _PreProcessPageState extends State<PreProcessPage> {
   // Stage dates card
   Widget _stageDatesCard() {
     if (_loadingCalendar) {
-      return const Card(child: ListTile(title: Text("Stage dates"), trailing: SizedBox(width: 20, height: 20, child: CircularProgressIndicator())));
+      return const Card(
+        child: ListTile(
+          title: Text("Stage dates"),
+          trailing: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
     }
     if (_calendarErr != null) {
       return Card(
         child: ListTile(
           title: const Text("Stage dates"),
           subtitle: Text("Failed to load: $_calendarErr"),
-          trailing: OutlinedButton(onPressed: _fetchCalendar, child: const Text("Retry")),
+          trailing: OutlinedButton(
+            onPressed: _fetchCalendar,
+            child: const Text("Retry"),
+          ),
         ),
       );
     }
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Stage dates • ${_monthLabel(_month)}", style: const TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          if (_stages.isEmpty) const Text("No stages available"),
-          ..._stages.map((s) => Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Row(
-              children: [
-                const Icon(Icons.event_note, size: 18),
-                const SizedBox(width: 8),
-                Expanded(child: Text("${s["name"]}")),
-                Text(_formatDate("${s["date"]}")),
-              ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Stage dates • ${_monthLabel(_month)}",
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
-          )),
-        ]),
+            const SizedBox(height: 8),
+            if (_stages.isEmpty) const Text("No stages available"),
+            ..._stages.map(
+              (s) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: [
+                    const Icon(Icons.event_note, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text("${s["name"]}")),
+                    Text(_formatDate("${s["date"]}")),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -206,14 +271,26 @@ class _PreProcessPageState extends State<PreProcessPage> {
   Widget _reserveCalendarSection() {
     if (!_reserve) return const SizedBox.shrink();
     if (_loadingRes) {
-      return const Card(child: ListTile(title: Text("Reserve blocks"), trailing: SizedBox(width: 20, height: 20, child: CircularProgressIndicator())));
+      return const Card(
+        child: ListTile(
+          title: Text("Reserve blocks"),
+          trailing: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
     }
     if (_resErr != null) {
       return Card(
         child: ListTile(
           title: const Text("Reserve blocks"),
           subtitle: Text("Failed to load: $_resErr"),
-          trailing: OutlinedButton(onPressed: _fetchReserves, child: const Text("Retry")),
+          trailing: OutlinedButton(
+            onPressed: _fetchReserves,
+            child: const Text("Retry"),
+          ),
         ),
       );
     }
@@ -232,13 +309,22 @@ class _PreProcessPageState extends State<PreProcessPage> {
     }
     if (_creditErr != null) {
       return Scaffold(
-        appBar: AppBar(leading: const LogoutLeading(), title: const Text("Pre-Process")),
+        appBar: AppBar(
+          leading: const LogoutLeading(),
+          title: const Text("Pre-Process"),
+        ),
         body: Center(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text("Failed to load credit ranges:\n$_creditErr"),
-            const SizedBox(height: 8),
-            OutlinedButton(onPressed: _fetchCredit, child: const Text("Retry")),
-          ]),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Failed to load credit ranges:\n$_creditErr"),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: _fetchCredit,
+                child: const Text("Retry"),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -250,7 +336,11 @@ class _PreProcessPageState extends State<PreProcessPage> {
         actions: [
           IconButton(
             tooltip: "Refresh data",
-            onPressed: () { _fetchCredit(); _fetchCalendar(); if (_reserve) _fetchReserves(); },
+            onPressed: () {
+              _fetchCredit();
+              _fetchCalendar();
+              if (_reserve) _fetchReserves();
+            },
             icon: const Icon(Icons.cloud_sync_outlined),
           ),
           IconButton(
@@ -265,7 +355,9 @@ class _PreProcessPageState extends State<PreProcessPage> {
                 _resIndex = 0;
               });
               _syncState();
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Reset to defaults")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Reset to defaults")),
+              );
             },
             icon: const Icon(Icons.refresh),
           ),
@@ -286,7 +378,10 @@ class _PreProcessPageState extends State<PreProcessPage> {
               subtitle: const Text("Show reserve blocks for this month"),
               value: _reserve,
               onChanged: (v) {
-                setState(() { _reserve = v; _syncState(); });
+                setState(() {
+                  _reserve = v;
+                  _syncState();
+                });
                 if (v) _fetchReserves();
               },
             ),
@@ -297,7 +392,11 @@ class _PreProcessPageState extends State<PreProcessPage> {
           const SizedBox(height: 8),
           CreditRangeSelector(
             value: _credit,
-            onChanged: (v) => setState(() { _credit = v; _syncState(); }),
+            onChanged:
+                (v) => setState(() {
+                  _credit = v;
+                  _syncState();
+                }),
             min: appState.creditMin,
             max: appState.creditMax,
             def: appState.creditDefault,
@@ -305,23 +404,42 @@ class _PreProcessPageState extends State<PreProcessPage> {
           Card(
             child: SwitchListTile(
               title: const Text("Use Leave Slide"),
-              subtitle: const Text("Enable to apply a +/- day offset in export"),
+              subtitle: const Text(
+                "Enable to apply a +/- day offset in export",
+              ),
               value: _useLeave,
-              onChanged: (v) => setState(() { _useLeave = v; _syncState(); }),
+              onChanged:
+                  (v) => setState(() {
+                    _useLeave = v;
+                    _syncState();
+                  }),
             ),
           ),
           LeaveSlideVisualizer(
             value: _leave,
             enabled: _useLeave,
-            onChanged: (v) => setState(() { _leave = v; _syncState(); }),
+            onChanged:
+                (v) => setState(() {
+                  _leave = v;
+                  _syncState();
+                }),
           ),
 
           const SizedBox(height: 8),
-          _SummaryCard(credit: _credit, useLeave: _useLeave, leave: _leave, reserve: _reserve),
+          _SummaryCard(
+            credit: _credit,
+            useLeave: _useLeave,
+            leave: _leave,
+            reserve: _reserve,
+          ),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: FilledButton.icon(onPressed: _submit, icon: const Icon(Icons.check), label: const Text("Submit")),
+            child: FilledButton.icon(
+              onPressed: _submit,
+              icon: const Icon(Icons.check),
+              label: const Text("Submit"),
+            ),
           ),
         ],
       ),
@@ -330,12 +448,28 @@ class _PreProcessPageState extends State<PreProcessPage> {
 }
 
 class _SummaryCard extends StatelessWidget {
-  final CreditPref credit; final bool useLeave; final int leave; final bool reserve;
-  const _SummaryCard({required this.credit, required this.useLeave, required this.leave, required this.reserve});
-  String get _creditLabel => switch (credit) { CreditPref.low => "Low", CreditPref.neutral => "Neutral", CreditPref.high => "High" };
+  final CreditPref credit;
+  final bool useLeave;
+  final int leave;
+  final bool reserve;
+  const _SummaryCard({
+    required this.credit,
+    required this.useLeave,
+    required this.leave,
+    required this.reserve,
+  });
+  String get _creditLabel => switch (credit) {
+    CreditPref.low => "Low",
+    CreditPref.neutral => "Neutral",
+    CreditPref.high => "High",
+  };
   @override
-  Widget build(BuildContext context) => Card(child: ListTile(
-    title: const Text("Summary"),
-    subtitle: Text("Credit: $_creditLabel • Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"} • Reserve: ${reserve ? "Yes" : "No"}"),
-  ));
+  Widget build(BuildContext context) => Card(
+    child: ListTile(
+      title: const Text("Summary"),
+      subtitle: Text(
+        "Credit: $_creditLabel • Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"} • Reserve: ${reserve ? "Yes" : "No"}",
+      ),
+    ),
+  );
 }

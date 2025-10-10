@@ -2,7 +2,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
-import "../../shared/services/jss_composer.dart";
+import "package:nextbid_demo/shared/services/jss_composer.dart";
 import "../../shared/widgets/logout_leading.dart";
 import "../../shared/widgets/bid_group_editor.dart";
 import "../../shared/widgets/validation_banner.dart";
@@ -16,22 +16,33 @@ class BuildBidPage extends StatelessWidget {
     if (v.ok) return true;
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Cannot export yet"),
-        content: SizedBox(
-          width: 420,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: v.errors.map((e) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text("• $e"),
-              )).toList(),
+      builder:
+          (buildCtx) => AlertDialog(
+            title: const Text("Cannot export yet"),
+            content: SizedBox(
+              width: 420,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                      v.errors
+                          .map(
+                            (e) => Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: Text("• $e"),
+                            ),
+                          )
+                          .toList(),
+                ),
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(buildCtx).pop(),
+                child: const Text("OK"),
+              ),
+            ],
           ),
-        ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
-      ),
     );
     return false;
   }
@@ -41,7 +52,9 @@ class BuildBidPage extends StatelessWidget {
     final text = composeJssText(windowsEol: true);
     await Clipboard.setData(ClipboardData(text: text));
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Commands copied")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Commands copied")));
     }
   }
 
@@ -52,85 +65,125 @@ class BuildBidPage extends StatelessWidget {
       Directory? dir = await getDownloadsDirectory();
       dir ??= await getApplicationDocumentsDirectory();
       final ts = DateTime.now().toIso8601String().replaceAll(":", "-");
-      final file = File("${dir.path}${Platform.pathSeparator}nextbid_commands_$ts.txt");
+      final file = File(
+        "${dir.path}${Platform.pathSeparator}nextbid_commands_$ts.txt",
+      );
       await file.writeAsString(text); // UTF-8 + CRLF already from composer
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Saved to ${file.path}")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Saved to ${file.path}")));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Export failed: $e")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Export failed: $e")));
       }
     }
   }
 
   Future<void> _serverCheck(BuildContext context) async {
-    final navigator = Navigator.of(context);
     final api = const ApiClient();
     final text = composeJssText(windowsEol: true);
     try {
       final res = await api.validateBidServer(text);
-      if (!navigator.mounted) return;
+      if (!context.mounted) return;
       final ok = res["ok"] == true;
       final List errs = (res["errors"] as List?) ?? [];
       showDialog(
-        context: navigator.context,
-        builder: (_) => AlertDialog(
-          title: Text(ok ? "Server validation passed" : "Server found issues"),
-          content: SizedBox(
-            width: 420,
-            child: SingleChildScrollView(
-              child: ok
-                  ? const Text("Looks good! Export is safe.")
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: errs.map((e) => Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: Text("• $e"),
-                      )).toList(),
-                    ),
+        context: context,
+        builder:
+            (buildCtx) => AlertDialog(
+              title: Text(
+                ok ? "Server validation passed" : "Server found issues",
+              ),
+              content: SizedBox(
+                width: 420,
+                child: SingleChildScrollView(
+                  child:
+                      ok
+                          ? const Text("Looks good! Export is safe.")
+                          : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                                errs
+                                    .map(
+                                      (e) => Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 6,
+                                        ),
+                                        child: Text("• $e"),
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(buildCtx).pop(),
+                  child: const Text("OK"),
+                ),
+              ],
             ),
-          ),
-          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
-        ),
       );
     } catch (e) {
-      if (!navigator.mounted) return;
+      if (!context.mounted) return;
       showDialog(
-        context: navigator.context,
-        builder: (_) => AlertDialog(
-          title: const Text("Server validation failed"),
-          content: Text(e.toString()),
-          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
-        ),
+        context: context,
+        builder:
+            (buildCtx) => AlertDialog(
+              title: const Text("Server validation failed"),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(buildCtx).pop(),
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
       );
     }
   }
 
   Future<void> _serverExport(BuildContext context) async {
-    final navigator = Navigator.of(context);
     final api = const ApiClient();
     final text = composeJssText(windowsEol: true);
     try {
       final res = await api.exportBidServer(text);
-      if (!navigator.mounted) return;
+      if (!context.mounted) return;
       showDialog(
-        context: navigator.context,
-        builder: (_) => AlertDialog(
-          title: const Text("Server export complete"),
-          content: Text("Saved on server (stub)\nBytes: ${res["size"]}\nWhen: ${res["ts"]}"),
-          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
-        ),
+        context: context,
+        builder:
+            (buildCtx) => AlertDialog(
+              title: const Text("Server export complete"),
+              content: Text(
+                "Saved on server (stub)\nBytes: ${res["size"]}\nWhen: ${res["ts"]}",
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(buildCtx).pop(),
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
       );
     } catch (e) {
-      if (!navigator.mounted) return;
+      if (!context.mounted) return;
       showDialog(
-        context: navigator.context,
-        builder: (_) => AlertDialog(
-          title: const Text("Server export failed"),
-          content: Text(e.toString()),
-          actions: [TextButton(onPressed: () => Navigator.pop(navigator.context), child: const Text("OK"))],
-        ),
+        context: context,
+        builder:
+            (buildCtx) => AlertDialog(
+              title: const Text("Server export failed"),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(buildCtx).pop(),
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
       );
     }
   }
@@ -139,7 +192,10 @@ class BuildBidPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final lines = composeJssLines();
     return Scaffold(
-      appBar: AppBar(leading: const LogoutLeading(), title: const Text("Build")),
+      appBar: AppBar(
+        leading: const LogoutLeading(),
+        title: const Text("Build"),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -148,7 +204,13 @@ class BuildBidPage extends StatelessWidget {
           Card(
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: Align(alignment: Alignment.centerLeft, child: Text(lines.join("\n"), style: const TextStyle(fontFamily: "monospace"))),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  lines.join("\n"),
+                  style: const TextStyle(fontFamily: "monospace"),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -159,16 +221,41 @@ class BuildBidPage extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          decoration: const BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, -2))]),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, -2),
+              ),
+            ],
+          ),
           child: Row(
             children: [
-              FilledButton.icon(onPressed: () => _copy(context),        icon: const Icon(Icons.copy),              label: const Text("Copy")),
+              FilledButton.icon(
+                onPressed: () => _copy(context),
+                icon: const Icon(Icons.copy),
+                label: const Text("Copy"),
+              ),
               const SizedBox(width: 8),
-              OutlinedButton.icon(onPressed: () => _export(context),     icon: const Icon(Icons.download_outlined), label: const Text("Export .txt")),
+              OutlinedButton.icon(
+                onPressed: () => _export(context),
+                icon: const Icon(Icons.download_outlined),
+                label: const Text("Export .txt"),
+              ),
               const SizedBox(width: 8),
-              OutlinedButton.icon(onPressed: () => _serverCheck(context), icon: const Icon(Icons.shield_outlined),  label: const Text("Server check")),
+              OutlinedButton.icon(
+                onPressed: () => _serverCheck(context),
+                icon: const Icon(Icons.shield_outlined),
+                label: const Text("Server check"),
+              ),
               const SizedBox(width: 8),
-              OutlinedButton.icon(onPressed: () => _serverExport(context), icon: const Icon(Icons.cloud_upload_outlined), label: const Text("Server export")),
+              OutlinedButton.icon(
+                onPressed: () => _serverExport(context),
+                icon: const Icon(Icons.cloud_upload_outlined),
+                label: const Text("Server export"),
+              ),
             ],
           ),
         ),
