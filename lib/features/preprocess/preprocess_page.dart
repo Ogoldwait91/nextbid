@@ -14,7 +14,9 @@ class PreProcessPage extends StatefulWidget {
 
 class _PreProcessPageState extends State<PreProcessPage> {
   final _api = const ApiClient();
-  static const String _month = "2025-11";
+
+  // Month is now stateful so we can navigate between months
+  String _month = "2025-11";
 
   bool _loadingCredit = true;
   String? _creditErr;
@@ -41,7 +43,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
     if (_reserve) _fetchReserves();
   }
 
-  // --- API fetches ---
+  // ---------------- API fetches ----------------
   Future<void> _fetchCredit() async {
     setState(() { _loadingCredit = true; _creditErr = null; });
     try {
@@ -82,7 +84,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
     }
   }
 
-  // --- local state sync ---
+  // --------------- Local state sync ---------------
   void _syncState() {
     appState.setCreditPref(_credit);
     appState.setUseLeaveSlide(_useLeave);
@@ -96,7 +98,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
     context.go("/build");
   }
 
-  // --- UI helpers (stage dates) ---
+  // --------------- Month + UI helpers ---------------
   String _monthLabel(String ym) {
     final parts = ym.split("-");
     if (parts.length != 2) return ym;
@@ -113,6 +115,57 @@ class _PreProcessPageState extends State<PreProcessPage> {
     return "${dt.day} ${m[dt.month-1]}";
   }
 
+  String _ymAdd(String ym, int deltaMonths) {
+    final parts = ym.split("-");
+    final y = int.tryParse(parts[0]) ?? DateTime.now().year;
+    final m = int.tryParse(parts.elementAt(1)) ?? DateTime.now().month;
+    final base = DateTime(y, m, 1);
+    final next = DateTime(base.year, base.month + deltaMonths, 1);
+    final mm = next.month.toString().padLeft(2, "0");
+    return "${next.year}-$mm";
+  }
+
+  void _changeMonth(int delta) {
+    setState(() {
+      _month = _ymAdd(_month, delta);
+      _stages = const [];
+      _resBlocks = const [];
+      _resIndex = 0;
+      _creditErr = null; _calendarErr = null; _resErr = null;
+    });
+    _fetchCredit();
+    _fetchCalendar();
+    if (_reserve) _fetchReserves();
+  }
+
+  Widget _monthNavCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: Row(
+          children: [
+            IconButton(
+              tooltip: "Previous month",
+              onPressed: () => _changeMonth(-1),
+              icon: const Icon(Icons.chevron_left),
+            ),
+            Expanded(
+              child: Center(
+                child: Text(_monthLabel(_month), style: const TextStyle(fontWeight: FontWeight.w700)),
+              ),
+            ),
+            IconButton(
+              tooltip: "Next month",
+              onPressed: () => _changeMonth(1),
+              icon: const Icon(Icons.chevron_right),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Stage dates card
   Widget _stageDatesCard() {
     if (_loadingCalendar) {
       return const Card(child: ListTile(title: Text("Stage dates"), trailing: SizedBox(width: 20, height: 20, child: CircularProgressIndicator())));
@@ -130,7 +183,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Stage dates  ${_monthLabel(_month)}", style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text("Stage dates • ${_monthLabel(_month)}", style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           if (_stages.isEmpty) const Text("No stages available"),
           ..._stages.map((s) => Padding(
@@ -149,6 +202,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
     );
   }
 
+  // Reserve calendar section (only when toggle is ON)
   Widget _reserveCalendarSection() {
     if (!_reserve) return const SizedBox.shrink();
     if (_loadingRes) {
@@ -220,10 +274,12 @@ class _PreProcessPageState extends State<PreProcessPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _monthNavCard(),
+          const SizedBox(height: 8),
           _stageDatesCard(),
           const SizedBox(height: 8),
 
-          // Reserve calendar (appears under the toggle when ON)
+          // Reserve toggle and calendar
           Card(
             child: SwitchListTile(
               title: const Text("Prefer Reserve"),
@@ -280,9 +336,6 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(child: ListTile(
     title: const Text("Summary"),
-    subtitle: Text("Credit: $_creditLabel  Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"}  Reserve: ${reserve ? "Yes" : "No"}"),
+    subtitle: Text("Credit: $_creditLabel • Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"} • Reserve: ${reserve ? "Yes" : "No"}"),
   ));
 }
-
-
-
