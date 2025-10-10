@@ -1,4 +1,4 @@
-﻿name: nextbid_demo
+name: nextbid_demo
 description: "A new Flutter project."
 publish_to: "none"
 version: 1.0.0+1
@@ -16,6 +16,7 @@ dependencies:
   path_provider: ^2.1.5
   http: ^1.5.0
   http_parser: ^4.1.2
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:

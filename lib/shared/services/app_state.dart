@@ -1,4 +1,4 @@
-﻿import "package:flutter/foundation.dart";
+import "package:flutter/foundation.dart";
 
 enum CreditPref { low, neutral, high }
 
@@ -26,6 +26,7 @@ class AppState extends ChangeNotifier {
   bool useLeaveSlide = false; // NEW: controls whether LEAVE_SLIDE is applied
   int leaveDeltaDays = 0; // -3..+3
   bool preferReserve = false;
+  bool protectBank = false;
 
   // Bid composition
   final List<BidGroup> groups = [BidGroup(name: "Group 1")];
@@ -109,6 +110,10 @@ class AppState extends ChangeNotifier {
       rows: src.rows.map((r) => BidRow(r.text)).toList(),
     );
     groups.insert(index + 1, copy);
+    notifyListeners();
+  }
+  void setProtectBank(bool v) {
+    protectBank = v;
     notifyListeners();
   }
 }
