@@ -1,12 +1,5 @@
-﻿from fastapi import FastAPI, HTTPException
+﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Dict
-from pathlib import Path
-from datetime import datetime, timezone
-from pydantic import BaseModel
-import hashlib
-import json
-import re
 
 app = FastAPI(title="NextBid API", version="0.0.1")
 
@@ -17,9 +10,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -------------------- CREDIT --------------------
 CREDIT_BY_MONTH = {
-    "2025-11": {"min": 20, "max": 85, "default": 50},
+    "2025-11": {"min": 20, "max": 85, "default": 50},  # tweak as you like
 }
 
 @app.get("/health")
@@ -30,8 +22,23 @@ def health():
 def credit(month: str):
     data = CREDIT_BY_MONTH.get(month) or {"min": 20, "max": 85, "default": 50}
     return {"month": month, **data}
+# --- calendar stub ---
+CALENDAR_BY_MONTH = {
+    # Example stage dates for Nov 2025 (adjust later from PDFs)
+    "2025-11": [
+        {"name": "Bid Opens",  "date": "2025-10-20"},
+        {"name": "Bid Closes", "date": "2025-10-27"},
+        {"name": "Awards",     "date": "2025-11-10"},
+    ],
+}
 
-# -------------------- STATUS --------------------
+@app.get("/calendar/{month}")
+def calendar(month: str):
+    stages = CALENDAR_BY_MONTH.get(month, [])
+    return {"month": month, "stages": stages}
+# --- status resolver stub ---
+import hashlib
+
 def _hash_to_range(s: str, max_value: int) -> int:
     h = hashlib.sha256(s.encode("utf-8")).hexdigest()[:8]
     return (int(h, 16) % max_value) + 1
@@ -48,8 +55,11 @@ def status_resolve(staff_no: str, crew_code: str):
         "seniority": seniority,
         "cohort_size": cohort_size,
     }
+# --- bid validator stub ---
+import re
+from typing import List, Dict
+from pydantic import BaseModel
 
-# -------------------- BID VALIDATE --------------------
 ROW_RE  = re.compile(r'^[A-Z0-9 _+\-.,/:()#=\\]{1,80}$')
 BANK_RE = re.compile(r'^BANK_PROTECTION(?:\s+(ON|OFF))?$')
 
@@ -58,6 +68,7 @@ class BidText(BaseModel):
 
 @app.post("/bid/validate")
 def bid_validate(payload: BidText):
+    # Normalise line endings and split
     text = payload.text.replace("\r\n", "\n").replace("\r", "\n")
     lines = [ln.strip() for ln in text.split("\n")]
 
@@ -104,8 +115,10 @@ def bid_validate(payload: BidText):
         "errors": errors,
         "stats": {"groups": groups, "rows": rows, "unique_rows": len(seen)},
     }
+# --- bid export stub ---
+from pydantic import BaseModel
+from datetime import datetime, timezone
 
-# -------------------- BID EXPORT --------------------
 class ExportText(BaseModel):
     text: str
 
@@ -113,9 +126,11 @@ class ExportText(BaseModel):
 def bid_export(payload: ExportText):
     size = len(payload.text.encode("utf-8"))
     ts = datetime.now(timezone.utc).isoformat()
+    # (Later: persist to DB or filesystem)
     return {"ok": True, "size": size, "ts": ts}
+# --- pairings stub ---
+from typing import List, Dict
 
-# -------------------- PAIRINGS --------------------
 PAIRINGS_BY_MONTH: Dict[str, List[Dict]] = {
     "2025-11": [
         {"id": "TI7L11-001", "credit": 52, "nights": 3, "region": "LHR-LH", "type": "Long-haul"},
@@ -135,10 +150,37 @@ def pairings(month: str, limit: int | None = None):
     total = len(items)
     avg_credit = round(sum(int(p.get("credit", 0)) for p in items) / total, 1) if total else 0.0
     return {"month": month, "pairings": items, "stats": {"count": total, "avg_credit": avg_credit}}
+# Enforce core limits and bank protection position
+MAX_GROUPS = 15
+MAX_ROWS = 40
+BANK_PREFIX = "AWARD WORK CONTAINED WITHIN"
+BANK_POOL   = "L--"
 
-# -------------------- PRIVACY --------------------
+def _is_bank_protection(line: str) -> bool:
+    up = line.strip().upper()
+    return up.startswith(BANK_PREFIX) and f" {BANK_POOL}" in up
+
+def _check_bank_protection(groups: list[list[str]], errors: list[str]) -> None:
+    hits: list[tuple[int,int]] = []
+    for gi, g in enumerate(groups):
+        for ri, ln in enumerate(g):
+            if _is_bank_protection(ln):
+                hits.append((gi, ri))
+    if not hits:
+        return
+    if len(hits) > 1:
+        errors.append("Bank protection command must appear only once (final group, first line).")
+        return
+    gi, ri = hits[0]
+    if gi != len(groups) - 1 or ri != 0:
+        errors.append("Bank protection must be the FIRST line of your FINAL bid group.")
+# --- privacy stubs ---
+from pydantic import BaseModel
+from datetime import datetime, timezone
+
 @app.get("/privacy/data")
 def privacy_data():
+    # Stub: echo a tiny snapshot; later load from DB/files
     now = datetime.now(timezone.utc).isoformat()
     return {
         "generated_at": now,
@@ -149,9 +191,9 @@ def privacy_data():
 
 @app.delete("/privacy/data")
 def privacy_delete():
+    # Stub: pretend we deleted stored data
     return {"ok": True, "deleted": True}
-
-# -------------------- RESERVES --------------------
+# --- reserves stub ---
 RESERVES_BY_MONTH = {
     "2025-11": [
         {"code": "R1", "days": [2, 9, 16, 23, 30]},
@@ -165,10 +207,119 @@ def reserves(month: str):
     items = RESERVES_BY_MONTH.get(month, [])
     total = sum(len(r.get("days", [])) for r in items)
     return {"month": month, "blocks": items, "stats": {"count": len(items), "total_days": total}}
+import json
+from pathlib import Path
+from fastapi import HTTPException
 
-# -------------------- CALENDAR (docs-first) --------------------
+FIXTURES = Path(__file__).resolve().parent.parent.parent / "docs" / "fixtures"
+
+def _calendar_from_fixture(month: str) -> dict:
+    # expected path like docs/fixtures/nov2025/calendar_2025-11.json
+    ym = month
+    y, m = ym.split("-")
+    # choose folder by human month name (e.g., nov2025)
+    month_names = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"]
+    idx = int(m) - 1
+    folder = f"{month_names[idx]}{y}"
+    p = FIXTURES / folder / f"calendar_{ym}.json"
+    if not p.exists():
+      raise FileNotFoundError(str(p))
+    with p.open("r", encoding="utf-8") as f:
+      return json.load(f)
+
+@app.get("/calendar/{month}")
+def calendar(month: str):
+    try:
+        data = _calendar_from_fixture(month)
+        # normalize shape
+        stages = data.get("stages", [])
+        return {"month": month, "stages": stages}
+    except FileNotFoundError:
+        # fallback to empty list if missing
+        return {"month": month, "stages": []}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"calendar load failed: {e}")
+# ---------- Calendar override from year JSON (preferred) ----------
+import json
+from pathlib import Path
+from fastapi import HTTPException
+
+CALDIR = Path(__file__).resolve().parents[2] / "docs" / "calendar"
+
+def _calendar_from_year_json(month: str) -> dict | None:
+    try:
+        year = int(month.split("-")[0])
+    except Exception:
+        return None
+    p = CALDIR / f"calendar_{year}.json"
+    if not p.exists():
+        return None
+    try:
+        obj = json.loads(p.read_text(encoding="utf-8"))
+        months = obj.get("months", {})
+        m = months.get(month)
+        if not m:
+            return {"month": month, "stages": []}
+        stages = []
+        # Only include non-empty values
+        if m.get("opens"):   stages.append({"name": "Bidding opens",    "date": m["opens"]})
+        if m.get("closes"):  stages.append({"name": "Bidding closes",   "date": m["closes"]})
+        if m.get("awards"):  stages.append({"name": "Awards published", "date": m["awards"]})
+        if m.get("swap"):    stages.append({"name": "Swap window",      "date": m["swap"]})
+        return {"month": month, "stages": stages}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"calendar override failed: {e}")
+
+# Patch the existing /calendar handler to prefer the override
+orig_calendar = None
+try:
+    orig_calendar = calendar  # type: ignore  # keep a handle to the old function
+except NameError:
+    pass  # if not defined yet (depends where this block is appended)
+
+@app.get("/calendar/{month}")
+def calendar(month: str):  # type: ignore[override]
+    # 1) Prefer the year JSON override if present
+    ov = _calendar_from_year_json(month)
+    if ov is not None:
+        return ov
+    # 2) Else try the fixture-based loader defined above
+    try:
+        data = _calendar_from_fixture(month)  # existing function
+        stages = data.get("stages", [])
+        return {"month": month, "stages": stages}
+    except FileNotFoundError:
+        return {"month": month, "stages": []}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"calendar load failed: {e}")
+# ---- Definitive calendar handler (logs source) ----
+@app.get("/calendar/{month}")
+def calendar(month: str):  # type: ignore[override]
+    # 1) Prefer year JSON override
+    ov = _calendar_from_year_json(month)
+    if ov is not None:
+        print(f"[calendar] {month} -> year-json ({len(ov.get('stages', []))} stages)")
+        return ov
+    # 2) Fallback to per-month fixture
+    try:
+        data = _calendar_from_fixture(month)
+        stages = data.get("stages", [])
+        print(f"[calendar] {month} -> fixture ({len(stages)} stages)")
+        return {"month": month, "stages": stages}
+    except FileNotFoundError:
+        print(f"[calendar] {month} -> empty (no file)")
+        return {"month": month, "stages": []}
+    except Exception as e:
+        print(f"[calendar] {month} -> error: {e}")
+        raise HTTPException(status_code=500, detail=f"calendar load failed: {e}")
+# ======== Definitive calendar loader (docs-first) ========
+import json
+from pathlib import Path
+from fastapi import HTTPException
+
 FIXDIR = Path(__file__).resolve().parents[2] / "docs" / "fixtures"
 CALDIR = Path(__file__).resolve().parents[2] / "docs" / "calendar"
+
 _MON = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"]
 
 def _calendar_try_year_json(month: str):
@@ -181,7 +332,7 @@ def _calendar_try_year_json(month: str):
     if not p.exists():
         return None
     try:
-        obj = json.loads(p.read_text(encoding="utf-8-sig"))
+        obj = json.loads(p.read_text(encoding="utf-8"))
         row = obj.get("months", {}).get(month)
         if row is None:
             return {"month": month, "stages": []}
@@ -204,14 +355,17 @@ def _calendar_try_fixture(month: str):
     print(f"[calendar][fixture] trying {p} exists={p.exists()}")
     if not p.exists():
         raise FileNotFoundError(p)
-    return json.loads(p.read_text(encoding="utf-8-sig"))
+    return json.loads(p.read_text(encoding="utf-8"))
 
+# Rebind the route so this wins over any earlier definition
 @app.get("/calendar/{month}")
-def calendar(month: str):
+def calendar(month: str):  # type: ignore[override]
+    # 1) Prefer year JSON override (docs/calendar/calendar_<year>.json)
     ov = _calendar_try_year_json(month)
     if ov is not None:
         print(f"[calendar] {month} -> year-json ({len(ov.get('stages', []))} stages)")
         return ov
+    # 2) Fallback to per-month fixture (docs/fixtures/<mon><year>/calendar_YYYY-MM.json)
     try:
         data = _calendar_try_fixture(month)
         stages = data.get("stages", [])
@@ -223,8 +377,10 @@ def calendar(month: str):
     except Exception as e:
         print(f"[calendar] {month} -> error: {e}")
         raise HTTPException(status_code=500, detail=f"calendar load failed: {e}")
-
+# ======== End definitive calendar loader ========
 print("[boot] api main loaded")
-print("[paths] FIXDIR", FIXDIR)
-print("[paths] CALDIR", CALDIR)
-
+try:
+    print("[paths] FIXDIR", FIXDIR)
+    print("[paths] CALDIR", CALDIR)
+except Exception as _e:
+    print("[paths] not yet set:", _e)
