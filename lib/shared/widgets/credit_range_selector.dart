@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "../services/app_state.dart";
 
 class CreditRangeSelector extends StatelessWidget {
@@ -18,9 +18,10 @@ class CreditRangeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rangeText = (min != null && max != null)
-        ? "Range: $min–$max${def != null ? "  •  default $def" : ""}"
-        : null;
+    final rangeText =
+        (min != null && max != null)
+            ? "Range: $min–$max${def != null ? "  •  default $def" : ""}"
+            : null;
 
     return Card(
       child: Padding(
@@ -32,9 +33,21 @@ class CreditRangeSelector extends StatelessWidget {
             const SizedBox(height: 8),
             SegmentedButton<CreditPref>(
               segments: const [
-                ButtonSegment(value: CreditPref.low, icon: Icon(Icons.trending_down), label: Text("Low")),
-                ButtonSegment(value: CreditPref.neutral, icon: Icon(Icons.drag_handle), label: Text("Neutral")),
-                ButtonSegment(value: CreditPref.high, icon: Icon(Icons.trending_up), label: Text("High")),
+                ButtonSegment(
+                  value: CreditPref.low,
+                  icon: Icon(Icons.trending_down),
+                  label: Text("Low"),
+                ),
+                ButtonSegment(
+                  value: CreditPref.neutral,
+                  icon: Icon(Icons.drag_handle),
+                  label: Text("Neutral"),
+                ),
+                ButtonSegment(
+                  value: CreditPref.high,
+                  icon: Icon(Icons.trending_up),
+                  label: Text("High"),
+                ),
               ],
               selected: {value},
               onSelectionChanged: (set) => onChanged(set.first),

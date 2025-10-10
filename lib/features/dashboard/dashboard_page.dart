@@ -1,10 +1,15 @@
-﻿import "package:flutter/material.dart";
-import "package:go_router/go_router.dart";
-import "../../shared/services/app_state.dart";
-import "../../shared/widgets/heatmap_grid.dart";
-import "../../shared/widgets/layover_preference_list.dart";
-import "../../shared/widgets/logout_leading.dart";
-import "../../shared/widgets/profile_chip.dart";
+﻿import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:nextbid_demo/shared/services/app_state.dart';
+import 'package:nextbid_demo/shared/widgets/logout_leading.dart';
+import 'package:nextbid_demo/shared/widgets/profile_chip.dart';
+import 'package:nextbid_demo/shared/widgets/heatmap_grid.dart';
+import 'package:nextbid_demo/shared/widgets/layover_preference_list.dart';
+
+// newly added tiles
+import 'package:nextbid_demo/shared/widgets/anonymised_insights_tile.dart';
+import 'package:nextbid_demo/shared/widgets/top_pairings_tile.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -18,7 +23,8 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final prefs = const [
+    // Demo data (replace with your real state when wired)
+    final prefs = [
       LayoverPreference("New York", 0.24),
       LayoverPreference("Los Angeles", 0.16),
       LayoverPreference("Singapore", 0.15),
@@ -35,7 +41,7 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const LogoutLeading(),
-        title: const ProfileChip(), // <- shows name / rank / crew code & avatar
+        title: const ProfileChip(), // shows name / rank / crew code & avatar
         actions: [
           IconButton(
             onPressed: () => context.go("/profile"),
@@ -46,6 +52,12 @@ class DashboardPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // >>> New tiles (use the app's month)
+          AnonymisedInsightsTile(month: appState.currentMonth),
+          const SizedBox(height: 12),
+          TopPairingsTile(month: appState.currentMonth),
+
+          const SizedBox(height: 16),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -74,6 +86,7 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 16),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -122,7 +135,6 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
           ),
-          // (rest of your cards unchanged)…
         ],
       ),
     );

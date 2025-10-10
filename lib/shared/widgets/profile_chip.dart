@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 import "../services/profile_state.dart";
 
@@ -11,14 +11,21 @@ class ProfileChip extends StatelessWidget {
       animation: profileState,
       builder: (context, _) {
         final n = profileState.name.trim();
-        final initials = (n.isEmpty
-                ? "NB"
-                : n.split(RegExp(r"\\s+")).where((w) => w.isNotEmpty).map((w) => w[0]).take(2).join())
-            .toUpperCase();
+        final initials =
+            (n.isEmpty
+                    ? "NB"
+                    : n
+                        .split(RegExp(r"\\s+"))
+                        .where((w) => w.isNotEmpty)
+                        .map((w) => w[0])
+                        .take(2)
+                        .join())
+                .toUpperCase();
 
         final line2 = () {
           final base = "${profileState.rank} • ${profileState.crewCode}";
-          if (profileState.seniority != null && profileState.cohortSize != null) {
+          if (profileState.seniority != null &&
+              profileState.cohortSize != null) {
             return "$base • SNR ${profileState.seniority}/${profileState.cohortSize}";
           }
           return base;
@@ -32,15 +39,26 @@ class ProfileChip extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 16,
-                child: Text(initials, style: const TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(
+                  initials,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(n.isEmpty ? "Unnamed Pilot" : n,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                  Text(line2, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                  Text(
+                    n.isEmpty ? "Unnamed Pilot" : n,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    line2,
+                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
                 ],
               ),
             ],
