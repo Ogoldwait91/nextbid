@@ -1,19 +1,17 @@
 ﻿import "package:flutter/material.dart";
 import "package:nextbid_demo/shared/services/api_client.dart";
 
-class TopPairingsTile extends StatelessWidget {
+class DeadlinesTile extends StatelessWidget {
   final String month;
-  final int limit;
-  const TopPairingsTile({super.key, required this.month, this.limit = 6});
+  const DeadlinesTile({super.key, required this.month});
 
   @override
   Widget build(BuildContext context) {
     final api = const ApiClient();
-    // Fallback for empty month inputs
     final safeMonth = (month.isEmpty) ? "2025-11" : month;
 
     return FutureBuilder<Map<String, dynamic>>(
-      future: api.pairings(safeMonth, limit: limit),
+      future: api.calendar(safeMonth),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return Card(
@@ -23,7 +21,7 @@ class TopPairingsTile extends StatelessWidget {
                 children: const [
                   SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
                   SizedBox(width: 12),
-                  Text("Loading pairings…"),
+                  Text("Loading deadlines…"),
                 ],
               ),
             ),
@@ -37,8 +35,7 @@ class TopPairingsTile extends StatelessWidget {
                 children: [
                   const Icon(Icons.error, color: Colors.red),
                   const SizedBox(width: 8),
-                  const Expanded(child: Text("Can’t load pairings")),
-                  TextButton(onPressed: () { (context as Element).markNeedsBuild(); }, child: const Text("Retry")),
+                  Expanded(child: Text("Can’t load deadlines: ${snap.error}")),
                 ],
               ),
             ),
@@ -46,33 +43,36 @@ class TopPairingsTile extends StatelessWidget {
         }
 
         final data = snap.data ?? const {};
-        final items = (data["pairings"] as List?) ?? const [];
+        final stages = (data["stages"] as List?) ?? const [];
 
-        if (items.isEmpty) {
+        if (stages.isEmpty) {
           return Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Text("No pairings found for $safeMonth"),
+              child: Text("No deadlines for $safeMonth"),
             ),
           );
         }
 
         return Card(
+          elevation: 1,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Top Pairings • $safeMonth", style: Theme.of(context).textTheme.titleLarge),
+                Text("Deadlines • $safeMonth", style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
-                for (final p in items)
+                for (final s in stages)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: 6),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: Text(p["id"]?.toString() ?? "—")),
-                        Text("${p["credit"] ?? "?"}h"),
+                        Expanded(child: Text(s["name"]?.toString() ?? "—")),
+                        Text(s["date"]?.toString() ?? "—"),
                       ],
                     ),
                   ),

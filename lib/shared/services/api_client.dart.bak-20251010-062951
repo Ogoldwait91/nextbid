@@ -12,10 +12,16 @@ class ApiClient {
     final r = await http.get(Uri.parse("$base$path"));
     if (r.statusCode >= 200 && r.statusCode < 300) {
       return json.decode(r.body) as Map<String, dynamic>;
-      
+      Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
     throw Exception("GET $path failed: ${r.statusCode}");
-    
+    Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
   Future<Map<String, dynamic>> postJson(
     String path,
@@ -28,19 +34,31 @@ class ApiClient {
     );
     if (r.statusCode >= 200 && r.statusCode < 300) {
       return json.decode(r.body) as Map<String, dynamic>;
-      
+      Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
     throw Exception("POST $path failed: ${r.statusCode}");
-    
+    Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
   Future<Map<String, dynamic>> deleteJson(String path) async {
     final r = await http.delete(Uri.parse("$base$path"));
     if (r.statusCode >= 200 && r.statusCode < 300) {
       return json.decode(r.body) as Map<String, dynamic>;
-      
+      Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
     throw Exception("DELETE $path failed: ${r.statusCode}");
-    
+    Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
   // ------------ existing endpoints ------------
   Future<Map<String, dynamic>> credit(String month) =>
@@ -52,7 +70,10 @@ class ApiClient {
     final s = Uri.encodeQueryComponent(staffNo);
     final c = Uri.encodeQueryComponent(crewCode);
     return getJson("/status/resolve?staff_no=$s&crew_code=$c");
-    
+    Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
   Future<Map<String, dynamic>> validateBidServer(String text) =>
       postJson("/bid/validate", {"text": text});
@@ -98,12 +119,17 @@ class ApiClient {
     final resp = await http.Response.fromStream(streamed);
     if (resp.statusCode >= 200 && resp.statusCode < 300) {
       return json.decode(resp.body) as Map<String, dynamic>;
-      
+      Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
     throw Exception("POST /bid/upload failed: ${resp.statusCode}");
-    
+    Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
+    final q = (limit != null) ? "?limit=$limit" : "";
+    return getJson("/pairings/$month$q");
+  }
 }
-  
   Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
     final q = (limit != null) ? "?limit=$limit" : "";
     return getJson("/pairings/$month$q");

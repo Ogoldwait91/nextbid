@@ -1,15 +1,16 @@
-﻿import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+﻿import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 
-import 'package:nextbid_demo/shared/services/app_state.dart';
-import 'package:nextbid_demo/shared/widgets/logout_leading.dart';
-import 'package:nextbid_demo/shared/widgets/profile_chip.dart';
-import 'package:nextbid_demo/shared/widgets/heatmap_grid.dart';
-import 'package:nextbid_demo/shared/widgets/layover_preference_list.dart';
+import "package:nextbid_demo/shared/services/app_state.dart";
+import "package:nextbid_demo/shared/ui/spacing.dart";
 
-// newly added tiles
-import 'package:nextbid_demo/shared/widgets/anonymised_insights_tile.dart';
-import 'package:nextbid_demo/shared/widgets/top_pairings_tile.dart';
+// Existing shared widgets you already have in the repo:
+import "package:nextbid_demo/shared/widgets/logout_leading.dart";
+import "package:nextbid_demo/shared/widgets/profile_chip.dart";
+import "package:nextbid_demo/shared/widgets/heatmap_grid.dart";
+import "package:nextbid_demo/shared/widgets/layover_preference_list.dart";
+import "package:nextbid_demo/shared/widgets/anonymised_insights_tile.dart";
+// import "package:nextbid_demo/shared/widgets/top_pairings_tile.dart";
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -23,8 +24,8 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Demo data (replace with your real state when wired)
-    final prefs = [
+    // demo data you already used elsewhere
+    final prefs = const [
       LayoverPreference("New York", 0.24),
       LayoverPreference("Los Angeles", 0.16),
       LayoverPreference("Singapore", 0.15),
@@ -41,7 +42,7 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const LogoutLeading(),
-        title: const ProfileChip(), // shows name / rank / crew code & avatar
+        title: const ProfileChip(),
         actions: [
           IconButton(
             onPressed: () => context.go("/profile"),
@@ -52,81 +53,64 @@ class DashboardPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // >>> New tiles (use the app's month)
+          // ---- Insights tiles (consent-aware + pairings) ----
           AnonymisedInsightsTile(month: appState.currentMonth),
-          const SizedBox(height: 12),
-          TopPairingsTile(month: appState.currentMonth),
+          gap12,
+const SizedBox.shrink(),
+          gap16,
 
-          const SizedBox(height: 16),
-          Card(
+          // ---- Trend card ----
+Card(elevation: 1, clipBehavior: Clip.antiAlias, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Trend Dashboard",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "Heatmap",
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 6),
+                  Text("Trend Dashboard", style: Theme.of(context).textTheme.titleLarge),
+                  gap12,
+                  const Text("Heatmap", style: TextStyle(fontWeight: FontWeight.w600)),
+                  gap8,
                   HeatmapGrid(values: heat),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Top Layover Preferences",
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 8),
+                  gap16,
+                  const Text("Top Layover Preferences", style: TextStyle(fontWeight: FontWeight.w600)),
+                  gap8,
                   LayoverPreferenceList(items: prefs),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Card(
+
+          gap16,
+
+          // ---- Forecast card ----
+Card(elevation: 1, clipBehavior: Clip.antiAlias, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    "My Forecast",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
+                  Text("My Forecast", style: Theme.of(context).textTheme.titleLarge),
+                  gap12,
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 22),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F3F6),
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       children: [
-                        const Text(
-                          "Most Likely Outcome",
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                        const SizedBox(height: 6),
+                        const Text("Most Likely Outcome", style: TextStyle(color: Colors.black54)),
+                        gap6,
                         Text(
                           "${_forecastCity()} (Week 2)",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          "Confidence 60%",
-                          style: TextStyle(color: Colors.black54),
-                        ),
+                        gap4,
+                        const Text("Confidence 60%", style: TextStyle(color: Colors.black54)),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  gap12,
                   FilledButton(
                     onPressed: () => context.go("/build"),
                     child: const Text("Sceno"),
@@ -140,3 +124,9 @@ class DashboardPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+

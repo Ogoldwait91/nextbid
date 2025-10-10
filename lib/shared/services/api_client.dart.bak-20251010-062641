@@ -1,4 +1,4 @@
-﻿import "dart:convert";
+import "dart:convert";
 import "dart:io";
 import "package:http/http.dart" as http;
 import "package:http_parser/http_parser.dart" as http_parser;
@@ -12,11 +12,10 @@ class ApiClient {
     final r = await http.get(Uri.parse("$base$path"));
     if (r.statusCode >= 200 && r.statusCode < 300) {
       return json.decode(r.body) as Map<String, dynamic>;
-      
-}
+    }
     throw Exception("GET $path failed: ${r.statusCode}");
-    
-}
+  }
+
   Future<Map<String, dynamic>> postJson(
     String path,
     Map<String, dynamic> body,
@@ -28,20 +27,18 @@ class ApiClient {
     );
     if (r.statusCode >= 200 && r.statusCode < 300) {
       return json.decode(r.body) as Map<String, dynamic>;
-      
-}
+    }
     throw Exception("POST $path failed: ${r.statusCode}");
-    
-}
+  }
+
   Future<Map<String, dynamic>> deleteJson(String path) async {
     final r = await http.delete(Uri.parse("$base$path"));
     if (r.statusCode >= 200 && r.statusCode < 300) {
       return json.decode(r.body) as Map<String, dynamic>;
-      
-}
+    }
     throw Exception("DELETE $path failed: ${r.statusCode}");
-    
-}
+  }
+
   // ------------ existing endpoints ------------
   Future<Map<String, dynamic>> credit(String month) =>
       getJson("/credit/$month");
@@ -52,8 +49,8 @@ class ApiClient {
     final s = Uri.encodeQueryComponent(staffNo);
     final c = Uri.encodeQueryComponent(crewCode);
     return getJson("/status/resolve?staff_no=$s&crew_code=$c");
-    
-}
+  }
+
   Future<Map<String, dynamic>> validateBidServer(String text) =>
       postJson("/bid/validate", {"text": text});
 
@@ -98,14 +95,7 @@ class ApiClient {
     final resp = await http.Response.fromStream(streamed);
     if (resp.statusCode >= 200 && resp.statusCode < 300) {
       return json.decode(resp.body) as Map<String, dynamic>;
-      
-}
+    }
     throw Exception("POST /bid/upload failed: ${resp.statusCode}");
-    
-}
-  
-  Future<Map<String, dynamic>> pairings(String month, {int? limit}) {
-    final q = (limit != null) ? "?limit=$limit" : "";
-    return getJson("/pairings/$month$q");
   }
 }
