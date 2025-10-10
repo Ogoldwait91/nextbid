@@ -74,4 +74,7 @@ Our mission: give every pilot confidence in their bid — and better work-life b
 - Report feedback via WhatsApp/TestFlight notes
 
 
-## 📂 Repo Structure
+## 📂 Repo Structure## Dev quick start
+- Press F5 and pick “Dev: API then Flutter” (or run tasks from Terminal → Run Task)
+- Or run: .\run-dev.ps1 in PowerShell
+- API health: http://127.0.0.1:8000/healthz  → should return { "status": "ok" }
