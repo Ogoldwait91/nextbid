@@ -1,4 +1,4 @@
-﻿import "dart:io";
+import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
@@ -7,6 +7,7 @@ import "../../shared/widgets/logout_leading.dart";
 import "../../shared/widgets/bid_group_editor.dart";
 import "../../shared/widgets/validation_banner.dart";
 import "../../shared/services/api_client.dart";
+import "../../shared/services/app_state.dart";
 
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
@@ -29,7 +30,7 @@ class BuildBidPage extends StatelessWidget {
                           .map(
                             (e) => Padding(
                               padding: const EdgeInsets.only(bottom: 6),
-                              child: Text("• $e"),
+                              child: Text("Ã¢â‚¬Â¢ $e"),
                             ),
                           )
                           .toList(),
@@ -113,7 +114,7 @@ class BuildBidPage extends StatelessWidget {
                                         padding: const EdgeInsets.only(
                                           bottom: 6,
                                         ),
-                                        child: Text("• $e"),
+                                        child: Text("Ã¢â‚¬Â¢ $e"),
                                       ),
                                     )
                                     .toList(),
@@ -199,6 +200,18 @@ class BuildBidPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Card(
+  child: AnimatedBuilder(
+    animation: appState,
+    builder: (context, _) => SwitchListTile(
+      title: const Text("Protect Bank"),
+      subtitle: const Text("Neutral credit only; JCR may add TASS to reach CAP"),
+      value: appState.protectBank,
+      onChanged: (v) => appState.setProtectBank(v),
+    ),
+  ),
+),
+          const SizedBox(height: 8),
           const ValidationBanner(),
           const SizedBox(height: 12),
           Card(
