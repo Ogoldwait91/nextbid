@@ -1,11 +1,12 @@
-﻿import "package:flutter/material.dart";
-import "package:go_router/go_router.dart";
+import "package:flutter/material.dart";
 import "../../shared/services/app_state.dart";
 import "../../shared/services/api_client.dart";
 import "../../shared/widgets/credit_range_selector.dart";
 import "../../shared/widgets/leave_slide_visualizer.dart";
 import "../../shared/widgets/logout_leading.dart";
 import "../../shared/widgets/reserve_calendar.dart";
+import 'package:nextbid_demo/jss/jss_commands.dart';
+import 'package:nextbid_demo/utils/exporter.dart';
 
 class PreProcessPage extends StatefulWidget {
   const PreProcessPage({super.key});
@@ -14,6 +15,38 @@ class PreProcessPage extends StatefulWidget {
 }
 
 class _PreProcessPageState extends State<PreProcessPage> {
+  Future<void> _export() async {
+  try {
+    final lines = buildJss(
+      leaveDays: _useLeave ? _leave : 0,
+      creditPref: _credit.name,
+      groups: const [],
+    );
+
+    final base = 'nextbid_$_month';
+    final saved = await exportBidText('$base.txt', lines);
+
+    await exportSidecarJson('$base.json', <String, dynamic>{
+      'month': _month,
+      'creditRange': _credit.name,
+      'leaveSlide': <String, dynamic>{
+        'enabled': _useLeave,
+        'deltaDays': _leave,
+      },
+    });
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Exported: ${saved.path}')),
+    );
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Export failed: $e')),
+    );
+  }
+}
+
   final _api = const ApiClient();
 
   // Month is now stateful so we can navigate between months
@@ -104,13 +137,11 @@ class _PreProcessPageState extends State<PreProcessPage> {
     appState.setPreferReserve(_reserve);
   }
 
-  void _submit() {
-    _syncState();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Preferences saved")));
-    context.go("/build");
-  }
+  Future<void> _submit()  async{
+  _syncState();
+  await _export();  // write JSS text + toast
+  return;           // explicit return to silence "might complete normally"
+}
 
   // --------------- Month + UI helpers ---------------
   String _monthLabel(String ym) {
@@ -243,7 +274,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Stage dates • ${_monthLabel(_month)}",
+              "Stage dates  -  ${_monthLabel(_month)}",
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
@@ -438,7 +469,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
             child: FilledButton.icon(
               onPressed: _submit,
               icon: const Icon(Icons.check),
-              label: const Text("Submit"),
+              label: const Text("Submit to JSS"),
             ),
           ),
         ],
@@ -468,7 +499,7 @@ class _SummaryCard extends StatelessWidget {
     child: ListTile(
       title: const Text("Summary"),
       subtitle: Text(
-        "Credit: $_creditLabel • Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"} • Reserve: ${reserve ? "Yes" : "No"}",
+        "Credit: $_creditLabel  -  Leave: ${useLeave ? (leave >= 0 ? "+" : "") + leave.toString() : "Off"}  -  Reserve: ${reserve ? "Yes" : "No"}",
       ),
     ),
   );
