@@ -1,13 +1,3 @@
-﻿
-
-
-
-
-
-
-
-
-
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -18,7 +8,6 @@ import "../../shared/widgets/bid_group_editor.dart";
 import "../../shared/widgets/validation_banner.dart";
 import "../../shared/services/api_client.dart";
 import "../../shared/services/app_state.dart";
-
 
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
@@ -41,7 +30,7 @@ class BuildBidPage extends StatelessWidget {
                           .map(
                             (e) => Padding(
                               padding: const EdgeInsets.only(bottom: 6),
-                              child: Text("ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $e"),
+                              child: Text("Ã¢â‚¬Â¢ $e"),
                             ),
                           )
                           .toList(),
@@ -125,7 +114,7 @@ class BuildBidPage extends StatelessWidget {
                                         padding: const EdgeInsets.only(
                                           bottom: 6,
                                         ),
-                                        child: Text("ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $e"),
+                                        child: Text("Ã¢â‚¬Â¢ $e"),
                                       ),
                                     )
                                     .toList(),
@@ -287,33 +276,3 @@ class BuildBidPage extends StatelessWidget {
     );
   }
 }
-
-/* === Safe selection helpers (Phase-1) ================================
-   Prevents crashes when groups are added/removed while UI still holds
-   an old selected index. Call after any mutation to `groups`.
-======================================================================*/
-import "dart:math" as _math; // safe alias
-
-int clampSelectedIndex(int idx, int length) {
-  if (length == 0) return -1;              // no selection
-  if (idx < 0) return 0;
-  if (idx >= length) return length - 1;
-  return idx;
-}
-
-bool hasValidSelection(int idx, int length) =>
-    length > 0 && idx >= 0 && idx < length;
-
-/// Returns current group or null if none/invalid.
-dynamic currentGroupOrNull(List<dynamic> groups, int selectedIndex) {
-  if (selectedIndex < 0 || selectedIndex >= groups.length) return null;
-  return groups[selectedIndex];
-}
-
-/// Safely remove a group and clamp selection to avoid out-of-range access.
-void safeRemoveGroupAt(int i) {
-  safeRemoveGroupAt(i);
-  selectedIndex = clampSelectedIndex(selectedIndex, groups.length);
-}
-
-
