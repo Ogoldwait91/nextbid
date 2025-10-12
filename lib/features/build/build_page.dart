@@ -21,6 +21,8 @@ import "../../shared/services/app_state.dart";
 
 
 
+import 'command_hooks.dart';
+
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
 
@@ -306,16 +308,17 @@ bool hasValidSelection(int idx, int length) =>
     length > 0 && idx >= 0 && idx < length;
 
 /// Returns current group or null if none/invalid.
-dynamic currentGroupOrNull(List<dynamic> groups, int selectedIndex) {
-  if (selectedIndex < 0 || selectedIndex >= groups.length) return null;
-  return groups[selectedIndex];
+/* TODO: wire real variables -> dynamic currentGroupOrNull(List<dynamic> groups, int selectedIndex) { */
+/* TODO: wire real variables -> if (selectedIndex < 0 || selectedIndex >= groups.length) return null; */
+/* TODO: wire real variables -> return groups[selectedIndex]; */
 }
 
 /// Safely remove a group and clamp selection to avoid out-of-range access.
 void safeRemoveGroupAt(int i) {
   safeRemoveGroupAt(i);
-  selectedIndex = clampSelectedIndex(selectedIndex, groups.length);
+/* TODO: wire real variables -> selectedIndex = clampSelectedIndex(selectedIndex, groups.length); */
 }
+
 
 
 
