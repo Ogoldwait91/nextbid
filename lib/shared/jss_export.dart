@@ -27,6 +27,7 @@ Future<File> saveJssText({
   String filename = "nextbid_export.txt",
 }) async {
   final pathSep = Platform.pathSeparator;
-  final file = File("${directory.path}${pathSep}$filename");
+  final file = File("${directory.path}$pathSep$filename");
   return file.writeAsString(content, mode: FileMode.write, encoding: utf8);
 }
+
