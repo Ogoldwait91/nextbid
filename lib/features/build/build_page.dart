@@ -1,4 +1,14 @@
-﻿import "dart:io";
+﻿
+
+
+
+
+
+
+
+
+
+import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
@@ -8,6 +18,7 @@ import "../../shared/widgets/bid_group_editor.dart";
 import "../../shared/widgets/validation_banner.dart";
 import "../../shared/services/api_client.dart";
 import "../../shared/services/app_state.dart";
+
 
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
@@ -304,4 +315,5 @@ void safeRemoveGroupAt(int i) {
   safeRemoveGroupAt(i);
   selectedIndex = clampSelectedIndex(selectedIndex, groups.length);
 }
+
 
