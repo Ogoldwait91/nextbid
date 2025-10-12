@@ -276,26 +276,3 @@ class BuildBidPage extends StatelessWidget {
     );
   }
 }
-
-/// --- Phase-1 guardrails ---
-bool _canAddGroup(int currentGroups) => currentGroups < 15;
-bool _canAddRow(int rowsInGroup) => rowsInGroup < 40;
-
-void _addGroup() {
-  if (!_canAddGroup(groups.length)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Max 15 groups reached')));
-    return;
-  }
-  // existing logic to add group...
-}
-
-void _addRow(int groupIndex) {
-  if (!_canAddRow(groups[groupIndex].rows.length)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Max 40 rows per group')));
-    return;
-  }
-  // existing logic to add row...
-}
-/// --- end guardrails ---
