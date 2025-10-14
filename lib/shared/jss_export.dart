@@ -1,12 +1,9 @@
-﻿import "dart:convert";
+import "dart:convert";
 import "dart:io";
 
 /// Build JSS text with CRLF (\r\n) line endings.
 /// `groups` is a list of groups, each group is a list of lines (strings).
-String buildJssText({
-  required int credit,
-  required List<List<String>> groups,
-}) {
+String buildJssText({required int credit, required List<List<String>> groups}) {
   final lines = <String>[];
   lines.add("GLOBAL SETTINGS");
   lines.add("CREDIT=$credit");
@@ -30,4 +27,3 @@ Future<File> saveJssText({
   final file = File("${directory.path}$pathSep$filename");
   return file.writeAsString(content, mode: FileMode.write, encoding: utf8);
 }
-

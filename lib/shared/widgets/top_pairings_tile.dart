@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:nextbid_demo/shared/services/api_client.dart";
 
 class TopPairingsTile extends StatelessWidget {
@@ -21,7 +21,11 @@ class TopPairingsTile extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: const [
-                  SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                   SizedBox(width: 12),
                   Text("Loading pairings…"),
                 ],
@@ -38,7 +42,12 @@ class TopPairingsTile extends StatelessWidget {
                   const Icon(Icons.error, color: Colors.red),
                   const SizedBox(width: 8),
                   const Expanded(child: Text("Can’t load pairings")),
-                  TextButton(onPressed: () { (context as Element).markNeedsBuild(); }, child: const Text("Retry")),
+                  TextButton(
+                    onPressed: () {
+                      (context as Element).markNeedsBuild();
+                    },
+                    child: const Text("Retry"),
+                  ),
                 ],
               ),
             ),
@@ -63,7 +72,10 @@ class TopPairingsTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Top Pairings • $safeMonth", style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  "Top Pairings • $safeMonth",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 const SizedBox(height: 8),
                 for (final p in items)
                   Padding(

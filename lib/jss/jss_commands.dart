@@ -1,4 +1,4 @@
-﻿class Jss {
+class Jss {
   static String leave(int days) {
     final sign = days >= 0 ? '+' : '-';
     final magnitude = days.abs();
@@ -7,9 +7,12 @@
 
   static String credit(String pref) {
     switch (pref.toLowerCase()) {
-      case 'high': return 'CREDIT HIGH';
-      case 'low':  return 'CREDIT LOW';
-      default:     return 'CREDIT NEUTRAL';
+      case 'high':
+        return 'CREDIT HIGH';
+      case 'low':
+        return 'CREDIT LOW';
+      default:
+        return 'CREDIT NEUTRAL';
     }
   }
 }

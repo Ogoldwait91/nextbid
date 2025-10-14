@@ -112,6 +112,7 @@ class AppState extends ChangeNotifier {
     groups.insert(index + 1, copy);
     notifyListeners();
   }
+
   void setProtectBank(bool v) {
     protectBank = v;
     notifyListeners();

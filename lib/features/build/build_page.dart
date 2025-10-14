@@ -1,27 +1,13 @@
 ﻿import "dart:io";
-import 'command_hooks.dart';
-
 import "package:flutter/material.dart";
-
 import "package:flutter/services.dart";
-
 import "package:path_provider/path_provider.dart";
-
 import "package:nextbid_demo/shared/services/jss_composer.dart";
-
 import "../../shared/widgets/logout_leading.dart";
-
 import "../../shared/widgets/bid_group_editor.dart";
-
 import "../../shared/widgets/validation_banner.dart";
-
 import "../../shared/services/api_client.dart";
-
 import "../../shared/services/app_state.dart";
-
-
-
-import 'command_hooks.dart';
 
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
@@ -44,7 +30,7 @@ class BuildBidPage extends StatelessWidget {
                           .map(
                             (e) => Padding(
                               padding: const EdgeInsets.only(bottom: 6),
-                              child: Text("ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $e"),
+                              child: Text("Ã¢â‚¬Â¢ $e"),
                             ),
                           )
                           .toList(),
@@ -128,7 +114,7 @@ class BuildBidPage extends StatelessWidget {
                                         padding: const EdgeInsets.only(
                                           bottom: 6,
                                         ),
-                                        child: Text("ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $e"),
+                                        child: Text("Ã¢â‚¬Â¢ $e"),
                                       ),
                                     )
                                     .toList(),
@@ -215,16 +201,19 @@ class BuildBidPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Card(
-  child: AnimatedBuilder(
-    animation: appState,
-    builder: (context, _) => SwitchListTile(
-      title: const Text("Protect Bank"),
-      subtitle: const Text("Neutral credit only; JCR may add TASS to reach CAP"),
-      value: appState.protectBank,
-      onChanged: (v) => appState.setProtectBank(v),
-    ),
-  ),
-),
+            child: AnimatedBuilder(
+              animation: appState,
+              builder:
+                  (context, _) => SwitchListTile(
+                    title: const Text("Protect Bank"),
+                    subtitle: const Text(
+                      "Neutral credit only; JCR may add TASS to reach CAP",
+                    ),
+                    value: appState.protectBank,
+                    onChanged: (v) => appState.setProtectBank(v),
+                  ),
+            ),
+          ),
           const SizedBox(height: 8),
           const ValidationBanner(),
           const SizedBox(height: 12),
@@ -290,35 +279,3 @@ class BuildBidPage extends StatelessWidget {
     );
   }
 }
-
-/* === Safe selection helpers (Phase-1) ================================
-   Prevents crashes when groups are added/removed while UI still holds
-   an old selected index. Call after any mutation to `groups`.
-======================================================================*/
-import "dart:math" as _math; // safe alias
-
-int clampSelectedIndex(int idx, int length) {
-  if (length == 0) return -1;              // no selection
-  if (idx < 0) return 0;
-  if (idx >= length) return length - 1;
-  return idx;
-}
-
-bool hasValidSelection(int idx, int length) =>
-    length > 0 && idx >= 0 && idx < length;
-
-/// Returns current group or null if none/invalid.
-/* TODO: wire real variables -> dynamic currentGroupOrNull(List<dynamic> groups, int selectedIndex) { */
-/* TODO: wire real variables -> if (selectedIndex < 0 || selectedIndex >= groups.length) return null; */
-/* TODO: wire real variables -> return groups[selectedIndex]; */
-}
-
-/// Safely remove a group and clamp selection to avoid out-of-range access.
-void safeRemoveGroupAt(int i) {
-  safeRemoveGroupAt(i);
-/* TODO: wire real variables -> selectedIndex = clampSelectedIndex(selectedIndex, groups.length); */
-}
-
-
-
-

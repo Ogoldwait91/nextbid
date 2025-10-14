@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:nextbid_demo/shared/services/api_client.dart";
 
 class DeadlinesTile extends StatelessWidget {
@@ -19,7 +19,11 @@ class DeadlinesTile extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: const [
-                  SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                   SizedBox(width: 12),
                   Text("Loading deadlines…"),
                 ],
@@ -57,13 +61,18 @@ class DeadlinesTile extends StatelessWidget {
         return Card(
           elevation: 1,
           clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Deadlines • $safeMonth", style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  "Deadlines • $safeMonth",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 const SizedBox(height: 8),
                 for (final s in stages)
                   Padding(

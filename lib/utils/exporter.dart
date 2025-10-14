@@ -18,7 +18,10 @@ Future<File> exportBidText(String filename, List<String> lines) async {
 }
 
 /// Writes a pretty-printed JSON sidecar into the same export directory.
-Future<File> exportSidecarJson(String fileName, Map<String, dynamic> data) async {
+Future<File> exportSidecarJson(
+  String fileName,
+  Map<String, dynamic> data,
+) async {
   // Reuse whatever directory exportBidText uses
   final dir = await _ensureExportDir();
   final f = File(p.join(dir.path, fileName));

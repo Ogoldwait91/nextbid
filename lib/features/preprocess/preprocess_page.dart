@@ -16,36 +16,36 @@ class PreProcessPage extends StatefulWidget {
 
 class _PreProcessPageState extends State<PreProcessPage> {
   Future<void> _export() async {
-  try {
-    final lines = buildJss(
-      leaveDays: _useLeave ? _leave : 0,
-      creditPref: _credit.name,
-      groups: const [],
-    );
+    try {
+      final lines = buildJss(
+        leaveDays: _useLeave ? _leave : 0,
+        creditPref: _credit.name,
+        groups: const [],
+      );
 
-    final base = 'nextbid_$_month';
-    final saved = await exportBidText('$base.txt', lines);
+      final base = 'nextbid_$_month';
+      final saved = await exportBidText('$base.txt', lines);
 
-    await exportSidecarJson('$base.json', <String, dynamic>{
-      'month': _month,
-      'creditRange': _credit.name,
-      'leaveSlide': <String, dynamic>{
-        'enabled': _useLeave,
-        'deltaDays': _leave,
-      },
-    });
+      await exportSidecarJson('$base.json', <String, dynamic>{
+        'month': _month,
+        'creditRange': _credit.name,
+        'leaveSlide': <String, dynamic>{
+          'enabled': _useLeave,
+          'deltaDays': _leave,
+        },
+      });
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Exported: ${saved.path}')),
-    );
-  } catch (e) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Export failed: $e')),
-    );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Exported: ${saved.path}')));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+    }
   }
-}
 
   final _api = const ApiClient();
 
@@ -137,11 +137,11 @@ class _PreProcessPageState extends State<PreProcessPage> {
     appState.setPreferReserve(_reserve);
   }
 
-  Future<void> _submit()  async{
-  _syncState();
-  await _export();  // write JSS text + toast
-  return;           // explicit return to silence "might complete normally"
-}
+  Future<void> _submit() async {
+    _syncState();
+    await _export(); // write JSS text + toast
+    return; // explicit return to silence "might complete normally"
+  }
 
   // --------------- Month + UI helpers ---------------
   String _monthLabel(String ym) {

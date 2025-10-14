@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 
 import "package:nextbid_demo/shared/services/app_state.dart";
@@ -56,23 +56,37 @@ class DashboardPage extends StatelessWidget {
           // ---- Insights tiles (consent-aware + pairings) ----
           AnonymisedInsightsTile(month: appState.currentMonth),
           gap12,
-const SizedBox.shrink(),
+          const SizedBox.shrink(),
           gap16,
 
           // ---- Trend card ----
-Card(elevation: 1, clipBehavior: Clip.antiAlias, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
+          Card(
+            elevation: 1,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Trend Dashboard", style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    "Trend Dashboard",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   gap12,
-                  const Text("Heatmap", style: TextStyle(fontWeight: FontWeight.w600)),
+                  const Text(
+                    "Heatmap",
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   gap8,
                   HeatmapGrid(values: heat),
                   gap16,
-                  const Text("Top Layover Preferences", style: TextStyle(fontWeight: FontWeight.w600)),
+                  const Text(
+                    "Top Layover Preferences",
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   gap8,
                   LayoverPreferenceList(items: prefs),
                 ],
@@ -83,13 +97,21 @@ Card(elevation: 1, clipBehavior: Clip.antiAlias, shape: RoundedRectangleBorder(b
           gap16,
 
           // ---- Forecast card ----
-Card(elevation: 1, clipBehavior: Clip.antiAlias, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
+          Card(
+            elevation: 1,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text("My Forecast", style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    "My Forecast",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   gap12,
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 22),
@@ -99,14 +121,23 @@ Card(elevation: 1, clipBehavior: Clip.antiAlias, shape: RoundedRectangleBorder(b
                     ),
                     child: Column(
                       children: [
-                        const Text("Most Likely Outcome", style: TextStyle(color: Colors.black54)),
+                        const Text(
+                          "Most Likely Outcome",
+                          style: TextStyle(color: Colors.black54),
+                        ),
                         gap6,
                         Text(
                           "${_forecastCity()} (Week 2)",
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         gap4,
-                        const Text("Confidence 60%", style: TextStyle(color: Colors.black54)),
+                        const Text(
+                          "Confidence 60%",
+                          style: TextStyle(color: Colors.black54),
+                        ),
                       ],
                     ),
                   ),
@@ -124,9 +155,3 @@ Card(elevation: 1, clipBehavior: Clip.antiAlias, shape: RoundedRectangleBorder(b
     );
   }
 }
-
-
-
-
-
-
