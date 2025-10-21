@@ -321,3 +321,7 @@ print("[paths] CALDIR", CALDIR)
 @app.get("/healthz")
 def healthz():
     return {"status": "ok"}
+
+from app.routes import bid
+
+app.include_router(bid.router)
