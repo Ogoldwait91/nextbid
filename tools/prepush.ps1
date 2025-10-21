@@ -1,12 +1,12 @@
-Write-Host "Running pre-push checks..."
+﻿Write-Host "Running pre-push checks..."
 
 # 1) Flutter static analysis
 flutter analyze --no-fatal-infos --no-fatal-warnings
 if ($LASTEXITCODE -ne 0) { Write-Error "flutter analyze --no-fatal-infos --no-fatal-warnings failed"; exit 1 }
 
 # 2) Dart/Flutter tests
-dart test
-if ($LASTEXITCODE -ne 0) { Write-Error "dart test failed"; exit 1 }
+flutter test -r expanded
+if ($LASTEXITCODE -ne 0) { Write-Error "flutter test -r expanded failed"; exit 1 }
 
 # 3) API health ping (optional if not running)
 try {
@@ -21,3 +21,4 @@ try {
 }
 
 Write-Host "All checks passed."
+
