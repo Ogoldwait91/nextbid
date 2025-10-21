@@ -133,3 +133,7 @@ Thumbs.db
 # Logs
 *.log
 exports/
+
+# Local export artefacts
+export.jss
+valid_bid.txt
