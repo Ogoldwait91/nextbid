@@ -1,7 +1,2 @@
-﻿* text=auto eol=lf
-*.dart text eol=lf
-*.yaml text eol=lf
-*.yml  text eol=lf
-*.md   text eol=lf
-*.json text eol=lf
-*.gitignore text eol=lf
+﻿# Keep JSS exports as text with Windows CRLF endings
+*.jss text eol=crlf
