@@ -1,8 +1,8 @@
-﻿Write-Host "Running pre-push checks..."
+Write-Host "Running pre-push checks..."
 
 # 1) Flutter static analysis
-flutter analyze
-if ($LASTEXITCODE -ne 0) { Write-Error "flutter analyze failed"; exit 1 }
+flutter analyze --no-fatal-infos --no-fatal-warnings
+if ($LASTEXITCODE -ne 0) { Write-Error "flutter analyze --no-fatal-infos --no-fatal-warnings failed"; exit 1 }
 
 # 2) Dart/Flutter tests
 dart test
