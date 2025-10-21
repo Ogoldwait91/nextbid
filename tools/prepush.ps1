@@ -1,23 +1,23 @@
-﻿Write-Host 'Running pre-push checks...' 
-# Flutter static analysis (no formatting changes)
+﻿Write-Host "Running pre-push checks..."
+
+# 1) Flutter static analysis
 flutter analyze
-if (0 -ne 0) { Write-Error 'flutter analyze failed'; exit 1 }
+if ($LASTEXITCODE -ne 0) { Write-Error "flutter analyze failed"; exit 1 }
 
-# Dart tests if any exist (safe: exits 0 if none)
-if (Test-Path .\test) {
-  dart test
+# 2) Dart/Flutter tests
+dart test
+if ($LASTEXITCODE -ne 0) { Write-Error "dart test failed"; exit 1 }
+
+# 3) API health ping (optional if not running)
+try {
+  $r = Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 http://127.0.0.1:8000/healthz
+  if ($r.StatusCode -eq 200 -and $r.Content -match '"ok":\s*true') {
+    Write-Host "API /healthz OK"
+  } else {
+    Write-Warning "API /healthz responded but not OK: $($r.StatusCode) $($r.Content)"
+  }
+} catch {
+  Write-Host "API not running; skipping /healthz ping."
 }
 
-# FastAPI routes smoke test (if uvicorn available)
-if (Test-Path .\api\app\main.py) {
-  Write-Host 'API quick import check'
-  python - <<'PY'
-import importlib, sys
-try:
-    import api.app.main as m
-    print("OK: api.app.main importable; app:", hasattr(m, "app"))
-except Exception as e:
-    print("ERROR:", e); sys.exit(1)
-PY
-}
-Write-Host 'All checks passed.'
+Write-Host "All checks passed."
