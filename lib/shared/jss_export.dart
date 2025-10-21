@@ -1,4 +1,4 @@
-import "dart:convert";
+﻿import "dart:convert";
 import "dart:io";
 
 /// Build JSS text with CRLF (\r\n) line endings.
@@ -27,3 +27,11 @@ Future<File> saveJssText({
   final file = File("${directory.path}$pathSep$filename");
   return file.writeAsString(content, mode: FileMode.write, encoding: utf8);
 }
+
+/// Ensure CRLF line endings with a trailing CRLF (JSS-friendly).
+String ensureCrlfAll(String s) {
+  final lf = s.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+  final crlf = lf.replaceAll("\n", "\r\n");
+  return crlf.endsWith("\r\n") ? crlf : (crlf + "\r\n");
+}
+
