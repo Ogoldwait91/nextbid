@@ -31,3 +31,15 @@ def bid_export(payload: BidText):
         filename=fname,
         headers={"Cache-Control": "no-store"}
     )
+# --- added: raw JSS text endpoint (safe alongside existing JSON one) ---
+from fastapi import Body, Response
+
+@router.post("/bid/export.txt", summary="Export bid as raw .jss (text/plain, CRLF, UTF-8)")
+def bid_export_txt(payload: BidText = Body(..., media_type="application/json")):
+    jss_text = payload.text or ""
+    # Normalise to CRLF and ensure trailing CRLF
+    lf = jss_text.replace("\r\n", "\n").replace("\r", "\n")
+    crlf = lf.replace("\n", "\r\n")
+    if crlf and not crlf.endswith("\r\n"):
+        crlf += "\r\n"
+    return Response(content=crlf, media_type="text/plain; charset=utf-8")
