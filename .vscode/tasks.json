@@ -1,0 +1,56 @@
+﻿{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Export History (debug entry)",
+      "type": "shell",
+      "command": "flutter",
+      "args": ["run","-t","lib/main_history.dart"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Pre-push checks",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile","-ExecutionPolicy","Bypass","-File","${workspaceFolder}\\tools\\prepush.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Preview Export (.jss)",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile","-ExecutionPolicy","Bypass","-File","${workspaceFolder}\\tools\\preview-export.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Exports folder",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile","-ExecutionPolicy","Bypass","-File","${workspaceFolder}\\tools\\open-exports.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Flutter tests (expanded)",
+      "type": "shell",
+      "command": "flutter",
+      "args": ["test","-r","expanded"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Run API (Uvicorn)",
+      "type": "shell",
+      "command": "python",
+      "args": ["-m","uvicorn","api.app.main:app","--reload","--port","8000"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Flutter app",
+      "type": "shell",
+      "command": "flutter",
+      "args": ["run"],
+      "problemMatcher": []
+    }
+  ]
+}
+
