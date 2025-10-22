@@ -23,3 +23,40 @@ try {
 Write-Host "All checks passed."
 
 
+
+Write-Host "Running export validation (non-blocking)..." -ForegroundColor Cyan
+
+# Settings
+$BaseUrl = $env:NEXTBID_API_URL
+if (-not $BaseUrl -or $BaseUrl.Trim() -eq "") { $BaseUrl = "http://127.0.0.1:8000" }
+
+function Test-ApiHealthy([string]$Url) {
+  try {
+    $r = Invoke-WebRequest -Uri "$Url/healthz" -Method GET -UseBasicParsing -TimeoutSec 2
+    return ($r.StatusCode -eq 200)
+  } catch { return $false }
+}
+
+function Get-LatestExport {
+  $dir = Join-Path $env:USERPROFILE "Documents\NextBid"
+  if (!(Test-Path $dir)) { return $null }
+  Get-ChildItem $dir -Filter *.jss -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1
+}
+
+$latest = Get-LatestExport
+
+if (-not $latest) {
+  Write-Host "No exports found; skipping validation." -ForegroundColor DarkYellow
+} elseif (-not (Test-ApiHealthy $BaseUrl)) {
+  Write-Host "API not reachable at $BaseUrl; skipping validation." -ForegroundColor DarkYellow
+} else {
+  Write-Host ("Validating: {0}" -f $latest.FullName) -ForegroundColor DarkGray
+  & "$PSScriptRoot\validate.ps1" -File $latest.FullName -BaseUrl $BaseUrl
+  $exit = $LASTEXITCODE
+  if ($exit -ne 0) {
+    Write-Warning "Validation reported issues for $($latest.Name). Review before pushing."
+  } else {
+    Write-Host "Validation OK." -ForegroundColor Green
+  }
+}

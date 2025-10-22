@@ -4,6 +4,9 @@ import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
 import "package:nextbid_demo/shared/services/jss_composer.dart";
 import "../../shared/widgets/logout_leading.dart";
+import "package:nextbid_demo/shared/services/validate_client.dart";
+import "package:nextbid_demo/shared/widgets/validate_banner.dart";
+import "package:nextbid_demo/shared/widgets/validate_section.dart";
 
 class PreviewPage extends StatelessWidget {
   const PreviewPage({super.key});
@@ -43,7 +46,31 @@ class PreviewPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+    Map<String, dynamic>? _validateResult;
+  bool _validating = false;
+
+  Future<void> _validate(BuildContext context, String text) async {
+    setState(() => _validating = true);
+    try {
+      const base = String.fromEnvironment("NEXTBID_API", defaultValue: "http://127.0.0.1:8000");
+      final api  = ApiClient(base);
+      final res  = await api.validateBid(text);
+      setState(() => _validateResult = res);
+      final ok = (res["ok"] as bool?) ?? false;
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ok ? "Validation OK" : "Validation issues found"))
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Validate failed: $e"))
+      );
+    } finally {
+      if (mounted) setState(() => _validating = false);
+    }
+  }@override
+
     final lines = composeJssLines();
     return Scaffold(
       appBar: AppBar(
@@ -88,3 +115,8 @@ class PreviewPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
