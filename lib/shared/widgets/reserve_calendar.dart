@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 /// ReserveBlocksCalendar
 /// - Shows a month grid (Monâ€“Sun), highlights days for the selected reserve block.

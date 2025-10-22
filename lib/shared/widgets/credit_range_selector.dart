@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "../services/app_state.dart";
 
 class CreditRangeSelector extends StatelessWidget {

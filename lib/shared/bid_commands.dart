@@ -1,4 +1,4 @@
-﻿/// Typed bid commands â†’ single JSS lines via toJss().
+/// Typed bid commands â†’ single JSS lines via toJss().
 abstract class BidCommand {
   String toJss();
 }

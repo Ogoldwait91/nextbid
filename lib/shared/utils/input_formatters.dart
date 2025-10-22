@@ -1,4 +1,4 @@
-﻿import "package:flutter/services.dart";
+import "package:flutter/services.dart";
 
 /// Force uppercase for inputs like JSS rows or crew code.
 class UpperCaseTextFormatter extends TextInputFormatter {

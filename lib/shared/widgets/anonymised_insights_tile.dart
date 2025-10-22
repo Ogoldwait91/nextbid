@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "../services/api_client.dart";
 import "../services/privacy_state.dart"; // your ValueNotifier<bool> privacyConsent
 // if you prefer to pull currentMonth here

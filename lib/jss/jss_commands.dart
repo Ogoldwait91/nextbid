@@ -1,4 +1,4 @@
-﻿class Jss {
+class Jss {
   static String leave(int days) {
     final sign = days >= 0 ? '+' : '-';
     final magnitude = days.abs();

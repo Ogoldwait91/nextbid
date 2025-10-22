@@ -1,4 +1,4 @@
-﻿import "dart:io";
+import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
@@ -15,7 +15,7 @@ class BuildBidPage extends StatelessWidget {
   bool _preflight(BuildContext context) {
     final v = validateBid();
     if (v.ok) return true;
-    showDialog(
+    showDialog<void>(
       context: context,
       builder:
           (buildCtx) => AlertDialog(
@@ -92,7 +92,7 @@ class BuildBidPage extends StatelessWidget {
       if (!context.mounted) return;
       final ok = res["ok"] == true;
       final List errs = (res["errors"] as List?) ?? [];
-      showDialog(
+      showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(
@@ -131,7 +131,7 @@ class BuildBidPage extends StatelessWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      showDialog(
+      showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(
@@ -154,7 +154,7 @@ class BuildBidPage extends StatelessWidget {
     try {
       final res = await api.exportBidServer(text);
       if (!context.mounted) return;
-      showDialog(
+      showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(
@@ -172,7 +172,7 @@ class BuildBidPage extends StatelessWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      showDialog(
+      showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(

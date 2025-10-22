@@ -1,4 +1,4 @@
-﻿class JssValidator {
+class JssValidator {
   static void check({required List<List<String>> groups}) {
     if (groups.length > 15) {
       throw ArgumentError('Max 15 bid groups exceeded');

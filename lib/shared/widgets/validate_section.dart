@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:nextbid_demo/shared/services/validate_client.dart";
 import "package:nextbid_demo/shared/widgets/validate_banner.dart";
 

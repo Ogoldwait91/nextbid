@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 class HeatmapGrid extends StatelessWidget {
   final List<List<double>> values; // 7 columns (Mon..Sun) x N rows

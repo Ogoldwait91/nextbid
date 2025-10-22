@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "../services/app_state.dart";
 import "package:nextbid_demo/shared/services/jss_composer.dart";
 import "../utils/input_formatters.dart";

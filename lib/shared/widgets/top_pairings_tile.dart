@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:nextbid_demo/shared/services/api_client.dart";
 
 class TopPairingsTile extends StatelessWidget {

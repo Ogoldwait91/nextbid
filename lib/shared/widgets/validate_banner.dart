@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 class ValidateBanner extends StatelessWidget {
   final List<dynamic> errors;

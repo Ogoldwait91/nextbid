@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final data = await _api.privacyDownload();
       if (!mounted) return;
-      showDialog(
+      showDialog<void>(
         context: context,
         builder:
             (ctx) => AlertDialog(
@@ -97,7 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final res = await _api.privacyDelete();
       if (!mounted) return;
       final ok = res["ok"] == true;
-      showDialog(
+      showDialog<void>(
         context: context,
         builder:
             (ctx) => AlertDialog(
@@ -246,7 +246,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 icon: const Icon(Icons.info_outline),
                 tooltip: "More info",
                 onPressed: () {
-                  showModalBottomSheet(
+                  showModalBottomSheet<void>(
                     context: context,
                     isScrollControlled: true,
                     showDragHandle: true,

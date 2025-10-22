@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 void showToast(BuildContext context, String message, {bool ok = true}) {
   final color = ok ? Colors.green : Colors.red;

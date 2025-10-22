@@ -1,4 +1,4 @@
-﻿import "package:nextbid_demo/shared/spec/jss_spec.dart";
+import "package:nextbid_demo/shared/spec/jss_spec.dart";
 import "package:nextbid_demo/shared/services/app_state.dart";
 
 /// Allowed row grammar: Aâ€“Z, 0â€“9, space, _ + - . , / : ( ) # = and backslash

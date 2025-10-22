@@ -1,4 +1,4 @@
-﻿import "dart:convert";
+import "dart:convert";
 import "dart:io";
 
 /// Build JSS text with CRLF (\r\n) line endings.

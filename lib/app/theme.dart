@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 // BA-ish palette
 const Color baNavy = Color(0xFF0E1A2B);

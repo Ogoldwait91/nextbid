@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "../../shared/services/app_state.dart";
 import "../../shared/services/api_client.dart";
 import "../../shared/widgets/credit_range_selector.dart";

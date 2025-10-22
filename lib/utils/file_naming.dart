@@ -1,4 +1,4 @@
-﻿import "dart:io";
+import "dart:io";
 import "package:path/path.dart" as p;
 
 /// Compute the next export file path with pattern:
