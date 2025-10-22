@@ -14,7 +14,7 @@ Future<File> exportBidText(String filename, List<String> lines) async {
   final normalized = '$joined\r\n';
 
   final file = File(path);
-  return file.writeAsString(normalized, mode: FileMode.write, flush: true);
+  return file.writeAsString(normalized, flush: true);
 }
 
 /// Writes a pretty-printed JSON sidecar into the same export directory.
@@ -26,7 +26,7 @@ Future<File> exportSidecarJson(
   final dir = await _ensureExportDir();
   final f = File(p.join(dir.path, fileName));
   final pretty = const JsonEncoder.withIndent('  ').convert(data);
-  await f.writeAsString(pretty, encoding: utf8);
+  await f.writeAsString(pretty);
   return f;
 }
 

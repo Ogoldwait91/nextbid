@@ -3,11 +3,11 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
 import "package:nextbid_demo/shared/services/jss_composer.dart";
-import "../../shared/widgets/logout_leading.dart";
-import "../../shared/widgets/bid_group_editor.dart";
-import "../../shared/widgets/validation_banner.dart";
-import "../../shared/services/api_client.dart";
-import "../../shared/services/app_state.dart";
+import 'package:nextbid_demo/shared/widgets/logout_leading.dart';
+import 'package:nextbid_demo/shared/widgets/bid_group_editor.dart';
+import 'package:nextbid_demo/shared/widgets/validation_banner.dart';
+import 'package:nextbid_demo/shared/services/api_client.dart';
+import 'package:nextbid_demo/shared/services/app_state.dart';
 
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
@@ -50,7 +50,7 @@ class BuildBidPage extends StatelessWidget {
 
   Future<void> _copy(BuildContext context) async {
     if (!_preflight(context)) return;
-    final text = composeJssText(windowsEol: true);
+    final text = composeJssText();
     await Clipboard.setData(ClipboardData(text: text));
     if (context.mounted) {
       ScaffoldMessenger.of(
@@ -61,7 +61,7 @@ class BuildBidPage extends StatelessWidget {
 
   Future<void> _export(BuildContext context) async {
     if (!_preflight(context)) return;
-    final text = composeJssText(windowsEol: true);
+    final text = composeJssText();
     try {
       Directory? dir = await getDownloadsDirectory();
       dir ??= await getApplicationDocumentsDirectory();
@@ -86,7 +86,7 @@ class BuildBidPage extends StatelessWidget {
 
   Future<void> _serverCheck(BuildContext context) async {
     final api = const ApiClient();
-    final text = composeJssText(windowsEol: true);
+    final text = composeJssText();
     try {
       final res = await api.validateBidServer(text);
       if (!context.mounted) return;
@@ -150,7 +150,7 @@ class BuildBidPage extends StatelessWidget {
 
   Future<void> _serverExport(BuildContext context) async {
     final api = const ApiClient();
-    final text = composeJssText(windowsEol: true);
+    final text = composeJssText();
     try {
       final res = await api.exportBidServer(text);
       if (!context.mounted) return;

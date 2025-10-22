@@ -14,11 +14,11 @@ class DeadlinesTile extends StatelessWidget {
       future: api.calendar(safeMonth),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return Card(
+          return const Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Row(
-                children: const [
+                children: [
                   SizedBox(
                     width: 16,
                     height: 16,

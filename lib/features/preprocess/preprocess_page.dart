@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
-import "../../shared/services/app_state.dart";
-import "../../shared/services/api_client.dart";
-import "../../shared/widgets/credit_range_selector.dart";
-import "../../shared/widgets/leave_slide_visualizer.dart";
-import "../../shared/widgets/logout_leading.dart";
-import "../../shared/widgets/reserve_calendar.dart";
+import 'package:nextbid_demo/shared/services/app_state.dart';
+import 'package:nextbid_demo/shared/services/api_client.dart';
+import 'package:nextbid_demo/shared/widgets/credit_range_selector.dart';
+import 'package:nextbid_demo/shared/widgets/leave_slide_visualizer.dart';
+import 'package:nextbid_demo/shared/widgets/logout_leading.dart';
+import 'package:nextbid_demo/shared/widgets/reserve_calendar.dart';
 import 'package:nextbid_demo/jss/jss_commands.dart';
 import 'package:nextbid_demo/utils/exporter.dart';
 
@@ -20,7 +20,6 @@ class _PreProcessPageState extends State<PreProcessPage> {
       final lines = buildJss(
         leaveDays: _useLeave ? _leave : 0,
         creditPref: _credit.name,
-        groups: const [],
       );
 
       final base = 'nextbid_$_month';
@@ -190,8 +189,8 @@ class _PreProcessPageState extends State<PreProcessPage> {
     final parts = ym.split("-");
     final y = int.tryParse(parts[0]) ?? DateTime.now().year;
     final m = int.tryParse(parts.elementAt(1)) ?? DateTime.now().month;
-    final base = DateTime(y, m, 1);
-    final next = DateTime(base.year, base.month + deltaMonths, 1);
+    final base = DateTime(y, m);
+    final next = DateTime(base.year, base.month + deltaMonths);
     final mm = next.month.toString().padLeft(2, "0");
     return "${next.year}-$mm";
   }

@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
-import "../services/profile_state.dart";
+import 'package:nextbid_demo/shared/services/profile_state.dart';
 
 class ProfileChip extends StatelessWidget {
   const ProfileChip({super.key});

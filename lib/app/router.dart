@@ -1,16 +1,16 @@
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 
-import "../shared/services/auth_state.dart";
+import 'package:nextbid_demo/shared/services/auth_state.dart';
 
-import "../features/auth/login_page.dart";
-import "../features/auth/signup_page.dart";
+import 'package:nextbid_demo/features/auth/login_page.dart';
+import 'package:nextbid_demo/features/auth/signup_page.dart';
 
-import "../features/dashboard/dashboard_page.dart";
-import "../features/preprocess/preprocess_page.dart";
-import "../features/build/build_page.dart";
-import "../features/preview/preview_page.dart";
-import "../features/profile/profile_page.dart";
+import 'package:nextbid_demo/features/dashboard/dashboard_page.dart';
+import 'package:nextbid_demo/features/preprocess/preprocess_page.dart';
+import 'package:nextbid_demo/features/build/build_page.dart';
+import 'package:nextbid_demo/features/preview/preview_page.dart';
+import 'package:nextbid_demo/features/profile/profile_page.dart';
 
 final router = GoRouter(
   initialLocation: authState.value ? "/dashboard" : "/login",

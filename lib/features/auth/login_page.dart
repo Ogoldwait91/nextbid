@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
-import "../../shared/services/auth_state.dart";
+import 'package:nextbid_demo/shared/services/auth_state.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

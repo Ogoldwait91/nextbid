@@ -6,17 +6,14 @@ const Color baNavyLight = Color(0xFF1A3E6A);
 
 final lightTheme = ThemeData(
   useMaterial3: true,
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: baNavy,
-    brightness: Brightness.light,
-  ),
-  scaffoldBackgroundColor: Color(0xFFF7F7FA),
-  appBarTheme: AppBarTheme(
+  colorScheme: ColorScheme.fromSeed(seedColor: baNavy),
+  scaffoldBackgroundColor: const Color(0xFFF7F7FA),
+  appBarTheme: const AppBarTheme(
     backgroundColor: Colors.white,
     elevation: 0,
     foregroundColor: baNavy,
     centerTitle: false,
-    titleTextStyle: const TextStyle(
+    titleTextStyle: TextStyle(
       color: baNavy,
       fontWeight: FontWeight.w600,
       fontSize: 20,
@@ -31,7 +28,7 @@ final lightTheme = ThemeData(
       borderRadius: BorderRadius.all(Radius.circular(16)),
     ),
   ),
-  inputDecorationTheme: InputDecorationTheme(
+  inputDecorationTheme: const InputDecorationTheme(
     isDense: true,
     filled: true,
     fillColor: Color(0xFFF1F3F6),
@@ -45,7 +42,7 @@ final lightTheme = ThemeData(
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      padding: WidgetStatePropertyAll(
+      padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
     ),

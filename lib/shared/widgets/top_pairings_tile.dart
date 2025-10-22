@@ -16,11 +16,11 @@ class TopPairingsTile extends StatelessWidget {
       future: api.pairings(safeMonth, limit: limit),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return Card(
+          return const Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Row(
-                children: const [
+                children: [
                   SizedBox(
                     width: 16,
                     height: 16,

@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:nextbid_demo/shared/services/jss_composer.dart";
-import "../services/app_state.dart";
+import 'package:nextbid_demo/shared/services/app_state.dart';
 
 class ValidationBanner extends StatelessWidget {
   const ValidationBanner({super.key});
@@ -14,10 +14,10 @@ class ValidationBanner extends StatelessWidget {
         if (v.ok) {
           return Card(
             color: Colors.green.withAlpha(18),
-            child: ListTile(
-              leading: const Icon(Icons.check_circle, color: Colors.green),
-              title: const Text("All good"),
-              subtitle: const Text("Within limits and syntax looks valid."),
+            child: const ListTile(
+              leading: Icon(Icons.check_circle, color: Colors.green),
+              title: Text("All good"),
+              subtitle: Text("Within limits and syntax looks valid."),
             ),
           );
         }

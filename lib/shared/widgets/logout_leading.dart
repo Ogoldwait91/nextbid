@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
-import "../services/auth_state.dart";
+import 'package:nextbid_demo/shared/services/auth_state.dart';
 
 class LogoutLeading extends StatelessWidget {
   const LogoutLeading({super.key});

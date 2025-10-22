@@ -1,13 +1,13 @@
 import 'dart:convert';
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
-import "../../shared/services/auth_state.dart";
-import "../../shared/services/profile_state.dart";
-import "../../shared/services/privacy_state.dart";
-import "../../shared/widgets/logout_leading.dart";
-import "../../shared/widgets/faq_accordion.dart";
-import "../../shared/utils/input_formatters.dart";
-import "../../shared/services/api_client.dart";
+import 'package:nextbid_demo/shared/services/auth_state.dart';
+import 'package:nextbid_demo/shared/services/profile_state.dart';
+import 'package:nextbid_demo/shared/services/privacy_state.dart';
+import 'package:nextbid_demo/shared/widgets/logout_leading.dart';
+import 'package:nextbid_demo/shared/widgets/faq_accordion.dart';
+import 'package:nextbid_demo/shared/utils/input_formatters.dart';
+import 'package:nextbid_demo/shared/services/api_client.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

@@ -3,13 +3,13 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
 import "package:nextbid_demo/shared/services/jss_composer.dart";
-import "../../shared/widgets/logout_leading.dart";
+import 'package:nextbid_demo/shared/widgets/logout_leading.dart';
 
 class PreviewPage extends StatelessWidget {
   const PreviewPage({super.key});
 
   Future<void> _copy(BuildContext context) async {
-    final text = composeJssText(windowsEol: true);
+    final text = composeJssText();
     await Clipboard.setData(ClipboardData(text: text));
     if (context.mounted) {
       ScaffoldMessenger.of(
@@ -19,7 +19,7 @@ class PreviewPage extends StatelessWidget {
   }
 
   Future<void> _export(BuildContext context) async {
-    final text = composeJssText(windowsEol: true);
+    final text = composeJssText();
     try {
       Directory? dir = await getDownloadsDirectory();
       dir ??= await getApplicationDocumentsDirectory();

@@ -27,11 +27,11 @@ class ReserveBlocksCalendar extends StatelessWidget {
     final y = int.tryParse(parts[0]) ?? DateTime.now().year;
     final m =
         int.tryParse(parts.length > 1 ? parts[1] : "") ?? DateTime.now().month;
-    return DateTime(y, m, 1);
+    return DateTime(y, m);
   }
 
   int _daysInMonth(DateTime d) {
-    final firstNext = DateTime(d.year, d.month + 1, 1);
+    final firstNext = DateTime(d.year, d.month + 1);
     return firstNext.subtract(const Duration(days: 1)).day;
   }
 
@@ -139,9 +139,9 @@ class ReserveBlocksCalendar extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Weekday header (Mon..Sun)
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 _Dow("Mon"),
                 _Dow("Tue"),
                 _Dow("Wed"),

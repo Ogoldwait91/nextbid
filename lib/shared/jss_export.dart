@@ -1,4 +1,3 @@
-import "dart:convert";
 import "dart:io";
 
 /// Build JSS text with CRLF (\r\n) line endings.
@@ -25,7 +24,7 @@ Future<File> saveJssText({
 }) async {
   final pathSep = Platform.pathSeparator;
   final file = File("${directory.path}$pathSep$filename");
-  return file.writeAsString(content, mode: FileMode.write, encoding: utf8);
+  return file.writeAsString(content);
 }
 
 /// Ensure CRLF line endings with a trailing CRLF (JSS-friendly).

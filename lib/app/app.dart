@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'router.dart';
-import 'theme.dart';
+import 'package:nextbid_demo/app/router.dart';
+import 'package:nextbid_demo/app/theme.dart';
 
 class NextBidApp extends StatelessWidget {
   const NextBidApp({super.key});
@@ -12,7 +12,6 @@ class NextBidApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
       routerConfig: router,
     );
   }

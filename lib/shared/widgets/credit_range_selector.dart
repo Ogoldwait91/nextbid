@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "../services/app_state.dart";
+import 'package:nextbid_demo/shared/services/app_state.dart';
 
 class CreditRangeSelector extends StatelessWidget {
   final CreditPref value;
