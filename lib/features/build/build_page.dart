@@ -30,7 +30,9 @@ class BuildBidPage extends StatelessWidget {
                           .map(
                             (e) => Padding(
                               padding: const EdgeInsets.only(bottom: 6),
-                              child: Text("ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $e"),
+                              child: Text(
+                                "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $e",
+                              ),
                             ),
                           )
                           .toList(),
@@ -114,7 +116,9 @@ class BuildBidPage extends StatelessWidget {
                                         padding: const EdgeInsets.only(
                                           bottom: 6,
                                         ),
-                                        child: Text("ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $e"),
+                                        child: Text(
+                                          "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $e",
+                                        ),
                                       ),
                                     )
                                     .toList(),

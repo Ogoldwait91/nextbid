@@ -42,7 +42,7 @@ class ExportHistoryPage extends StatelessWidget {
               final kb = (stat.size / 1024).toStringAsFixed(1);
               return ListTile(
                 title: Text(name),
-                subtitle: Text("${stat.modified}  Ã¢â‚¬Â¢  ${kb}KB"),
+                subtitle: Text("${stat.modified}  ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢  ${kb}KB"),
                 trailing: IconButton(
                   icon: const Icon(Icons.folder_open),
                   onPressed: () {

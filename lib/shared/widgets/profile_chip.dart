@@ -23,10 +23,11 @@ class ProfileChip extends StatelessWidget {
                 .toUpperCase();
 
         final line2 = () {
-          final base = "${profileState.rank} Ã¢â‚¬Â¢ ${profileState.crewCode}";
+          final base =
+              "${profileState.rank} ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${profileState.crewCode}";
           if (profileState.seniority != null &&
               profileState.cohortSize != null) {
-            return "$base Ã¢â‚¬Â¢ SNR ${profileState.seniority}/${profileState.cohortSize}";
+            return "$base ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ SNR ${profileState.seniority}/${profileState.cohortSize}";
           }
           return base;
         }();
