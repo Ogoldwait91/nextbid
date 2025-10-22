@@ -8,8 +8,12 @@ import hashlib
 import json
 import re
 
-app = FastAPI(title="NextBid API", version="0.0.1")
+from .routes.bid import router as bid_router
 
+app = FastAPI(title="NextBid API", version="0.0.1")
+app.include_router(bid_router)
+
+app.include_router(bid_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # dev-friendly; tighten later
@@ -322,10 +326,15 @@ print("[paths] CALDIR", CALDIR)
 def healthz():
     return {"status": "ok"}
 
-from app.routes import bid
-
-app.include_router(bid.router)
+app.include_router(bid_router)
 @app.get("/healthz")
 def healthz():
     return {"ok": True, "service": "nextbid-api"}
+
+
+
+
+
+
+
 
