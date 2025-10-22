@@ -41,8 +41,10 @@ class ValidationBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 ...preview.map(
-                  (e) =>
-                      Text("â€¢ $e", style: const TextStyle(color: Colors.red)),
+                  (e) => Text(
+                    "Ã¢â‚¬Â¢ $e",
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
                 if (v.errors.length > preview.length) const SizedBox(height: 8),
                 if (v.errors.length > preview.length)
@@ -51,7 +53,7 @@ class ValidationBanner extends StatelessWidget {
                     child: TextButton(
                       onPressed: () => _showAll(context, v.errors),
                       child: Text(
-                        "View ${v.errors.length - preview.length} moreâ€¦",
+                        "View ${v.errors.length - preview.length} moreÃ¢â‚¬Â¦",
                       ),
                     ),
                   ),
@@ -77,7 +79,7 @@ class ValidationBanner extends StatelessWidget {
                         .map(
                           (e) => Padding(
                             padding: const EdgeInsets.only(bottom: 6),
-                            child: Text("â€¢ $e"),
+                            child: Text("Ã¢â‚¬Â¢ $e"),
                           ),
                         )
                         .toList(),

@@ -27,7 +27,7 @@ class TopPairingsTile extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   SizedBox(width: 12),
-                  Text("Loading pairingsâ€¦"),
+                  Text("Loading pairingsÃ¢â‚¬Â¦"),
                 ],
               ),
             ),
@@ -41,7 +41,7 @@ class TopPairingsTile extends StatelessWidget {
                 children: [
                   const Icon(Icons.error, color: Colors.red),
                   const SizedBox(width: 8),
-                  const Expanded(child: Text("Canâ€™t load pairings")),
+                  const Expanded(child: Text("CanÃ¢â‚¬â„¢t load pairings")),
                   TextButton(
                     onPressed: () {
                       (context as Element).markNeedsBuild();
@@ -73,7 +73,7 @@ class TopPairingsTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Top Pairings â€¢ $safeMonth",
+                  "Top Pairings Ã¢â‚¬Â¢ $safeMonth",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
@@ -83,7 +83,9 @@ class TopPairingsTile extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: Text(p["id"]?.toString() ?? "â€”")),
+                        Expanded(
+                          child: Text(p["id"]?.toString() ?? "Ã¢â‚¬â€"),
+                        ),
                         Text("${p["credit"] ?? "?"}h"),
                       ],
                     ),

@@ -78,9 +78,9 @@ class _AnonymisedInsightsTileState extends State<AnonymisedInsightsTile> {
               Text("Error: $error", style: const TextStyle(color: Colors.red)),
             if (privacyConsent.value && data != null)
               Text(
-                "P20: ${data!["percentiles"]["p20"]} â€¢ "
-                "P50: ${data!["percentiles"]["p50"]} â€¢ "
-                "P80: ${data!["percentiles"]["p80"]} â€¢ "
+                "P20: ${data!["percentiles"]["p20"]} Ã¢â‚¬Â¢ "
+                "P50: ${data!["percentiles"]["p50"]} Ã¢â‚¬Â¢ "
+                "P80: ${data!["percentiles"]["p80"]} Ã¢â‚¬Â¢ "
                 "n=${data!["bid_count"]}",
               ),
           ],

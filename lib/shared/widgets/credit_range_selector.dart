@@ -20,7 +20,7 @@ class CreditRangeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final rangeText =
         (min != null && max != null)
-            ? "Range: $minâ€“$max${def != null ? "  â€¢  default $def" : ""}"
+            ? "Range: $minÃ¢â‚¬â€œ$max${def != null ? "  Ã¢â‚¬Â¢  default $def" : ""}"
             : null;
 
     return Card(

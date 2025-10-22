@@ -12,7 +12,9 @@ class BidGroupEditor extends StatelessWidget {
           builder:
               (_) => AlertDialog(
                 title: const Text("Delete group?"),
-                content: Text("Are you sure you want to delete â€œ$nameâ€?"),
+                content: Text(
+                  "Are you sure you want to delete Ã¢â‚¬Å“$nameÃ¢â‚¬Â?",
+                ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
@@ -129,7 +131,7 @@ class BidGroupEditor extends StatelessWidget {
                                   decoration: const InputDecoration(
                                     labelText: "Row",
                                     helperText:
-                                        "Allowed: Aâ€“Z 0â€“9 _ + - . , / : \\ (â‰¤80)",
+                                        "Allowed: AÃ¢â‚¬â€œZ 0Ã¢â‚¬â€œ9 _ + - . , / : \\ (Ã¢â€°Â¤80)",
                                     counterText: "",
                                   ),
                                   onChanged:
@@ -173,7 +175,7 @@ class BidGroupEditor extends StatelessWidget {
                         v.errors
                             .map(
                               (e) => Text(
-                                "â€¢ $e",
+                                "Ã¢â‚¬Â¢ $e",
                                 style: const TextStyle(color: Colors.red),
                               ),
                             )
