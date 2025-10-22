@@ -1,44 +1,45 @@
-﻿name: CI (light)
-
+﻿name: ci
 on:
-  push:
-  pull_request:
+  push: { branches: [ main ] }
+  pull_request: { branches: [ main ] }
 
 jobs:
-  api-check:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install API deps
-        if: hashFiles('api/requirements.txt') != ''
-        run: pip install -r requirements.txt
-      - name: API sanity
-        run: python - << 'PY'
-print("API folder present; deps installed (if any).")
-PY
-
-  flutter-analyze:
+  flutter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - name: Pub get (best effort)
+        with: { flutter-version: "3.x" }
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: flutter analyze
+      - run: flutter test
+
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest -q
+
+  export-crlf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: fail if any .jss lines are not CRLF
         run: |
-          if [ -f "pubspec.yaml" ]; then
-            flutter pub get || true
-          fi
-      - name: Analyze (best effort)
-        run: |
-          if [ -f "pubspec.yaml" ]; then
-            flutter analyze || true
-          else
-            echo "No Flutter project at repo root; skipping."
-          fi
+          # ensure files exist before check; skip if none
+          set -e
+          if ! ls -1 **/*.jss 2>/dev/null; then echo "no .jss to check"; exit 0; fi
+          python - <<'PY'
+import sys,glob
+bad=[]
+for f in glob.glob('**/*.jss',recursive=True):
+    with open(f,'rb') as fp:
+        data=fp.read()
+    if b'\r\n' not in data: bad.append(f)
+if bad:
+    print("Non-CRLF files:",bad); sys.exit(1)
+PY

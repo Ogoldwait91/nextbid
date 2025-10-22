@@ -1,4 +1,4 @@
-﻿import "dart:convert";
+import "dart:convert";
 import "dart:io";
 import "package:nextbid_demo/utils/file_naming.dart";
 
@@ -11,8 +11,14 @@ Future<File> exportRawTextAuto({
 }) async {
   // normalise line endings to CRLF with trailing CRLF
   final lf = text.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-  final crlf = lf.replaceAll("\n", "\r\n") + (lf.isEmpty ? "" : (lf.endsWith("\n") ? "" : "\r\n"));
-  final file = await nextExportFilePath(crew: crew, month: month, baseDir: baseDir);
+  final crlf =
+      lf.replaceAll("\n", "\r\n") +
+      (lf.isEmpty ? "" : (lf.endsWith("\n") ? "" : "\r\n"));
+  final file = await nextExportFilePath(
+    crew: crew,
+    month: month,
+    baseDir: baseDir,
+  );
   await file.writeAsBytes(utf8.encode(crlf), flush: true);
   return file;
 }

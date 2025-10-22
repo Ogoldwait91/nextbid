@@ -1,8 +1,8 @@
-﻿import "package:shared_preferences/shared_preferences.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 class SettingsService {
   static const _kProtectBank = "protectBank";
-  static const _kLastCredit  = "lastCredit";
+  static const _kLastCredit = "lastCredit";
 
   Future<bool> getProtectBank() async {
     final p = await SharedPreferences.getInstance();

@@ -1,9 +1,13 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 
 class ValidateBanner extends StatelessWidget {
   final List<dynamic> errors;
   final List<dynamic> warnings;
-  const ValidateBanner({super.key, required this.errors, required this.warnings});
+  const ValidateBanner({
+    super.key,
+    required this.errors,
+    required this.warnings,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +23,20 @@ class ValidateBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Errors", style: TextStyle(color: Colors.red.shade800, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Errors",
+                    style: TextStyle(
+                      color: Colors.red.shade800,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 6),
-                  ...errors.map((e) => Text("• $e", style: TextStyle(color: Colors.red.shade800))),
+                  ...errors.map(
+                    (e) => Text(
+                      "• $e",
+                      style: TextStyle(color: Colors.red.shade800),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -34,9 +49,20 @@ class ValidateBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Warnings", style: TextStyle(color: Colors.amber.shade800, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Warnings",
+                    style: TextStyle(
+                      color: Colors.amber.shade800,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 6),
-                  ...warnings.map((w) => Text("• $w", style: TextStyle(color: Colors.amber.shade800))),
+                  ...warnings.map(
+                    (w) => Text(
+                      "• $w",
+                      style: TextStyle(color: Colors.amber.shade800),
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -1,4 +1,4 @@
-﻿import "dart:convert";
+import "dart:convert";
 import "package:http/http.dart" as http;
 
 class ApiClient {
@@ -7,7 +7,7 @@ class ApiClient {
 
   Future<Map<String, dynamic>> validateBid(String text) async {
     final uri = Uri.parse("$base/bid/validate");
-    final res  = await http.post(
+    final res = await http.post(
       uri,
       headers: {"Content-Type": "application/json; charset=utf-8"},
       body: jsonEncode({"text": text}),

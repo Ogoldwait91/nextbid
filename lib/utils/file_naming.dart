@@ -1,4 +1,4 @@
-﻿import "dart:io";
+import "dart:io";
 import "package:path/path.dart" as p;
 
 /// Compute the next export file path with pattern:
@@ -36,5 +36,4 @@ Future<File> nextExportFilePath({
   return File(p.join(dir.path, filename));
 }
 
-String _yyyyMm(DateTime d) =>
-    "${d.year}-${d.month.toString().padLeft(2, "0")}";
+String _yyyyMm(DateTime d) => "${d.year}-${d.month.toString().padLeft(2, "0")}";

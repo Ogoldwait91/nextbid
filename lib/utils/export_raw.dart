@@ -1,4 +1,4 @@
-﻿import "dart:convert";
+import "dart:convert";
 import "dart:io";
 import "package:path/path.dart" as p;
 
@@ -10,7 +10,10 @@ Future<File> exportRawText(String filename, String text) async {
     await dir.create(recursive: true);
   }
   // Normalise endings to CRLF for safety
-  final crlf = text.replaceAll("\r\n", "\n").replaceAll("\r", "\n").replaceAll("\n", "\r\n");
+  final crlf = text
+      .replaceAll("\r\n", "\n")
+      .replaceAll("\r", "\n")
+      .replaceAll("\n", "\r\n");
   final file = File(p.join(dir.path, filename));
   await file.writeAsBytes(utf8.encode(crlf));
   return file;

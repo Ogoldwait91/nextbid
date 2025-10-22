@@ -1,4 +1,4 @@
-﻿import "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:nextbid_demo/shared/services/validate_client.dart";
 import "package:nextbid_demo/shared/widgets/validate_banner.dart";
 
@@ -24,20 +24,25 @@ class _ValidateSectionState extends State<ValidateSection> {
   Future<void> _validate() async {
     setState(() => _busy = true);
     try {
-      const base = String.fromEnvironment("NEXTBID_API", defaultValue: "http://127.0.0.1:8000");
-      final api  = ApiClient(base);
-      final res  = await api.validateBid(_currentText());
+      const base = String.fromEnvironment(
+        "NEXTBID_API",
+        defaultValue: "http://127.0.0.1:8000",
+      );
+      final api = ApiClient(base);
+      final res = await api.validateBid(_currentText());
       setState(() => _validateResult = res);
       final ok = (res["ok"] as bool?) ?? false;
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(ok ? "Validation OK" : "Validation issues found"))
+        SnackBar(
+          content: Text(ok ? "Validation OK" : "Validation issues found"),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Validate failed: $e"))
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Validate failed: $e")));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -56,7 +61,11 @@ class _ValidateSectionState extends State<ValidateSection> {
         if (_busy)
           const Padding(
             padding: EdgeInsets.only(top: 8),
-            child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
           ),
         if (_validateResult != null)
           Padding(

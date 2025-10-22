@@ -1,2 +1,3 @@
 ﻿# Keep JSS exports as text with Windows CRLF endings
 *.jss text eol=crlf
+*.jss text eol=crlf
