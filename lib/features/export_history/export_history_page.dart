@@ -1,4 +1,4 @@
-import "dart:io";
+﻿import "dart:io";
 import "package:flutter/material.dart";
 import "package:path/path.dart" as p;
 
@@ -42,7 +42,7 @@ class ExportHistoryPage extends StatelessWidget {
               final kb = (stat.size / 1024).toStringAsFixed(1);
               return ListTile(
                 title: Text(name),
-                subtitle: Text("${stat.modified}  •  ${kb}KB"),
+                subtitle: Text("${stat.modified}  â€¢  ${kb}KB"),
                 trailing: IconButton(
                   icon: const Icon(Icons.folder_open),
                   onPressed: () {

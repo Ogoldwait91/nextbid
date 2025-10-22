@@ -1,4 +1,4 @@
-import "package:flutter/widgets.dart";
+﻿import "package:flutter/widgets.dart";
 
 // Vertical gaps
 const gap8 = SizedBox(height: 8);

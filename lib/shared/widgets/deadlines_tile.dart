@@ -25,7 +25,7 @@ class DeadlinesTile extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   SizedBox(width: 12),
-                  Text("Loading deadlines…"),
+                  Text("Loading deadlinesÃ¢â‚¬Â¦"),
                 ],
               ),
             ),
@@ -39,7 +39,9 @@ class DeadlinesTile extends StatelessWidget {
                 children: [
                   const Icon(Icons.error, color: Colors.red),
                   const SizedBox(width: 8),
-                  Expanded(child: Text("Can’t load deadlines: ${snap.error}")),
+                  Expanded(
+                    child: Text("CanÃ¢â‚¬â„¢t load deadlines: ${snap.error}"),
+                  ),
                 ],
               ),
             ),
@@ -70,7 +72,7 @@ class DeadlinesTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Deadlines • $safeMonth",
+                  "Deadlines Ã¢â‚¬Â¢ $safeMonth",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
@@ -80,8 +82,10 @@ class DeadlinesTile extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: Text(s["name"]?.toString() ?? "—")),
-                        Text(s["date"]?.toString() ?? "—"),
+                        Expanded(
+                          child: Text(s["name"]?.toString() ?? "Ã¢â‚¬â€"),
+                        ),
+                        Text(s["date"]?.toString() ?? "Ã¢â‚¬â€"),
                       ],
                     ),
                   ),

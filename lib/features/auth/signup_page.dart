@@ -24,7 +24,7 @@ class _SignupPageState extends State<SignupPage> {
   Future<void> _submit() async {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
-    await Future.delayed(
+    await Future<void>.delayed(
       const Duration(milliseconds: 400),
     ); // note: real signup
     if (!mounted) return;

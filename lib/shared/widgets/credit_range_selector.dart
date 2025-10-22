@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+﻿import "package:flutter/material.dart";
 import "../services/app_state.dart";
 
 class CreditRangeSelector extends StatelessWidget {
@@ -20,7 +20,7 @@ class CreditRangeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final rangeText =
         (min != null && max != null)
-            ? "Range: $min–$max${def != null ? "  •  default $def" : ""}"
+            ? "Range: $minâ€“$max${def != null ? "  â€¢  default $def" : ""}"
             : null;
 
     return Card(

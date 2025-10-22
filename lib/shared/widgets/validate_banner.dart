@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+﻿import "package:flutter/material.dart";
 
 class ValidateBanner extends StatelessWidget {
   final List<dynamic> errors;
@@ -33,7 +33,7 @@ class ValidateBanner extends StatelessWidget {
                   const SizedBox(height: 6),
                   ...errors.map(
                     (e) => Text(
-                      "• $e",
+                      "â€¢ $e",
                       style: TextStyle(color: Colors.red.shade800),
                     ),
                   ),
@@ -59,7 +59,7 @@ class ValidateBanner extends StatelessWidget {
                   const SizedBox(height: 6),
                   ...warnings.map(
                     (w) => Text(
-                      "• $w",
+                      "â€¢ $w",
                       style: TextStyle(color: Colors.amber.shade800),
                     ),
                   ),

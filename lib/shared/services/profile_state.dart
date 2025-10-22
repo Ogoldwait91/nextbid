@@ -1,4 +1,4 @@
-import "package:flutter/foundation.dart";
+﻿import "package:flutter/foundation.dart";
 
 class ProfileState extends ChangeNotifier {
   String name = "Your Name";

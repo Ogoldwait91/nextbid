@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+﻿import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 import "../services/profile_state.dart";
 
@@ -23,10 +23,10 @@ class ProfileChip extends StatelessWidget {
                 .toUpperCase();
 
         final line2 = () {
-          final base = "${profileState.rank} • ${profileState.crewCode}";
+          final base = "${profileState.rank} â€¢ ${profileState.crewCode}";
           if (profileState.seniority != null &&
               profileState.cohortSize != null) {
-            return "$base • SNR ${profileState.seniority}/${profileState.cohortSize}";
+            return "$base â€¢ SNR ${profileState.seniority}/${profileState.cohortSize}";
           }
           return base;
         }();

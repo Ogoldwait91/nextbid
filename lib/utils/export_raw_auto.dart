@@ -1,4 +1,4 @@
-import "dart:convert";
+﻿import "dart:convert";
 import "dart:io";
 import "package:nextbid_demo/utils/file_naming.dart";
 

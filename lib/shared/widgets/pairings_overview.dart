@@ -32,7 +32,9 @@ class PairingsOverview extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 6),
-            Text("Count: $total • Avg credit: ${avgCredit.toStringAsFixed(1)}"),
+            Text(
+              "Count: $total Ã¢â‚¬Â¢ Avg credit: ${avgCredit.toStringAsFixed(1)}",
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -42,7 +44,7 @@ class PairingsOverview extends StatelessWidget {
                       .take(3)
                       .map(
                         (e) => Chip(
-                          label: Text("${e.key} • ${e.value}"),
+                          label: Text("${e.key} Ã¢â‚¬Â¢ ${e.value}"),
                           visualDensity: VisualDensity.compact,
                         ),
                       )
@@ -62,7 +64,9 @@ class PairingsOverview extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.flight_takeoff),
                   title: Text("$id"),
-                  subtitle: Text("Credit $cr • $ngt night(s) • $rg"),
+                  subtitle: Text(
+                    "Credit $cr Ã¢â‚¬Â¢ $ngt night(s) Ã¢â‚¬Â¢ $rg",
+                  ),
                 );
               }),
           ],

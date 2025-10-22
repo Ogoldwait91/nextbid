@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+﻿import "package:flutter/material.dart";
 import "../services/api_client.dart";
 import "../services/privacy_state.dart"; // your ValueNotifier<bool> privacyConsent
 // if you prefer to pull currentMonth here
@@ -78,9 +78,9 @@ class _AnonymisedInsightsTileState extends State<AnonymisedInsightsTile> {
               Text("Error: $error", style: const TextStyle(color: Colors.red)),
             if (privacyConsent.value && data != null)
               Text(
-                "P20: ${data!["percentiles"]["p20"]} • "
-                "P50: ${data!["percentiles"]["p50"]} • "
-                "P80: ${data!["percentiles"]["p80"]} • "
+                "P20: ${data!["percentiles"]["p20"]} â€¢ "
+                "P50: ${data!["percentiles"]["p50"]} â€¢ "
+                "P80: ${data!["percentiles"]["p80"]} â€¢ "
                 "n=${data!["bid_count"]}",
               ),
           ],

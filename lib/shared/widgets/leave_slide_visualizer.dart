@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+﻿import "package:flutter/material.dart";
 
 class LeaveSlideVisualizer extends StatelessWidget {
   final int value; // -3..+3

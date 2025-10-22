@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _busy = true);
 
     // note: replace with real auth
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future<void>.delayed(const Duration(milliseconds: 400));
 
     if (!mounted) return;
     // Mark user as logged in -> router redirect will now allow /dashboard

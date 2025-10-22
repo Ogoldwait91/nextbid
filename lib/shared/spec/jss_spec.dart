@@ -1,4 +1,4 @@
-class JssSpec {
+﻿class JssSpec {
   static const int maxGroups = 15;
   static const int maxRows = 40;
 

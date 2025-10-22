@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+﻿import "package:flutter/material.dart";
 import "../services/app_state.dart";
 import "package:nextbid_demo/shared/services/jss_composer.dart";
 import "../utils/input_formatters.dart";
@@ -12,7 +12,7 @@ class BidGroupEditor extends StatelessWidget {
           builder:
               (_) => AlertDialog(
                 title: const Text("Delete group?"),
-                content: Text("Are you sure you want to delete “$name”?"),
+                content: Text("Are you sure you want to delete â€œ$nameâ€?"),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
@@ -129,7 +129,7 @@ class BidGroupEditor extends StatelessWidget {
                                   decoration: const InputDecoration(
                                     labelText: "Row",
                                     helperText:
-                                        "Allowed: A–Z 0–9 _ + - . , / : \\ (≤80)",
+                                        "Allowed: Aâ€“Z 0â€“9 _ + - . , / : \\ (â‰¤80)",
                                     counterText: "",
                                   ),
                                   onChanged:
@@ -173,7 +173,7 @@ class BidGroupEditor extends StatelessWidget {
                         v.errors
                             .map(
                               (e) => Text(
-                                "• $e",
+                                "â€¢ $e",
                                 style: const TextStyle(color: Colors.red),
                               ),
                             )

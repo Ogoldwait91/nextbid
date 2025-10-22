@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class NBHeatmap extends StatelessWidget {
   final List<List<int>> data; // 0..4 intensity
