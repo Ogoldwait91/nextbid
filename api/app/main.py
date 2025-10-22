@@ -328,3 +328,4 @@ app.include_router(bid.router)
 @app.get("/healthz")
 def healthz():
     return {"ok": True, "service": "nextbid-api"}
+
