@@ -4,22 +4,36 @@
   [string]$Crew = "USER",
   [switch]$AutoSeq
 )
-)
-
+# Load default crew from local config if not explicitly provided
+try {
+  $cfgPath = Join-Path $PSScriptRoot "config.json"
+  if ($Crew -eq "USER" -and (Test-Path $cfgPath)) {
+    $cfg = Get-Content -Raw $cfgPath | ConvertFrom-Json
+    if ($cfg.crew) { $Crew = "$($cfg.crew)" }
+  }
+} catch {}
 $docRoot = Join-Path $env:USERPROFILE "Documents\NextBid"
 New-Item -ItemType Directory -Force -Path $docRoot | Out-Null
 
-$target = if ($AutoSeq) {
-  & "$PSScriptRoot\next-seq.ps1" -Month $Month -Crew $Crew -Dir $docRoot
+# Choose target file path
+if ($AutoSeq) {
+  $target = & "$PSScriptRoot\next-seq.ps1" -Month $Month -Crew $Crew -Dir $docRoot
 } else {
-  Join-Path $docRoot ("nextbid_{0}_{1}.jss" -f $Crew, $Month)
+  $target = Join-Path $docRoot ("nextbid_{0}_{1}.jss" -f $Crew, $Month)
+# Load default crew from local config if not explicitly provided
+try {
+  $cfgPath = Join-Path $PSScriptRoot "config.json"
+  if ($Crew -eq "USER" -and (Test-Path $cfgPath)) {
+    $cfg = Get-Content -Raw $cfgPath | ConvertFrom-Json
+    if ($cfg.crew) { $Crew = "$($cfg.crew)" }
+  }
+} catch {}
 }
 
 function To-Crlf([string]$text) {
-  # Normalise all endings to LF, then join as CRLF
+  # Normalize to LF then to CRLF, and ensure trailing CRLF for non-empty files
   $lf = $text -replace "`r`n", "`n" -replace "`r", "`n"
   $crlf = ($lf -split "`n") -join "`r`n"
-  # Ensure trailing CRLF so checks see at least one line ending if content exists
   if ($crlf.Length -gt 0 -and -not $crlf.EndsWith("`r`n")) { $crlf += "`r`n" }
   return $crlf
 }
@@ -40,17 +54,39 @@ $crlf = To-Crlf $raw
 
 # Write as UTF-8 (no BOM) with CRLF — WinPS-safe
 $enc = [System.Text.UTF8Encoding]::new($false)
+# Load default crew from local config if not explicitly provided
+try {
+  $cfgPath = Join-Path $PSScriptRoot "config.json"
+  if ($Crew -eq "USER" -and (Test-Path $cfgPath)) {
+    $cfg = Get-Content -Raw $cfgPath | ConvertFrom-Json
+    if ($cfg.crew) { $Crew = "$($cfg.crew)" }
+  }
+} catch {}
 [System.IO.File]::WriteAllText($target, $crlf, $enc)
-
+# Load default crew from local config if not explicitly provided
+try {
+  $cfgPath = Join-Path $PSScriptRoot "config.json"
+  if ($Crew -eq "USER" -and (Test-Path $cfgPath)) {
+    $cfg = Get-Content -Raw $cfgPath | ConvertFrom-Json
+    if ($cfg.crew) { $Crew = "$($cfg.crew)" }
+  }
+} catch {}
 Write-Host "Saved preview:" -ForegroundColor Green
 Write-Host " $target"
 
-# Sanity: show first 3 lines
+# Show first 3 lines
 (Get-Content -TotalCount 3 -Path $target) | ForEach-Object { "  " + $_ }
 
-# Robust CRLF detection
+# Count CRLFs
 $bytes = [IO.File]::ReadAllBytes($target)
-# Count CRLF pairs
+# Load default crew from local config if not explicitly provided
+try {
+  $cfgPath = Join-Path $PSScriptRoot "config.json"
+  if ($Crew -eq "USER" -and (Test-Path $cfgPath)) {
+    $cfg = Get-Content -Raw $cfgPath | ConvertFrom-Json
+    if ($cfg.crew) { $Crew = "$($cfg.crew)" }
+  }
+} catch {}
 $crlfCount = 0
 for ($i=0; $i -lt $bytes.Length-1; $i++) { if ($bytes[$i] -eq 13 -and $bytes[$i+1] -eq 10) { $crlfCount++ } }
 if ($crlfCount -gt 0) {
