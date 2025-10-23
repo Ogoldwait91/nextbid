@@ -33,7 +33,7 @@ class ValidateBanner extends StatelessWidget {
                   const SizedBox(height: 6),
                   ...errors.map(
                     (e) => Text(
-                      "ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $e",
+                      "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $e",
                       style: TextStyle(color: Colors.red.shade800),
                     ),
                   ),
@@ -59,7 +59,7 @@ class ValidateBanner extends StatelessWidget {
                   const SizedBox(height: 6),
                   ...warnings.map(
                     (w) => Text(
-                      "ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ $w",
+                      "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $w",
                       style: TextStyle(color: Colors.amber.shade800),
                     ),
                   ),

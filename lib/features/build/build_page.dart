@@ -12,10 +12,10 @@ import 'package:nextbid_demo/shared/services/app_state.dart';
 class BuildBidPage extends StatelessWidget {
   const BuildBidPage({super.key});
 
-  bool _preflight(BuildContext context) {
+  Future<bool> _preflight(BuildContext context) async {
     final v = validateBid();
     if (v.ok) return true;
-    showDialog<void>(
+    await showDialog<void>(
       context: context,
       builder:
           (buildCtx) => AlertDialog(
@@ -31,7 +31,7 @@ class BuildBidPage extends StatelessWidget {
                             (e) => Padding(
                               padding: const EdgeInsets.only(bottom: 6),
                               child: Text(
-                                "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $e",
+                                "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ $e",
                               ),
                             ),
                           )
@@ -51,7 +51,7 @@ class BuildBidPage extends StatelessWidget {
   }
 
   Future<void> _copy(BuildContext context) async {
-    if (!_preflight(context)) return;
+    if (!(await _preflight(context))) return;
     final text = composeJssText();
     await Clipboard.setData(ClipboardData(text: text));
     if (context.mounted) {
@@ -62,7 +62,7 @@ class BuildBidPage extends StatelessWidget {
   }
 
   Future<void> _export(BuildContext context) async {
-    if (!_preflight(context)) return;
+    if (!(await _preflight(context))) return;
     final text = composeJssText();
     try {
       Directory? dir = await getDownloadsDirectory();
@@ -93,8 +93,12 @@ class BuildBidPage extends StatelessWidget {
       final res = await api.validateBidServer(text);
       if (!context.mounted) return;
       final ok = res["ok"] == true;
-      final List errs = (res["errors"] as List?) ?? [];
-      showDialog<void>(
+      final List<String> errs =
+          (res['errors'] as List?)
+              ?.map((e) => e.toString())
+              .toList(growable: false) ??
+          const <String>[];
+      await showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(
@@ -117,7 +121,7 @@ class BuildBidPage extends StatelessWidget {
                                           bottom: 6,
                                         ),
                                         child: Text(
-                                          "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $e",
+                                          "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ $e",
                                         ),
                                       ),
                                     )
@@ -135,7 +139,7 @@ class BuildBidPage extends StatelessWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      showDialog<void>(
+      await showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(
@@ -158,7 +162,7 @@ class BuildBidPage extends StatelessWidget {
     try {
       final res = await api.exportBidServer(text);
       if (!context.mounted) return;
-      showDialog<void>(
+      await showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(
@@ -176,7 +180,7 @@ class BuildBidPage extends StatelessWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      showDialog<void>(
+      await showDialog<void>(
         context: context,
         builder:
             (buildCtx) => AlertDialog(

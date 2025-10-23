@@ -47,7 +47,7 @@ final lightTheme = ThemeData(
       ),
     ),
   ),
-  // Make indicatorColor const by using ARGB (Ã¢â€°Ë†20% alpha BA navy)
+  // Make indicatorColor const by using ARGB (ÃƒÂ¢Ã¢â‚¬Â°Ã‹â€ 20% alpha BA navy)
   navigationBarTheme: const NavigationBarThemeData(
     backgroundColor: Colors.white,
     indicatorColor: Color(0x330E1A2B),

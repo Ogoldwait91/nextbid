@@ -1,4 +1,4 @@
-/// Typed bid commands ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ single JSS lines via toJss().
+/// Typed bid commands ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ single JSS lines via toJss().
 abstract class BidCommand {
   String toJss();
 }
@@ -46,6 +46,6 @@ class RawJssLine implements BidCommand {
   String toJss() => line;
 }
 
-/// Utility: map commands ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ non-empty JSS lines
+/// Utility: map commands ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ non-empty JSS lines
 List<String> commandsToLines(List<BidCommand> commands) =>
     commands.map((c) => c.toJss().trim()).where((s) => s.isNotEmpty).toList();

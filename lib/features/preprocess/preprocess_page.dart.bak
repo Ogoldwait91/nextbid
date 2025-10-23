@@ -417,7 +417,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
                   _reserve = v;
                 });
                 await _syncState();
-                if (v) await _fetchReserves();
+                if (v) _fetchReserves();
               },
             ),
           ),

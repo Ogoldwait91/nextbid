@@ -14,7 +14,7 @@ class LogoutLeading extends StatelessWidget {
         return IconButton(
           icon: const Icon(Icons.logout),
           tooltip: "Sign out",
-          onPressed: () {
+          onPressed: () async {
             authState.value = false;
             context.go("/login");
           },

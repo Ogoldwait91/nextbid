@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final data = await _api.privacyDownload();
       if (!mounted) return;
-      showDialog<void>(
+      await showDialog<void>(
         context: context,
         builder:
             (ctx) => AlertDialog(
@@ -97,7 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final res = await _api.privacyDelete();
       if (!mounted) return;
       final ok = res["ok"] == true;
-      showDialog<void>(
+      await showDialog<void>(
         context: context,
         builder:
             (ctx) => AlertDialog(
@@ -245,8 +245,8 @@ class _ProfilePageState extends State<ProfilePage> {
               secondary: IconButton(
                 icon: const Icon(Icons.info_outline),
                 tooltip: "More info",
-                onPressed: () {
-                  showModalBottomSheet<void>(
+                onPressed: () async {
+                  await showModalBottomSheet<void>(
                     context: context,
                     isScrollControlled: true,
                     showDragHandle: true,
@@ -296,7 +296,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: FilledButton.icon(
               icon: const Icon(Icons.logout),
               label: const Text("Sign out"),
-              onPressed: () {
+              onPressed: () async {
                 authState.value = false;
                 context.go("/login");
               },

@@ -1,7 +1,7 @@
 import "package:nextbid_demo/shared/spec/jss_spec.dart";
 import "package:nextbid_demo/shared/services/app_state.dart";
 
-/// Allowed row grammar: AÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“Z, 0ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“9, space, _ + - . , / : ( ) # = and backslash
+/// Allowed row grammar: AÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œZ, 0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ9, space, _ + - . , / : ( ) # = and backslash
 final RegExp _rowRe = RegExp(r'^[A-Z0-9 _+\-.,/:()#=\\]{1,80}$');
 
 class BidValidation {
