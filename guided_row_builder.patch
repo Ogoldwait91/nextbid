@@ -1,0 +1,238 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@
+ class BidGroupEditor extends StatelessWidget {
+   const BidGroupEditor({super.key});
+ 
++  // Opens a bottom-sheet to guide a pilot through building a JSS command row.
++  Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
++    String cmdType = 'AWARD';
++    String waiveOption = 'INDUSTRIAL REST';
++    String setOption = 'MAX WP LENGTH';
++
++    final tripCtl = TextEditingController();
++    final dateCtl = TextEditingController();
++    final poolCtl = TextEditingController(text: 'L--');
++    final limitCtl = TextEditingController();
++    final valueCtl = TextEditingController();
++
++    String toUpperNonEmpty(String s) => s.trim().toUpperCase();
++
++    await showModalBottomSheet(
++      context: context,
++      isScrollControlled: true,
++      builder: (ctx) {
++        return Padding(
++          padding: EdgeInsets.only(
++            left: 16,
++            right: 16,
++            top: 16,
++            bottom: 16 + MediaQuery.of(ctx).viewInsets.bottom,
++          ),
++          child: StatefulBuilder(
++            builder: (context, setState) {
++              return SingleChildScrollView(
++                child: Column(
++                  mainAxisSize: MainAxisSize.min,
++                  crossAxisAlignment: CrossAxisAlignment.stretch,
++                  children: [
++                    Text('Add Bid Command',
++                        style: Theme.of(context).textTheme.titleMedium),
++                    const SizedBox(height: 12),
++                    // Command type
++                    DropdownButtonFormField<String>(
++                      value: cmdType,
++                      decoration:
++                          const InputDecoration(labelText: 'Command Type'),
++                      items: const [
++                        DropdownMenuItem(value: 'AWARD', child: Text('AWARD')),
++                        DropdownMenuItem(value: 'AVOID', child: Text('AVOID')),
++                        DropdownMenuItem(value: 'WAIVE', child: Text('WAIVE')),
++                        DropdownMenuItem(value: 'SET', child: Text('SET')),
++                      ],
++                      onChanged: (v) => setState(() => cmdType = v ?? 'AWARD'),
++                    ),
++                    const SizedBox(height: 12),
++
++                    // WAIVE
++                    if (cmdType == 'WAIVE') ...[
++                      DropdownButtonFormField<String>(
++                        value: waiveOption,
++                        decoration:
++                            const InputDecoration(labelText: 'Waive Option'),
++                        items: const [
++                          DropdownMenuItem(
++                              value: 'INDUSTRIAL REST',
++                              child: Text('Industrial Rest')),
++                          DropdownMenuItem(
++                              value: 'EASA REST',
++                              child: Text('EASA Rest')),
++                          DropdownMenuItem(value: 'DFW', child: Text('Relax DFW')),
++                          DropdownMenuItem(value: 'FDO', child: Text('Relax FDO')),
++                          DropdownMenuItem(value: 'NA', child: Text('Relax NA')),
++                          DropdownMenuItem(value: 'PD1', child: Text('Relax PD1')),
++                          DropdownMenuItem(value: 'PD2', child: Text('Relax PD2')),
++                          DropdownMenuItem(value: 'WR', child: Text('Relax WR')),
++                        ],
++                        onChanged: (v) => setState(() => waiveOption = v ?? waiveOption),
++                      ),
++                    ]
++
++                    // SET
++                    else if (cmdType == 'SET') ...[
++                      DropdownButtonFormField<String>(
++                        value: setOption,
++                        decoration:
++                            const InputDecoration(labelText: 'Set Option'),
++                        items: const [
++                          DropdownMenuItem(
++                              value: 'MAX WP LENGTH',
++                              child: Text('Max WP length (days)')),
++                          DropdownMenuItem(
++                              value: 'MAX WP COUNT',
++                              child: Text('Max WP count')),
++                          DropdownMenuItem(
++                              value: 'MIN DAYS OFF',
++                              child: Text('Min days off between WPs')),
++                          DropdownMenuItem(
++                              value: 'REPORT TIME',
++                              child: Text('Working period report time (HHMM)')),
++                          DropdownMenuItem(
++                              value: 'RELEASE TIME',
++                              child: Text('Working period release time (HHMM)')),
++                          DropdownMenuItem(
++                              value: 'MAX NIGHTS AWAY',
++                              child: Text('Max nights away')),
++                        ],
++                        onChanged: (v) => setState(() => setOption = v ?? setOption),
++                      ),
++                      const SizedBox(height: 8),
++                      TextFormField(
++                        controller: valueCtl,
++                        decoration: InputDecoration(
++                          labelText: setOption.contains('TIME')
++                              ? 'Value (HHMM)'
++                              : 'Value',
++                          hintText: setOption.contains('TIME') ? '1300' : 'e.g. 4',
++                        ),
++                      ),
++                    ]
++
++                    // AWARD / AVOID
++                    else ...[
++                      TextFormField(
++                        controller: tripCtl,
++                        decoration: const InputDecoration(
++                          labelText: 'Trip Property',
++                          hintText: 'e.g. TI7L11-005',
++                        ),
++                      ),
++                      const SizedBox(height: 8),
++                      TextFormField(
++                        controller: dateCtl,
++                        decoration: const InputDecoration(
++                          labelText: 'Date Range (optional)',
++                          hintText: 'e.g. 06NOV-10NOV or Mon-Fri',
++                        ),
++                      ),
++                      const SizedBox(height: 8),
++                      DropdownButtonFormField<String>(
++                        value: poolCtl.text.isNotEmpty ? poolCtl.text : 'L--',
++                        decoration:
++                            const InputDecoration(labelText: 'Trip Pool (optional)'),
++                        items: const [
++                          DropdownMenuItem(value: 'L--', child: Text('L--')),
++                          DropdownMenuItem(value: 'L-', child: Text('L-')),
++                          DropdownMenuItem(value: 'L', child: Text('L')),
++                          DropdownMenuItem(value: '+/-', child: Text('+/-')),
++                          DropdownMenuItem(value: 'H', child: Text('H')),
++                          DropdownMenuItem(value: 'H+', child: Text('H+')),
++                          DropdownMenuItem(value: 'H++', child: Text('H++')),
++                        ],
++                        onChanged: (v) => setState(() => poolCtl.text = v ?? ''),
++                      ),
++                      const SizedBox(height: 8),
++                      if (cmdType == 'AWARD')
++                        TextFormField(
++                          controller: limitCtl,
++                          decoration: const InputDecoration(
++                            labelText: 'Limit (optional)',
++                            hintText: 'e.g. 3',
++                          ),
++                        ),
++                    ],
++
++                    const SizedBox(height: 16),
++                    Row(
++                      mainAxisAlignment: MainAxisAlignment.end,
++                      children: [
++                        TextButton(
++                          onPressed: () => Navigator.pop(ctx),
++                          child: const Text('Cancel'),
++                        ),
++                        const SizedBox(width: 8),
++                        FilledButton(
++                          onPressed: () {
++                            String rowText = '';
++                            if (cmdType == 'WAIVE') {
++                              rowText = 'WAIVE ';
++                            } else if (cmdType == 'SET') {
++                              final val = toUpperNonEmpty(valueCtl.text);
++                              if (val.isEmpty) {
++                                ScaffoldMessenger.of(context).showSnackBar(
++                                  const SnackBar(content: Text('Please enter a value')),
++                                );
++                                return;
++                              }
++                              rowText = 'SET  ';
++                            } else {
++                              final trip = toUpperNonEmpty(tripCtl.text);
++                              if (trip.isEmpty) {
++                                ScaffoldMessenger.of(context).showSnackBar(
++                                  const SnackBar(
++                                      content: Text('Please enter a trip property')),
++                                );
++                                return;
++                              }
++                              final date = toUpperNonEmpty(dateCtl.text);
++                              final pool = toUpperNonEmpty(poolCtl.text);
++                              final limit = toUpperNonEmpty(limitCtl.text);
++                              rowText = ' ';
++                              if (date.isNotEmpty) rowText += ' ';
++                              if (pool.isNotEmpty) rowText += ' ';
++                              if (cmdType == 'AWARD' && limit.isNotEmpty) {
++                                rowText += ' ';
++                              }
++                            }
++                            Navigator.of(ctx).pop(rowText);
++                          },
++                          child: const Text('Add'),
++                        ),
++                      ],
++                    ),
++                  ],
++                ),
++              );
++            },
++          ),
++        );
++      },
++    ).then((result) {
++      if (result is String && result.trim().isNotEmpty) {
++        appState.addRow(groupIndex, result.trim().toUpperCase());
++      }
++    });
++  }
+@@
+-                        FilledButton.icon(
+-                          onPressed: appState.totalRows >= 40
+-                              ? null
+-                              : () => appState.addRow(gi),
++                        FilledButton.icon(
++                          onPressed: appState.totalRows >= 40
++                              ? null
++                              : () => _addRowGuided(context, gi),
+                           icon: const Icon(Icons.add),
+                           label: const Text("Add row"),
+                         ),
+*** End Patch

@@ -1,0 +1,31 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/services/jss_composer.dart
+@@
+ List<String> validateBid(AppState state) {
+   final errors = <String>[];
+   final totalRows = state.totalRows;
+   if (totalRows > 40) {
+     errors.add('Too many bid rows (). Max 40.');
+   }
++
++  // Enforce max 7 WAIVE and max 6 SET across the bid (per aide memoire)
++  int waiveCount = 0;
++  int setCount = 0;
++  for (final g in state.groups) {
++    for (final r in g.rows) {
++      final u = r.text.trim().toUpperCase();
++      if (u.startsWith('WAIVE ')) waiveCount++;
++      if (u.startsWith('SET ')) setCount++;
++    }
++  }
++  if (waiveCount > 7) {
++    errors.add('Too many WAIVE bids (). Max 7.');
++  }
++  if (setCount > 6) {
++    errors.add('Too many SET bids (). Max 6.');
++  }
+@@
+   // existing checks...
+   return errors;
+ }
+*** End Patch
