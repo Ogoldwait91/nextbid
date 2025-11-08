@@ -1,0 +1,82 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@
+-  // Guided “Add row” — bottom sheet to compose a valid JSS command line
++  // Guided “Add row” — centered Dialog to compose a valid JSS command line
+   Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
+@@
+-    final String? result = await showModalBottomSheet<String?>(
+-      context: context,
+-      isScrollControlled: true,
+-      builder: (ctx) {
+-        return Padding(
+-          padding: EdgeInsets.only(
+-            left: 16,
+-            right: 16,
+-            top: 16,
+-            bottom: 16 + MediaQuery.of(ctx).viewInsets.bottom,
+-          ),
+-          child: StatefulBuilder(
+-            builder: (context, setSt) {
+-              return SingleChildScrollView(
+-                child: Column(
+-                  mainAxisSize: MainAxisSize.min,
+-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+-                  children: [
++    final String? result = await showDialog<String?>(
++      context: context,
++      barrierDismissible: false,
++      builder: (dialogCtx) {
++        return Center(
++          child: ConstrainedBox(
++            constraints: const BoxConstraints(maxWidth: 520),
++            child: Dialog(
++              insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
++              child: Padding(
++                padding: EdgeInsets.only(
++                  left: 16,
++                  right: 16,
++                  top: 16,
++                  bottom: 16 + MediaQuery.of(dialogCtx).viewInsets.bottom,
++                ),
++                child: StatefulBuilder(
++                  builder: (context, setSt) {
++                    return SingleChildScrollView(
++                      child: Column(
++                        mainAxisSize: MainAxisSize.min,
++                        crossAxisAlignment: CrossAxisAlignment.stretch,
++                        children: [
+@@
+-                        TextButton(
+-                          onPressed: () => Navigator.of(ctx).pop(),
++                        TextButton(
++                          onPressed: () => Navigator.of(dialogCtx).pop(),
+                           child: const Text('Cancel'),
+                         ),
+                         const SizedBox(width: 8),
+                         FilledButton(
+                           onPressed: () {
+@@
+-                            Navigator.of(ctx).pop(rowText);
++                            Navigator.of(dialogCtx).pop(rowText);
+                           },
+                           child: const Text('Add'),
+                         ),
+                       ],
+-                    ),
+-                  ],
+-                ),
+-              );
+-            },
+-          ),
+-        );
++                    ),
++                  ],
++                ),
++              ),
++            ),
++          ),
++        );
+       },
+     );
+*** End Patch
