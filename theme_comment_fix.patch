@@ -1,0 +1,6 @@
+﻿*** Begin Patch
+*** Update File: lib/app/theme.dart
+@@
+-  // Make indicatorColor const by using ARGB (ÃƒÂ¢Ã¢â‚¬Â°Ã‹â€ 20% alpha BA navy)
++  // Make indicatorColor const by using ARGB (20% alpha BA navy)
+*** End Patch

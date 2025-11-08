@@ -1,5 +1,5 @@
-import "package:flutter/material.dart";
-import "package:go_router/go_router.dart";
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nextbid_demo/shared/services/profile_state.dart';
 
 class ProfileChip extends StatelessWidget {
@@ -11,29 +11,28 @@ class ProfileChip extends StatelessWidget {
       animation: profileState,
       builder: (context, _) {
         final n = profileState.name.trim();
+
+        // Build two-letter initials from the name (defaults to "NB")
         final initials =
             (n.isEmpty
-                    ? "NB"
+                    ? 'NB'
                     : n
-                        .split(RegExp(r"\\s+"))
+                        .split(RegExp(r'\s+')) // split on whitespace
                         .where((w) => w.isNotEmpty)
                         .map((w) => w[0])
                         .take(2)
                         .join())
                 .toUpperCase();
 
-        final line2 = () {
-          final base =
-              "${profileState.rank} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ ${profileState.crewCode}";
-          if (profileState.seniority != null &&
-              profileState.cohortSize != null) {
-            return "$base ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ SNR ${profileState.seniority}/${profileState.cohortSize}";
-          }
-          return base;
-        }();
+        // Secondary line under the name: "RANK • CREWCODE [• SNR X/Y]"
+        final base = '${profileState.rank} • ${profileState.crewCode}';
+        final line2 =
+            (profileState.seniority != null && profileState.cohortSize != null)
+                ? '$base • SNR ${profileState.seniority}/${profileState.cohortSize}'
+                : base;
 
         return InkWell(
-          onTap: () => context.go("/profile"),
+          onTap: () => context.go('/profile'),
           borderRadius: BorderRadius.circular(999),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -50,7 +49,7 @@ class ProfileChip extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    n.isEmpty ? "Unnamed Pilot" : n,
+                    n.isEmpty ? 'Unnamed Pilot' : n,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

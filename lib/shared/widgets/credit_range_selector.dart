@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 import 'package:nextbid_demo/shared/services/app_state.dart';
 
 class CreditRangeSelector extends StatelessWidget {
@@ -7,6 +7,7 @@ class CreditRangeSelector extends StatelessWidget {
   final int? min;
   final int? max;
   final int? def;
+
   const CreditRangeSelector({
     super.key,
     required this.value,
@@ -18,9 +19,10 @@ class CreditRangeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rangeText =
+    // Clean range text: "Range: min – max • default X"
+    final String? rangeText =
         (min != null && max != null)
-            ? "Range: $minÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ$max${def != null ? "  ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢  default $def" : ""}"
+            ? 'Range: $min – $max${def != null ? ' • default $def' : ''}'
             : null;
 
     return Card(
@@ -29,24 +31,24 @@ class CreditRangeSelector extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Credit Preference"),
+            const Text('Credit Preference'),
             const SizedBox(height: 8),
             SegmentedButton<CreditPref>(
               segments: const [
-                ButtonSegment(
+                ButtonSegment<CreditPref>(
                   value: CreditPref.low,
                   icon: Icon(Icons.trending_down),
-                  label: Text("Low"),
+                  label: Text('Low'),
                 ),
-                ButtonSegment(
+                ButtonSegment<CreditPref>(
                   value: CreditPref.neutral,
                   icon: Icon(Icons.drag_handle),
-                  label: Text("Neutral"),
+                  label: Text('Neutral'),
                 ),
-                ButtonSegment(
+                ButtonSegment<CreditPref>(
                   value: CreditPref.high,
                   icon: Icon(Icons.trending_up),
-                  label: Text("High"),
+                  label: Text('High'),
                 ),
               ],
               selected: {value},

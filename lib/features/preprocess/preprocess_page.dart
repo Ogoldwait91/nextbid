@@ -16,6 +16,9 @@ class PreProcessPage extends StatefulWidget {
 
 class _PreProcessPageState extends State<PreProcessPage> {
   Future<void> _export() async {
+    // Capture before any await so we don't use context across async gaps
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       final lines = buildJss(
         leaveDays: _useLeave ? _leave : 0,
@@ -35,14 +38,12 @@ class _PreProcessPageState extends State<PreProcessPage> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Exported: ${saved.path}')));
+      messenger.showSnackBar(
+        SnackBar(content: Text('Exported: ${saved.path}')),
+      );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+      messenger.showSnackBar(SnackBar(content: Text('Export failed: $e')));
     }
   }
 
@@ -389,7 +390,7 @@ class _PreProcessPageState extends State<PreProcessPage> {
                 _resIndex = 0;
               });
               await _syncState();
-              if (!mounted) return;
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Reset to defaults")),
               );
