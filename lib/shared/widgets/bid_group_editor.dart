@@ -3,6 +3,8 @@ import 'package:nextbid_demo/shared/services/app_state.dart';
 import 'package:nextbid_demo/shared/services/jss_composer.dart';
 import 'package:nextbid_demo/shared/utils/input_formatters.dart';
 
+import 'package:nextbid_demo/shared/widgets/roster_preview_panel.dart';
+
 class BidGroupEditor extends StatelessWidget {
   const BidGroupEditor({super.key});
 
@@ -80,6 +82,44 @@ class BidGroupEditor extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: FilledButton.icon(
+                              onPressed:
+                                  () => showDialog(
+                                    context: context,
+                                    builder:
+                                        (ctx) => Center(
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(
+                                              maxWidth: 960,
+                                            ),
+                                            child: Dialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              insetPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 24,
+                                                  ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  12,
+                                                ),
+                                                child:
+                                                    const RosterPreviewPanel(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                  ),
+                              icon: const Icon(Icons.visibility),
+                              label: const Text('Preview (Beta)'),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
 
                           // Command type
                           DropdownButtonFormField<String>(
@@ -109,6 +149,44 @@ class BidGroupEditor extends StatelessWidget {
                                 (v) => setSt(() {
                                   cmdType = v ?? 'AWARD';
                                 }),
+                          ),
+                          const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: FilledButton.icon(
+                              onPressed:
+                                  () => showDialog(
+                                    context: context,
+                                    builder:
+                                        (ctx) => Center(
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(
+                                              maxWidth: 960,
+                                            ),
+                                            child: Dialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              insetPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 24,
+                                                  ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  12,
+                                                ),
+                                                child:
+                                                    const RosterPreviewPanel(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                  ),
+                              icon: const Icon(Icons.visibility),
+                              label: const Text('Preview (Beta)'),
+                            ),
                           ),
                           const SizedBox(height: 12),
 
@@ -475,6 +553,37 @@ class BidGroupEditor extends StatelessWidget {
                   label: const Text('Add group'),
                 ),
               ],
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.icon(
+                onPressed:
+                    () => showDialog(
+                      context: context,
+                      builder:
+                          (ctx) => Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 960),
+                              child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                insetPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 24,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: const RosterPreviewPanel(),
+                                ),
+                              ),
+                            ),
+                          ),
+                    ),
+                icon: const Icon(Icons.visibility),
+                label: const Text('Preview (Beta)'),
+              ),
             ),
             const SizedBox(height: 12),
             ...List.generate(appState.groups.length, (gi) {
