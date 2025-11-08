@@ -1,0 +1,391 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@
+-  // Guided “Add row” — centered dialog with segmented commands, chips & validation
+-  Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
+-    String cmdType = 'AWARD';
+-    String waiveOption = 'INDUSTRIAL REST';
+-    String setOption = 'MAX WP LENGTH';
+-
+-    final tripCtl = TextEditingController();
+-    final dateCtl = TextEditingController();
+-    final poolCtl = TextEditingController(text: 'L--');
+-    final limitCtl = TextEditingController();
+-    final valueCtl = TextEditingController();
+-
+-    String up(String s) => s.trim().toUpperCase();
+-
+-    final String? result = await showDialog<String?>(
+-      context: context,
+-      barrierDismissible: false,
+-      builder: (ctx) {
+-        return Dialog(
+-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+-          child: ConstrainedBox(
+-            constraints: const BoxConstraints(maxWidth: 520),
+-            child: Padding(
+-              padding: const EdgeInsets.all(16),
+-              child: StatefulBuilder(
+-                builder: (context, setSt) {
+-                  return SingleChildScrollView(
+-                    child: Column(
+-                      mainAxisSize: MainAxisSize.min,
+-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+-                      children: [
++  // Guided “Add row” — improved floating dialog for bid commands
++  Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
++    String cmdType = 'AWARD';
++    String waiveOption = 'INDUSTRIAL REST';
++    String setOption = 'MAX WP LENGTH';
++    final tripCtl  = TextEditingController();
++    final dateCtl  = TextEditingController();
++    final poolSelection = ValueNotifier<String>('L--');
++    final limitCtl = TextEditingController();
++    final valueCtl = TextEditingController();
++    final selectedDays = <String>{};
++    final formKey  = GlobalKey<FormState>();
++
++    String up(String s) => s.trim().toUpperCase();
++
++    final String? result = await showDialog<String?>(
++      context: context,
++      barrierDismissible: false,
++      builder: (dialogCtx) {
++        return Center(
++          child: ConstrainedBox(
++            constraints: const BoxConstraints(maxWidth: 520),
++            child: Dialog(
++              child: Padding(
++                padding: const EdgeInsets.all(16),
++                child: StatefulBuilder(
++                  builder: (ctx, setState) {
++                    void update(void Function() fn) {
++                      setState(() => fn());
++                    }
++                    return SingleChildScrollView(
++                      child: Form(
++                        key: formKey,
++                        onChanged: () => setState(() {}),
++                        child: Column(
++                          mainAxisSize: MainAxisSize.min,
++                          crossAxisAlignment: CrossAxisAlignment.stretch,
++                          children: [
++                            Row(
++                              children: [
++                                Text('Add Command',
++                                    style: Theme.of(context).textTheme.titleMedium),
++                                const Spacer(),
++                                IconButton(
++                                  icon: const Icon(Icons.close),
++                                  onPressed: () => Navigator.of(dialogCtx).pop(),
++                                )
++                              ],
++                            ),
++                            const SizedBox(height: 8),
++                            // Command selector
++                            SegmentedButton<String>(
++                              segments: const [
++                                ButtonSegment(value: 'AWARD', label: Text('Award')),
++                                ButtonSegment(value: 'AVOID', label: Text('Avoid')),
++                                ButtonSegment(value: 'WAIVE', label: Text('Waive')),
++                                ButtonSegment(value: 'SET',   label: Text('Set')),
++                              ],
++                              selected: {cmdType},
++                              onSelectionChanged: (s) => update(() => cmdType = s.first),
++                            ),
++                            const SizedBox(height: 16),
++                            if (cmdType == 'WAIVE') ...[
++                              Text('Waive option',
++                                  style: Theme.of(context).textTheme.labelLarge),
++                              DropdownButtonFormField<String>(
++                                initialValue: waiveOption,
++                                decoration: const InputDecoration(
++                                  labelText: 'Waive Option',
++                                ),
++                                items: const [
++                                  DropdownMenuItem(
++                                    value: 'INDUSTRIAL REST',
++                                    child: Text('Industrial Rest'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'EASA REST',
++                                    child: Text('EASA Rest'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'DFW',
++                                    child: Text('Relax DFW'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'FDO',
++                                    child: Text('Relax FDO'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'NA',
++                                    child: Text('Relax NA'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'PD1',
++                                    child: Text('Relax PD1'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'PD2',
++                                    child: Text('Relax PD2'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'WR',
++                                    child: Text('Relax WR'),
++                                  ),
++                                ],
++                                onChanged: (v) =>
++                                    update(() => waiveOption = v ?? waiveOption),
++                              ),
++                            ] else if (cmdType == 'SET') ...[
++                              Text('Set option',
++                                  style: Theme.of(context).textTheme.labelLarge),
++                              DropdownButtonFormField<String>(
++                                initialValue: setOption,
++                                decoration: const InputDecoration(
++                                  labelText: 'Set Option',
++                                ),
++                                items: const [
++                                  DropdownMenuItem(
++                                    value: 'MAX WP LENGTH',
++                                    child: Text('Max WP length (days)'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'MAX WP COUNT',
++                                    child: Text('Max WP count'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'MIN DAYS OFF',
++                                    child: Text('Min days off between WPs'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'REPORT TIME',
++                                    child: Text('Report time (HHMM)'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'RELEASE TIME',
++                                    child: Text('Release time (HHMM)'),
++                                  ),
++                                  DropdownMenuItem(
++                                    value: 'MAX NIGHTS AWAY',
++                                    child: Text('Max nights away'),
++                                  ),
++                                ],
++                                onChanged: (v) =>
++                                    update(() => setOption = v ?? setOption),
++                              ),
++                              const SizedBox(height: 8),
++                              TextFormField(
++                                controller: valueCtl,
++                                decoration: InputDecoration(
++                                  labelText: setOption.contains('TIME')
++                                      ? 'Value (HHMM)'
++                                      : 'Value',
++                                  hintText:
++                                      setOption.contains('TIME') ? '1300' : 'e.g. 4',
++                                ),
++                                validator: (_) {
++                                  if (cmdType != 'SET') return null;
++                                  final t = valueCtl.text.trim();
++                                  if (t.isEmpty) return 'Enter value';
++                                  if (setOption.contains('TIME')) {
++                                    return RegExp(r'^\\d{3,4}\$').hasMatch(t)
++                                        ? null
++                                        : 'Use HHMM (e.g. 1300)';
++                                  }
++                                  return RegExp(r'^\\d+\$').hasMatch(t)
++                                      ? null
++                                      : 'Use a whole number';
++                                },
++                              ),
++                            ] else ...[
++                              Text('Trip command',
++                                  style: Theme.of(context).textTheme.labelLarge),
++                              Autocomplete<String>(
++                                optionsBuilder: (textEditingValue) {
++                                  final input = textEditingValue.text.toUpperCase();
++                                  if (input.isEmpty) {
++                                    return const Iterable<String>.empty();
++                                  }
++                                  const opts = [
++                                    'TI7L11-005','TI7L11-006',
++                                    'TI7L12-001','TI7L12-002',
++                                    'TI7L13-003',
++                                  ];
++                                  return opts.where((o) => o.contains(input));
++                                },
++                                onSelected: (sel) => update(() => tripCtl.text = sel),
++                                fieldViewBuilder:
++                                    (ctx, textController, focusNode, onFieldSubmitted) {
++                                  return TextFormField(
++                                    controller: textController,
++                                    focusNode: focusNode,
++                                    decoration: const InputDecoration(
++                                      labelText: 'Trip Property',
++                                      hintText: 'e.g. TI7L11-005',
++                                    ),
++                                    validator: (_) {
++                                      if (cmdType == 'AWARD' || cmdType == 'AVOID') {
++                                        return textController.text.trim().isEmpty
++                                            ? 'Trip property is required'
++                                            : null;
++                                      }
++                                      return null;
++                                    },
++                                  );
++                                },
++                              ),
++                              const SizedBox(height: 8),
++                              Text('Date Range',
++                                  style: Theme.of(context).textTheme.labelLarge),
++                              TextFormField(
++                                controller: dateCtl,
++                                decoration: const InputDecoration(
++                                  labelText: 'Date Range (optional)',
++                                  hintText: '06NOV-10NOV',
++                                ),
++                              ),
++                              const SizedBox(height: 8),
++                              Wrap(
++                                spacing: 4,
++                                children: [
++                                  for (final day in
++                                      ['MON','TUE','WED','THU','FRI','SAT','SUN'])
++                                    FilterChip(
++                                      label: Text(day),
++                                      selected: selectedDays.contains(day),
++                                      onSelected: (sel) {
++                                        update(() {
++                                          if (sel) {
++                                            selectedDays.add(day);
++                                          } else {
++                                            selectedDays.remove(day);
++                                          }
++                                        });
++                                      },
++                                    ),
++                                ],
++                              ),
++                              const SizedBox(height: 8),
++                              ValueListenableBuilder<String>(
++                                valueListenable: poolSelection,
++                                builder: (ctx, value, _) {
++                                  return SegmentedButton<String>(
++                                    segments: const [
++                                      ButtonSegment(value: 'H++', label: Text('H++')),
++                                      ButtonSegment(value: 'H+',  label: Text('H+')),
++                                      ButtonSegment(value: 'H',   label: Text('H')),
++                                      ButtonSegment(value: 'N',   label: Text('N')),
++                                      ButtonSegment(value: 'L',   label: Text('L')),
++                                      ButtonSegment(value: 'L-',  label: Text('L-')),
++                                      ButtonSegment(value: 'L--', label: Text('L--')),
++                                    ],
++                                    selected: {value},
++                                    onSelectionChanged: (s) =>
++                                        update(() => poolSelection.value = s.first),
++                                  );
++                                },
++                              ),
++                              const SizedBox(height: 8),
++                              if (cmdType == 'AWARD')
++                                TextFormField(
++                                  controller: limitCtl,
++                                  decoration: const InputDecoration(
++                                    labelText: 'Limit (optional)',
++                                    hintText: 'e.g. 3',
++                                  ),
++                                  validator: (_) {
++                                    if (cmdType != 'AWARD') return null;
++                                    final t = limitCtl.text.trim();
++                                    if (t.isEmpty) return null;
++                                    return RegExp(r'^\\d+\$').hasMatch(t)
++                                        ? null
++                                        : 'Use a whole number';
++                                  },
++                                ),
++                            ],
++                            const SizedBox(height: 16),
++                            Row(
++                              mainAxisAlignment: MainAxisAlignment.end,
++                              children: [
++                                TextButton(
++                                  onPressed: () => Navigator.of(dialogCtx).pop(),
++                                  child: const Text('Cancel'),
++                                ),
++                                const SizedBox(width: 8),
++                                FilledButton(
++                                  onPressed: formKey.currentState?.validate() == true
++                                      ? () {
++                                          String rowText = '';
++                                          if (cmdType == 'WAIVE') {
++                                            rowText = 'WAIVE ';
++                                          } else if (cmdType == 'SET') {
++                                            rowText =
++                                                'SET  ';
++                                          } else {
++                                            final trip  = up(tripCtl.text);
++                                            final date  = up(dateCtl.text);
++                                            final pool  = poolSelection.value;
++                                            final limit = up(limitCtl.text);
++                                            rowText = ' ';
++                                            if (selectedDays.isNotEmpty) {
++                                              rowText += ' ';
++                                            }
++                                            if (date.isNotEmpty) rowText += ' ';
++                                            if (pool.isNotEmpty) rowText += ' ';
++                                            if (cmdType == 'AWARD' && limit.isNotEmpty) {
++                                              rowText += ' ';
++                                            }
++                                          }
++                                          Navigator.of(dialogCtx).pop(rowText.trim());
++                                        }
++                                      : null,
++                                  child: const Text('Add'),
++                                ),
++                              ],
++                            ),
++                          ],
++                        ),
++                      ),
++                    );
+                   },
+                 ),
+               ),
+             ),
+           ),
+         );
+       },
+     );
+ 
+-    if (result != null && result.trim().isNotEmpty) {
+-      appState.addRow(groupIndex, result.trim().toUpperCase());
+-    }
++    if (result != null && result.trim().isNotEmpty) {
++      appState.addRow(groupIndex);
++      final newIndex = appState.groups[groupIndex].rows.length - 1;
++      appState.updateRow(groupIndex, newIndex, result.trim().toUpperCase());
++    }
+*** End Patch
+*** End Patch
+*** Update File: lib/shared/services/jss_composer.dart
+@@
+   // existing WAIVE/SET count checks...
++
++    // Roster commands (WAIVE/SET) must come before trip commands (AWARD/AVOID)
++    bool seenTripCommand = false;
++    for (final g in state.groups) {
++      for (final r in g.rows) {
++        final u = r.text.trim().toUpperCase();
++        if (u.startsWith('AWARD ') || u.startsWith('AVOID ')) {
++          seenTripCommand = true;
++        }
++        if ((u.startsWith('WAIVE ') || u.startsWith('SET ')) && seenTripCommand) {
++          errors.add('Roster (WAIVE/SET) commands must come before Award/Avoid commands.');
++          break;
++        }
++      }
++    }
+*** End Patch
+*** End Patch
