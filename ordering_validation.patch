@@ -1,0 +1,20 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/services/jss_composer.dart
+@@ List<String> validateBid(AppState state) {
++    // Roster commands must come before Trip commands
++    bool seenTripCommand = false;
++    for (final g in state.groups) {
++      for (final r in g.rows) {
++        final u = r.text.trim().toUpperCase();
++        if (u.startsWith('AWARD ') || u.startsWith('AVOID ')) {
++          seenTripCommand = true;
++        }
++        if ((u.startsWith('WAIVE ') || u.startsWith('SET ')) && seenTripCommand) {
++          errors.add(
++            'Roster (WAIVE/SET) commands must come before Award/Avoid commands.',
++          );
++          break;
++        }
++      }
++    }
+*** End Patch

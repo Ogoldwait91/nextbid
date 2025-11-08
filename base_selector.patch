@@ -1,0 +1,18 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@ else ...[
+                             const SizedBox(height: 8),
++                            Text('Report airport', style: Theme.of(context).textTheme.labelLarge),
++                            DropdownButtonFormField<String>(
++                              initialValue: selectedBase,
++                              decoration: const InputDecoration(
++                                labelText: 'Report Airport',
++                              ),
++                              items: const [
++                                DropdownMenuItem(value: 'ANY', child: Text('Any')),
++                                DropdownMenuItem(value: 'LGW', child: Text('LGW')),
++                                DropdownMenuItem(value: 'LHR', child: Text('LHR')),
++                              ],
++                              onChanged: (v) => setSt(() => selectedBase = v ?? selectedBase),
++                            ),
+*** End Patch
