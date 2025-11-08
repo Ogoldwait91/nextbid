@@ -1,0 +1,117 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@
+-  // Guided “Add row” — bottom sheet to compose a valid JSS command line
+-  Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
+-    String cmdType = 'AWARD';
+-    String waiveOption = 'INDUSTRIAL REST';
+-    String setOption = 'MAX WP LENGTH';
+-
+-    final tripCtl = TextEditingController();
+-    final dateCtl = TextEditingController();
+-    final poolCtl = TextEditingController(text: 'L--');
+-    final limitCtl = TextEditingController();
+-    final valueCtl = TextEditingController();
+-
+-    String up(String s) => s.trim().toUpperCase();
+-
+-    final String? result = await showModalBottomSheet<String?>(
+-      context: context,
+-      isScrollControlled: true,
+-      builder: (ctx) {
+-        return Padding(
+-          padding: EdgeInsets.only(
+-            left: 16,
+-            right: 16,
+-            top: 16,
+-            bottom: 16 + MediaQuery.of(ctx).viewInsets.bottom,
+-          ),
+-          child: StatefulBuilder(
+-            builder: (context, setSt) {
+-              return SingleChildScrollView(
+-                child: Column(
+-                  mainAxisSize: MainAxisSize.min,
+-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+-                  children: [
++  // Guided “Add row” — centered dialog to compose a valid JSS command line
++  Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
++    String cmdType = 'AWARD';
++    String waiveOption = 'INDUSTRIAL REST';
++    String setOption = 'MAX WP LENGTH';
++
++    final tripCtl = TextEditingController();
++    final dateCtl = TextEditingController();
++    final poolCtl = TextEditingController(text: 'L--');
++    final limitCtl = TextEditingController();
++    final valueCtl = TextEditingController();
++
++    String up(String s) => s.trim().toUpperCase();
++
++    final String? result = await showDialog<String?>(
++      context: context,
++      barrierDismissible: false,
++      builder: (ctx) {
++        return Dialog(
++          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
++          child: ConstrainedBox(
++            constraints: const BoxConstraints(maxWidth: 520),
++            child: Padding(
++              padding: const EdgeInsets.all(16),
++              child: StatefulBuilder(
++                builder: (context, setSt) {
++                  return SingleChildScrollView(
++                    child: Column(
++                      mainAxisSize: MainAxisSize.min,
++                      crossAxisAlignment: CrossAxisAlignment.stretch,
++                      children: [
+@@
+-                    Row(
+-                      mainAxisAlignment: MainAxisAlignment.end,
+-                      children: [
+-                        TextButton(
+-                          onPressed: () => Navigator.of(ctx).pop(),
+-                          child: const Text('Cancel'),
+-                        ),
+-                        const SizedBox(width: 8),
+-                        FilledButton(
+-                          onPressed: () {
++                    Row(
++                      mainAxisAlignment: MainAxisAlignment.end,
++                      children: [
++                        TextButton(
++                          onPressed: () => Navigator.of(ctx).pop(),
++                          child: const Text('Cancel'),
++                        ),
++                        const SizedBox(width: 8),
++                        FilledButton(
++                          onPressed: () {
+@@
+-                            Navigator.of(ctx).pop(rowText);
+-                          },
+-                          child: const Text('Add'),
+-                        ),
+-                      ],
+-                    ),
+-                  ],
+-                ),
+-              );
+-            },
+-          ),
+-        );
+-      },
+-    );
++                            Navigator.of(ctx).pop(rowText);
++                          },
++                          child: const Text('Add'),
++                        ),
++                      ],
++                    ),
++                  ],
++                ),
++              ),
++            ),
++          ),
++        );
++      },
++    );
+*** End Patch

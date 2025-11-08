@@ -1,6 +1,6 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 import 'package:nextbid_demo/shared/services/app_state.dart';
-import "package:nextbid_demo/shared/services/jss_composer.dart";
+import 'package:nextbid_demo/shared/services/jss_composer.dart';
 import 'package:nextbid_demo/shared/utils/input_formatters.dart';
 
 class BidGroupEditor extends StatelessWidget {
@@ -10,24 +10,286 @@ class BidGroupEditor extends StatelessWidget {
     return await showDialog<bool>(
           context: context,
           builder:
-              (_) => AlertDialog(
-                title: const Text("Delete group?"),
-                content: Text(
-                  "Are you sure you want to delete ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“$nameÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â?",
-                ),
+              (context) => AlertDialog(
+                title: const Text('Delete group?'),
+                content: Text('Are you sure you want to delete "$name"?'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: const Text("Cancel"),
+                    child: const Text('Cancel'),
                   ),
                   FilledButton(
                     onPressed: () => Navigator.pop(context, true),
-                    child: const Text("Delete"),
+                    child: const Text('Delete'),
                   ),
                 ],
               ),
         ) ??
         false;
+  }
+
+  // Guided “Add row” — bottom sheet to compose a valid JSS command line
+  Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
+    String cmdType = 'AWARD';
+    String waiveOption = 'INDUSTRIAL REST';
+    String setOption = 'MAX WP LENGTH';
+
+    final tripCtl = TextEditingController();
+    final dateCtl = TextEditingController();
+    final poolCtl = TextEditingController(text: 'L--');
+    final limitCtl = TextEditingController();
+    final valueCtl = TextEditingController();
+
+    String up(String s) => s.trim().toUpperCase();
+
+    final String? result = await showModalBottomSheet<String?>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: 16 + MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setSt) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Add Bid Command',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Command type
+                    DropdownButtonFormField<String>(
+                      initialValue: cmdType,
+                      decoration: const InputDecoration(
+                        labelText: 'Command Type',
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'AWARD', child: Text('AWARD')),
+                        DropdownMenuItem(value: 'AVOID', child: Text('AVOID')),
+                        DropdownMenuItem(value: 'WAIVE', child: Text('WAIVE')),
+                        DropdownMenuItem(value: 'SET', child: Text('SET')),
+                      ],
+                      onChanged: (v) => setSt(() => cmdType = v ?? 'AWARD'),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // WAIVE
+                    if (cmdType == 'WAIVE') ...[
+                      DropdownButtonFormField<String>(
+                        initialValue: waiveOption,
+                        decoration: const InputDecoration(
+                          labelText: 'Waive Option',
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'INDUSTRIAL REST',
+                            child: Text('Industrial Rest'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'EASA REST',
+                            child: Text('EASA Rest'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'DFW',
+                            child: Text('Relax DFW'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'FDO',
+                            child: Text('Relax FDO'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'NA',
+                            child: Text('Relax NA'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'PD1',
+                            child: Text('Relax PD1'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'PD2',
+                            child: Text('Relax PD2'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'WR',
+                            child: Text('Relax WR'),
+                          ),
+                        ],
+                        onChanged:
+                            (v) => setSt(() => waiveOption = v ?? waiveOption),
+                      ),
+                    ]
+                    // SET
+                    else if (cmdType == 'SET') ...[
+                      DropdownButtonFormField<String>(
+                        initialValue: setOption,
+                        decoration: const InputDecoration(
+                          labelText: 'Set Option',
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'MAX WP LENGTH',
+                            child: Text('Max WP length (days)'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'MAX WP COUNT',
+                            child: Text('Max WP count'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'MIN DAYS OFF',
+                            child: Text('Min days off between WPs'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'REPORT TIME',
+                            child: Text('Working period report time (HHMM)'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'RELEASE TIME',
+                            child: Text('Working period release time (HHMM)'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'MAX NIGHTS AWAY',
+                            child: Text('Max nights away'),
+                          ),
+                        ],
+                        onChanged:
+                            (v) => setSt(() => setOption = v ?? setOption),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: valueCtl,
+                        decoration: InputDecoration(
+                          labelText:
+                              setOption.contains('TIME')
+                                  ? 'Value (HHMM)'
+                                  : 'Value',
+                          hintText:
+                              setOption.contains('TIME') ? '1300' : 'e.g. 4',
+                        ),
+                      ),
+                    ]
+                    // AWARD / AVOID
+                    else ...[
+                      TextFormField(
+                        controller: tripCtl,
+                        decoration: const InputDecoration(
+                          labelText: 'Trip Property',
+                          hintText: 'e.g. TI7L11-005',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: dateCtl,
+                        decoration: const InputDecoration(
+                          labelText: 'Date Range (optional)',
+                          hintText: 'e.g. 06NOV-10NOV or Mon-Fri',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        initialValue:
+                            poolCtl.text.isNotEmpty ? poolCtl.text : 'L--',
+                        decoration: const InputDecoration(
+                          labelText: 'Trip Pool (optional)',
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'L--', child: Text('L--')),
+                          DropdownMenuItem(value: 'L-', child: Text('L-')),
+                          DropdownMenuItem(value: 'L', child: Text('L')),
+                          DropdownMenuItem(value: '+/-', child: Text('+/-')),
+                          DropdownMenuItem(value: 'H', child: Text('H')),
+                          DropdownMenuItem(value: 'H+', child: Text('H+')),
+                          DropdownMenuItem(value: 'H++', child: Text('H++')),
+                        ],
+                        onChanged: (v) => setSt(() => poolCtl.text = v ?? ''),
+                      ),
+                      const SizedBox(height: 8),
+                      if (cmdType == 'AWARD')
+                        TextFormField(
+                          controller: limitCtl,
+                          decoration: const InputDecoration(
+                            labelText: 'Limit (optional)',
+                            hintText: 'e.g. 3',
+                          ),
+                        ),
+                    ],
+
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                        const SizedBox(width: 8),
+                        FilledButton(
+                          onPressed: () {
+                            String rowText = '';
+                            if (cmdType == 'WAIVE') {
+                              rowText = 'WAIVE ${up(waiveOption)}';
+                            } else if (cmdType == 'SET') {
+                              final val = up(valueCtl.text);
+                              if (val.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Please enter a value'),
+                                  ),
+                                );
+                                return;
+                              }
+                              rowText = 'SET ${up(setOption)} $val';
+                            } else {
+                              final trip = up(tripCtl.text);
+                              if (trip.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter a trip property',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              final date = up(dateCtl.text);
+                              final pool = up(poolCtl.text);
+                              final limit = up(limitCtl.text);
+                              rowText = '$cmdType $trip';
+                              if (date.isNotEmpty) rowText += ' $date';
+                              if (pool.isNotEmpty) rowText += ' $pool';
+                              if (cmdType == 'AWARD' && limit.isNotEmpty) {
+                                rowText += ' $limit';
+                              }
+                            }
+                            Navigator.of(ctx).pop(rowText);
+                          },
+                          child: const Text('Add'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+
+    if (result != null && result.trim().isNotEmpty) {
+      // Add a new row and update its text
+      appState.addRow(groupIndex);
+      final newRowIndex = appState.groups[groupIndex].rows.length - 1;
+      appState.updateRow(groupIndex, newRowIndex, result.trim().toUpperCase());
+    }
   }
 
   @override
@@ -42,14 +304,14 @@ class BidGroupEditor extends StatelessWidget {
             Row(
               children: [
                 _Counter(
-                  label: "Groups",
+                  label: 'Groups',
                   value: appState.groups.length,
                   max: 15,
                   warn: appState.groups.length > 15,
                 ),
                 const SizedBox(width: 12),
                 _Counter(
-                  label: "Rows",
+                  label: 'Rows',
                   value: appState.totalRows,
                   max: 40,
                   warn: appState.totalRows > 40,
@@ -59,7 +321,7 @@ class BidGroupEditor extends StatelessWidget {
                   onPressed:
                       appState.groups.length >= 15 ? null : appState.addGroup,
                   icon: const Icon(Icons.add),
-                  label: const Text("Add group"),
+                  label: const Text('Add group'),
                 ),
               ],
             ),
@@ -78,16 +340,16 @@ class BidGroupEditor extends StatelessWidget {
                             child: TextFormField(
                               initialValue: g.name,
                               decoration: const InputDecoration(
-                                labelText: "Group name",
+                                labelText: 'Group name',
                               ),
                               onChanged: (s) => appState.renameGroup(gi, s),
                             ),
                           ),
                           PopupMenuButton<String>(
-                            tooltip: "More",
+                            tooltip: 'More',
                             onSelected: (v) async {
-                              if (v == "dup") appState.duplicateGroup(gi);
-                              if (v == "del" &&
+                              if (v == 'dup') appState.duplicateGroup(gi);
+                              if (v == 'del' &&
                                   await _confirmDeleteGroup(context, g.name)) {
                                 appState.removeGroup(gi);
                               }
@@ -95,17 +357,17 @@ class BidGroupEditor extends StatelessWidget {
                             itemBuilder:
                                 (context) => const [
                                   PopupMenuItem(
-                                    value: "dup",
+                                    value: 'dup',
                                     child: ListTile(
                                       leading: Icon(Icons.copy),
-                                      title: Text("Duplicate"),
+                                      title: Text('Duplicate'),
                                     ),
                                   ),
                                   PopupMenuItem(
-                                    value: "del",
+                                    value: 'del',
                                     child: ListTile(
                                       leading: Icon(Icons.delete_outline),
-                                      title: Text("Delete"),
+                                      title: Text('Delete'),
                                     ),
                                   ),
                                 ],
@@ -122,24 +384,23 @@ class BidGroupEditor extends StatelessWidget {
                               Expanded(
                                 child: TextFormField(
                                   initialValue: row.text,
-                                  textInputAction: TextInputAction.next,
                                   maxLength: 80,
                                   inputFormatters: [
                                     UpperCaseTextFormatter(),
                                     jssRowFilter,
                                   ],
                                   decoration: const InputDecoration(
-                                    labelText: "Row",
+                                    labelText: 'Row',
                                     helperText:
-                                        "Allowed: AÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œZ 0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ9 _ + - . , / : \\ (ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¤80)",
-                                    counterText: "",
+                                        'Allowed: A–Z 0–9 _ + - . , / : \\  (max 80)',
+                                    counterText: '',
                                   ),
                                   onChanged:
                                       (s) => appState.updateRow(gi, ri, s),
                                 ),
                               ),
                               IconButton(
-                                tooltip: "Remove row",
+                                tooltip: 'Remove row',
                                 onPressed: () => appState.removeRow(gi, ri),
                                 icon: const Icon(Icons.close),
                               ),
@@ -153,9 +414,9 @@ class BidGroupEditor extends StatelessWidget {
                           onPressed:
                               appState.totalRows >= 40
                                   ? null
-                                  : () => appState.addRow(gi),
+                                  : () => _addRowGuided(context, gi),
                           icon: const Icon(Icons.add),
-                          label: const Text("Add row"),
+                          label: const Text('Add row'),
                         ),
                       ),
                     ],
@@ -175,7 +436,7 @@ class BidGroupEditor extends StatelessWidget {
                         v.errors
                             .map(
                               (e) => Text(
-                                "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $e",
+                                '• $e',
                                 style: const TextStyle(color: Colors.red),
                               ),
                             )
@@ -212,7 +473,7 @@ class _Counter extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        "$label: $value / $max",
+        '$label: $value / $max',
         style: TextStyle(color: color, fontWeight: FontWeight.w600),
       ),
     );

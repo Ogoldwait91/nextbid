@@ -1,0 +1,10 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@
+-                        TextButton(
+-                          onPressed: () => Navigator.pop(ctx, null),
++                        TextButton(
++                          onPressed: () => Navigator.of(ctx).pop(),
+                           child: const Text('Cancel'),
+                         ),
+*** End Patch
