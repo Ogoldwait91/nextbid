@@ -83,7 +83,7 @@ class BidGroupEditor extends StatelessWidget {
 
                           // Command type
                           DropdownButtonFormField<String>(
-                            initialValue: cmdType,
+                            value: cmdType,
                             decoration: const InputDecoration(
                               labelText: 'Command Type',
                             ),
@@ -115,7 +115,7 @@ class BidGroupEditor extends StatelessWidget {
                           // WAIVE
                           if (cmdType == 'WAIVE') ...[
                             DropdownButtonFormField<String>(
-                              initialValue: waiveOption,
+                              value: waiveOption,
                               decoration: const InputDecoration(
                                 labelText: 'Waive Option',
                               ),
@@ -162,7 +162,7 @@ class BidGroupEditor extends StatelessWidget {
                           // SET
                           else if (cmdType == 'SET') ...[
                             DropdownButtonFormField<String>(
-                              initialValue: setOption,
+                              value: setOption,
                               decoration: const InputDecoration(
                                 labelText: 'Set Option',
                               ),
@@ -284,7 +284,7 @@ class BidGroupEditor extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<String>(
-                              initialValue: selectedBase,
+                              value: selectedBase,
                               decoration: const InputDecoration(
                                 labelText: 'Report Airport',
                               ),
@@ -307,7 +307,7 @@ class BidGroupEditor extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<String>(
-                              initialValue:
+                              value:
                                   (poolCtl.text.isNotEmpty
                                       ? poolCtl.text
                                       : 'L--'),
