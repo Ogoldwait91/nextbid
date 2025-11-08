@@ -1,0 +1,10 @@
+﻿*** Begin Patch
+*** Update File: lib/features/dashboard/dashboard_page.dart
+@@
+-                    decoration: BoxDecoration(
+-                      color: cs.surfaceVariant,
++                    decoration: BoxDecoration(
++                      color: cs.surfaceContainerHighest,
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+*** End Patch

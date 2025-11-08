@@ -98,7 +98,7 @@ class DashboardPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 22),
                     decoration: BoxDecoration(
-                      color: cs.surfaceVariant,
+                      color: cs.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
