@@ -1,0 +1,100 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@ else ...[
+-                            sectionTitle('Trip property'),
+-                            TextFormField(
+-                              controller: tripCtl,
+-                              decoration: const InputDecoration(
+-                                labelText: 'Trip Property',
+-                                hintText: 'e.g. TI7L11-005',
+-                              ),
+-                            ),
++                            Text('Trip command', style: Theme.of(context).textTheme.labelLarge),
++                            // Autocomplete code (as above)…
+@@
+                             const SizedBox(height: 8),
+-                            sectionTitle('Date range'),
+-                            Row(
+-                              children: [
+-                                Expanded(
+-                                  child: TextFormField(
+-                                    controller: dateCtl,
+-                                    decoration: const InputDecoration(
+-                                      labelText: 'Date Range (optional)',
+-                                      hintText: 'e.g. 06NOV-10NOV or Mon-Fri',
+-                                    ),
+-                                  ),
+-                                ),
+-                              ],
+-                            ),
+-                            const SizedBox(height: 6),
+-                            Wrap(
+-                              spacing: 8,
+-                              runSpacing: 8,
+-                              children: [
+-                                ActionChip(
+-                                  label: const Text('MON-FRI'),
+-                                  onPressed: () =>
+-                                      invalidate(() => dateCtl.text = 'MON-FRI', setSt),
+-                                ),
+-                                ActionChip(
+-                                  label: const Text('WEEK 2'),
+-                                  onPressed: () =>
+-                                      invalidate(() => dateCtl.text = 'WEEK 2', setSt),
+-                                ),
+-                                ActionChip(
+-                                  label: const Text('06NOV-10NOV'),
+-                                  onPressed: () => invalidate(
+-                                      () => dateCtl.text = '06NOV-10NOV', setSt),
+-                                ),
+-                              ],
+-                            ),
++                            Text('Date range', style: Theme.of(context).textTheme.labelLarge),
++                            TextFormField(
++                              controller: dateCtl,
++                              decoration: const InputDecoration(
++                                labelText: 'Date Range (optional)',
++                                hintText: '06NOV-10NOV',
++                              ),
++                            ),
++                            const SizedBox(height: 6),
++                            Wrap(
++                              spacing: 4,
++                              children: [
++                                for (final day in ['MON','TUE','WED','THU','FRI','SAT','SUN'])
++                                  FilterChip(
++                                    label: Text(day),
++                                    selected: selectedDays.contains(day),
++                                    onSelected: (sel) {
++                                      setSt(() {
++                                        if (sel) selectedDays.add(day);
++                                        else selectedDays.remove(day);
++                                      });
++                                    },
++                                  ),
++                              ],
++                            ),
++                            const SizedBox(height: 8),
++                            Text('Time range', style: Theme.of(context).textTheme.labelLarge),
++                            Row(
++                              children: [
++                                Expanded(
++                                  child: TextFormField(
++                                    controller: fromTimeCtl,
++                                    decoration: const InputDecoration(
++                                      labelText: 'From (HHMM)',
++                                    ),
++                                  ),
++                                ),
++                                const SizedBox(width: 8),
++                                Expanded(
++                                  child: TextFormField(
++                                    controller: toTimeCtl,
++                                    decoration: const InputDecoration(
++                                      labelText: 'To (HHMM)',
++                                    ),
++                                  ),
++                                ),
++                              ],
++                            ),
+*** End Patch

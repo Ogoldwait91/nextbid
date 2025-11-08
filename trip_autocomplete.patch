@@ -1,0 +1,39 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/bid_group_editor.dart
+@@ if (cmdType == 'WAIVE') ... else if (cmdType == 'SET') ... else ...[
+-                      TextFormField(
+-                        controller: tripCtl,
+-                        decoration: const InputDecoration(
+-                          labelText: 'Trip Property',
+-                          hintText: 'e.g. TI7L11-005',
+-                        ),
+-                      ),
++                      // Trip property autocomplete
++                      Autocomplete<String>(
++                        optionsBuilder: (textEditingValue) {
++                          final input = textEditingValue.text.toUpperCase();
++                          if (input.isEmpty) {
++                            return const Iterable<String>.empty();
++                          }
++                          // TODO: replace with real trip codes from API or local list
++                          const opts = [
++                            'TI7L11-005','TI7L11-006',
++                            'TI7L12-001','TI7L12-002',
++                            'TI7L13-003',
++                          ];
++                          return opts.where((o) => o.contains(input));
++                        },
++                        onSelected: (sel) => setSt(() => tripCtl.text = sel),
++                        fieldViewBuilder:
++                            (ctx, controller, focusNode, onFieldSubmitted) {
++                          return TextFormField(
++                            controller: controller,
++                            focusNode: focusNode,
++                            decoration: const InputDecoration(
++                              labelText: 'Trip Property',
++                              hintText: 'e.g. TI7L11-005',
++                            ),
++                          );
++                        },
++                      ),
+*** End Patch
