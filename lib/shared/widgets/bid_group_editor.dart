@@ -28,264 +28,415 @@ class BidGroupEditor extends StatelessWidget {
         false;
   }
 
-  // Guided “Add row” — bottom sheet to compose a valid JSS command line
+  // CENTERED DIALOG to compose a valid JSS command line
   Future<void> _addRowGuided(BuildContext context, int groupIndex) async {
     String cmdType = 'AWARD';
     String waiveOption = 'INDUSTRIAL REST';
     String setOption = 'MAX WP LENGTH';
+    String selectedBase = 'ANY';
+    final Set<String> selectedDays = <String>{};
 
     final tripCtl = TextEditingController();
     final dateCtl = TextEditingController();
     final poolCtl = TextEditingController(text: 'L--');
     final limitCtl = TextEditingController();
     final valueCtl = TextEditingController();
+    final fromTimeCtl = TextEditingController();
+    final toTimeCtl = TextEditingController();
 
     String up(String s) => s.trim().toUpperCase();
 
-    final String? result = await showModalBottomSheet<String?>(
+    final String? result = await showDialog<String?>(
       context: context,
-      isScrollControlled: true,
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: 16 + MediaQuery.of(ctx).viewInsets.bottom,
-          ),
-          child: StatefulBuilder(
-            builder: (context, setSt) {
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Add Bid Command',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 12),
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 24,
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                  bottom: 16 + MediaQuery.of(dialogCtx).viewInsets.bottom,
+                ),
+                child: StatefulBuilder(
+                  builder: (context, setSt) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Add Bid Command',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 12),
 
-                    // Command type
-                    DropdownButtonFormField<String>(
-                      initialValue: cmdType,
-                      decoration: const InputDecoration(
-                        labelText: 'Command Type',
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'AWARD', child: Text('AWARD')),
-                        DropdownMenuItem(value: 'AVOID', child: Text('AVOID')),
-                        DropdownMenuItem(value: 'WAIVE', child: Text('WAIVE')),
-                        DropdownMenuItem(value: 'SET', child: Text('SET')),
-                      ],
-                      onChanged: (v) => setSt(() => cmdType = v ?? 'AWARD'),
-                    ),
-                    const SizedBox(height: 12),
+                          // Command type
+                          DropdownButtonFormField<String>(
+                            value: cmdType,
+                            decoration: const InputDecoration(
+                              labelText: 'Command Type',
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'AWARD',
+                                child: Text('AWARD'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'AVOID',
+                                child: Text('AVOID'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'WAIVE',
+                                child: Text('WAIVE'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'SET',
+                                child: Text('SET'),
+                              ),
+                            ],
+                            onChanged:
+                                (v) => setSt(() {
+                                  cmdType = v ?? 'AWARD';
+                                }),
+                          ),
+                          const SizedBox(height: 12),
 
-                    // WAIVE
-                    if (cmdType == 'WAIVE') ...[
-                      DropdownButtonFormField<String>(
-                        initialValue: waiveOption,
-                        decoration: const InputDecoration(
-                          labelText: 'Waive Option',
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'INDUSTRIAL REST',
-                            child: Text('Industrial Rest'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'EASA REST',
-                            child: Text('EASA Rest'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'DFW',
-                            child: Text('Relax DFW'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'FDO',
-                            child: Text('Relax FDO'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'NA',
-                            child: Text('Relax NA'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'PD1',
-                            child: Text('Relax PD1'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'PD2',
-                            child: Text('Relax PD2'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'WR',
-                            child: Text('Relax WR'),
-                          ),
-                        ],
-                        onChanged:
-                            (v) => setSt(() => waiveOption = v ?? waiveOption),
-                      ),
-                    ]
-                    // SET
-                    else if (cmdType == 'SET') ...[
-                      DropdownButtonFormField<String>(
-                        initialValue: setOption,
-                        decoration: const InputDecoration(
-                          labelText: 'Set Option',
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'MAX WP LENGTH',
-                            child: Text('Max WP length (days)'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'MAX WP COUNT',
-                            child: Text('Max WP count'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'MIN DAYS OFF',
-                            child: Text('Min days off between WPs'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'REPORT TIME',
-                            child: Text('Working period report time (HHMM)'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'RELEASE TIME',
-                            child: Text('Working period release time (HHMM)'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'MAX NIGHTS AWAY',
-                            child: Text('Max nights away'),
-                          ),
-                        ],
-                        onChanged:
-                            (v) => setSt(() => setOption = v ?? setOption),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: valueCtl,
-                        decoration: InputDecoration(
-                          labelText:
-                              setOption.contains('TIME')
-                                  ? 'Value (HHMM)'
-                                  : 'Value',
-                          hintText:
-                              setOption.contains('TIME') ? '1300' : 'e.g. 4',
-                        ),
-                      ),
-                    ]
-                    // AWARD / AVOID
-                    else ...[
-                      TextFormField(
-                        controller: tripCtl,
-                        decoration: const InputDecoration(
-                          labelText: 'Trip Property',
-                          hintText: 'e.g. TI7L11-005',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: dateCtl,
-                        decoration: const InputDecoration(
-                          labelText: 'Date Range (optional)',
-                          hintText: 'e.g. 06NOV-10NOV or Mon-Fri',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      DropdownButtonFormField<String>(
-                        initialValue:
-                            poolCtl.text.isNotEmpty ? poolCtl.text : 'L--',
-                        decoration: const InputDecoration(
-                          labelText: 'Trip Pool (optional)',
-                        ),
-                        items: const [
-                          DropdownMenuItem(value: 'L--', child: Text('L--')),
-                          DropdownMenuItem(value: 'L-', child: Text('L-')),
-                          DropdownMenuItem(value: 'L', child: Text('L')),
-                          DropdownMenuItem(value: '+/-', child: Text('+/-')),
-                          DropdownMenuItem(value: 'H', child: Text('H')),
-                          DropdownMenuItem(value: 'H+', child: Text('H+')),
-                          DropdownMenuItem(value: 'H++', child: Text('H++')),
-                        ],
-                        onChanged: (v) => setSt(() => poolCtl.text = v ?? ''),
-                      ),
-                      const SizedBox(height: 8),
-                      if (cmdType == 'AWARD')
-                        TextFormField(
-                          controller: limitCtl,
-                          decoration: const InputDecoration(
-                            labelText: 'Limit (optional)',
-                            hintText: 'e.g. 3',
-                          ),
-                        ),
-                    ],
-
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(),
-                          child: const Text('Cancel'),
-                        ),
-                        const SizedBox(width: 8),
-                        FilledButton(
-                          onPressed: () {
-                            String rowText = '';
-                            if (cmdType == 'WAIVE') {
-                              rowText = 'WAIVE ${up(waiveOption)}';
-                            } else if (cmdType == 'SET') {
-                              final val = up(valueCtl.text);
-                              if (val.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Please enter a value'),
+                          // WAIVE
+                          if (cmdType == 'WAIVE') ...[
+                            DropdownButtonFormField<String>(
+                              value: waiveOption,
+                              decoration: const InputDecoration(
+                                labelText: 'Waive Option',
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'INDUSTRIAL REST',
+                                  child: Text('Industrial Rest'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'EASA REST',
+                                  child: Text('EASA Rest'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'DFW',
+                                  child: Text('Relax DFW'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'FDO',
+                                  child: Text('Relax FDO'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'NA',
+                                  child: Text('Relax NA'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'PD1',
+                                  child: Text('Relax PD1'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'PD2',
+                                  child: Text('Relax PD2'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'WR',
+                                  child: Text('Relax WR'),
+                                ),
+                              ],
+                              onChanged:
+                                  (v) => setSt(
+                                    () => waiveOption = v ?? waiveOption,
                                   ),
-                                );
-                                return;
-                              }
-                              rowText = 'SET ${up(setOption)} $val';
-                            } else {
-                              final trip = up(tripCtl.text);
-                              if (trip.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Please enter a trip property',
+                            ),
+                          ]
+                          // SET
+                          else if (cmdType == 'SET') ...[
+                            DropdownButtonFormField<String>(
+                              value: setOption,
+                              decoration: const InputDecoration(
+                                labelText: 'Set Option',
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'MAX WP LENGTH',
+                                  child: Text('Max WP length (days)'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'MAX WP COUNT',
+                                  child: Text('Max WP count'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'MIN DAYS OFF',
+                                  child: Text('Min days off between WPs'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'REPORT TIME',
+                                  child: Text(
+                                    'Working period report time (HHMM)',
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'RELEASE TIME',
+                                  child: Text(
+                                    'Working period release time (HHMM)',
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'MAX NIGHTS AWAY',
+                                  child: Text('Max nights away'),
+                                ),
+                              ],
+                              onChanged:
+                                  (v) =>
+                                      setSt(() => setOption = v ?? setOption),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: valueCtl,
+                              decoration: InputDecoration(
+                                labelText:
+                                    setOption.contains('TIME')
+                                        ? 'Value (HHMM)'
+                                        : 'Value',
+                                hintText:
+                                    setOption.contains('TIME')
+                                        ? '1300'
+                                        : 'e.g. 4',
+                              ),
+                            ),
+                          ]
+                          // AWARD / AVOID
+                          else ...[
+                            TextFormField(
+                              controller: tripCtl,
+                              decoration: const InputDecoration(
+                                labelText: 'Trip Property',
+                                hintText: 'e.g. TI7L11-005',
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: dateCtl,
+                              decoration: const InputDecoration(
+                                labelText: 'Date Range (optional)',
+                                hintText: '06NOV-10NOV',
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 4,
+                              children: [
+                                for (final day in [
+                                  'MON',
+                                  'TUE',
+                                  'WED',
+                                  'THU',
+                                  'FRI',
+                                  'SAT',
+                                  'SUN',
+                                ])
+                                  FilterChip(
+                                    label: Text(day),
+                                    selected: selectedDays.contains(day),
+                                    onSelected: (sel) {
+                                      setSt(() {
+                                        if (sel) {
+                                          selectedDays.add(day);
+                                        } else {
+                                          selectedDays.remove(day);
+                                        }
+                                      });
+                                    },
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: fromTimeCtl,
+                                    decoration: const InputDecoration(
+                                      labelText: 'From (HHMM)',
                                     ),
                                   ),
-                                );
-                                return;
-                              }
-                              final date = up(dateCtl.text);
-                              final pool = up(poolCtl.text);
-                              final limit = up(limitCtl.text);
-                              rowText = '$cmdType $trip';
-                              if (date.isNotEmpty) rowText += ' $date';
-                              if (pool.isNotEmpty) rowText += ' $pool';
-                              if (cmdType == 'AWARD' && limit.isNotEmpty) {
-                                rowText += ' $limit';
-                              }
-                            }
-                            Navigator.of(ctx).pop(rowText);
-                          },
-                          child: const Text('Add'),
-                        ),
-                      ],
-                    ),
-                  ],
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: toTimeCtl,
+                                    decoration: const InputDecoration(
+                                      labelText: 'To (HHMM)',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              value: selectedBase,
+                              decoration: const InputDecoration(
+                                labelText: 'Report Airport',
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'ANY',
+                                  child: Text('Any'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'LGW',
+                                  child: Text('LGW'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'LHR',
+                                  child: Text('LHR'),
+                                ),
+                              ],
+                              onChanged:
+                                  (v) => setSt(() => selectedBase = v ?? 'ANY'),
+                            ),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              value:
+                                  (poolCtl.text.isNotEmpty
+                                      ? poolCtl.text
+                                      : 'L--'),
+                              decoration: const InputDecoration(
+                                labelText: 'Trip Pool (optional)',
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'L--',
+                                  child: Text('L--'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'L-',
+                                  child: Text('L-'),
+                                ),
+                                DropdownMenuItem(value: 'L', child: Text('L')),
+                                DropdownMenuItem(
+                                  value: '+/-',
+                                  child: Text('+/-'),
+                                ),
+                                DropdownMenuItem(value: 'H', child: Text('H')),
+                                DropdownMenuItem(
+                                  value: 'H+',
+                                  child: Text('H+'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'H++',
+                                  child: Text('H++'),
+                                ),
+                              ],
+                              onChanged:
+                                  (v) => setSt(() => poolCtl.text = v ?? ''),
+                            ),
+                            const SizedBox(height: 8),
+                            if (cmdType == 'AWARD')
+                              TextFormField(
+                                controller: limitCtl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Limit (optional)',
+                                  hintText: 'e.g. 3',
+                                ),
+                              ),
+                          ],
+
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () => Navigator.of(dialogCtx).pop(),
+                                child: const Text('Cancel'),
+                              ),
+                              const SizedBox(width: 8),
+                              FilledButton(
+                                onPressed: () {
+                                  String rowText = '';
+                                  if (cmdType == 'WAIVE') {
+                                    rowText = 'WAIVE ${up(waiveOption)}';
+                                  } else if (cmdType == 'SET') {
+                                    final val = up(valueCtl.text);
+                                    if (val.isEmpty) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Please enter a value'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    rowText = 'SET ${up(setOption)} $val';
+                                  } else {
+                                    final trip = up(tripCtl.text);
+                                    if (trip.isEmpty) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Please enter a trip property',
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    final date = up(dateCtl.text);
+                                    final pool = up(poolCtl.text);
+                                    final limit = up(limitCtl.text);
+                                    final fromT = up(fromTimeCtl.text);
+                                    final toT = up(toTimeCtl.text);
+                                    final days =
+                                        selectedDays.isEmpty
+                                            ? ''
+                                            : selectedDays.join(',');
+
+                                    rowText = '$cmdType $trip';
+                                    if (date.isNotEmpty) rowText += ' $date';
+                                    if (days.isNotEmpty) rowText += ' $days';
+                                    if (fromT.isNotEmpty && toT.isNotEmpty) {
+                                      rowText += ' $fromT-$toT';
+                                    }
+                                    if (selectedBase != 'ANY') {
+                                      rowText += ' $selectedBase';
+                                    }
+                                    if (pool.isNotEmpty) rowText += ' $pool';
+                                    if (cmdType == 'AWARD' &&
+                                        limit.isNotEmpty) {
+                                      rowText += ' $limit';
+                                    }
+                                  }
+                                  Navigator.of(dialogCtx).pop(rowText);
+                                },
+                                child: const Text('Add'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ),
           ),
         );
       },
     );
 
     if (result != null && result.trim().isNotEmpty) {
-      // Add a new row and update its text
       appState.addRow(groupIndex);
       final newRowIndex = appState.groups[groupIndex].rows.length - 1;
       appState.updateRow(groupIndex, newRowIndex, result.trim().toUpperCase());
@@ -392,7 +543,7 @@ class BidGroupEditor extends StatelessWidget {
                                   decoration: const InputDecoration(
                                     labelText: 'Row',
                                     helperText:
-                                        'Allowed: A–Z 0–9 _ + - . , / : \\  (max 80)',
+                                        'Allowed: A-Z 0-9 _ + - . , / : \\  (max 80)',
                                     counterText: '',
                                   ),
                                   onChanged:
@@ -463,6 +614,7 @@ class _Counter extends StatelessWidget {
     required this.max,
     this.warn = false,
   });
+
   @override
   Widget build(BuildContext context) {
     final color = warn ? Colors.red : Theme.of(context).colorScheme.primary;
