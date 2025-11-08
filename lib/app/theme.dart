@@ -1,13 +1,31 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 // BA-ish palette
 const Color baNavy = Color(0xFF0E1A2B);
 const Color baNavyLight = Color(0xFF1A3E6A);
 
-final lightTheme = ThemeData(
+// Unified text theme for NextBid
+const TextTheme nextBidTextTheme = TextTheme(
+  headlineLarge: TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.bold,
+    letterSpacing: -0.5,
+  ),
+  titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+  bodyMedium: TextStyle(fontSize: 14, height: 1.4),
+  labelLarge: TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.2,
+  ),
+);
+
+final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(seedColor: baNavy),
+  textTheme: nextBidTextTheme,
   scaffoldBackgroundColor: const Color(0xFFF7F7FA),
+
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.white,
     elevation: 0,
@@ -19,7 +37,9 @@ final lightTheme = ThemeData(
       fontSize: 20,
     ),
   ),
-  // NEW: CardThemeData (not CardTheme)
+
+  // Keep visual consistency for cards
+  // (using CardThemeData here because your current code compiles with it)
   cardTheme: const CardThemeData(
     color: Colors.white,
     elevation: 0,
@@ -28,6 +48,7 @@ final lightTheme = ThemeData(
       borderRadius: BorderRadius.all(Radius.circular(16)),
     ),
   ),
+
   inputDecorationTheme: const InputDecorationTheme(
     isDense: true,
     filled: true,
@@ -37,6 +58,7 @@ final lightTheme = ThemeData(
       borderSide: BorderSide.none,
     ),
   ),
+
   filledButtonTheme: FilledButtonThemeData(
     style: ButtonStyle(
       shape: WidgetStatePropertyAll(
@@ -47,7 +69,8 @@ final lightTheme = ThemeData(
       ),
     ),
   ),
-  // Make indicatorColor const by using ARGB (ÃƒÂ¢Ã¢â‚¬Â°Ã‹â€ 20% alpha BA navy)
+
+  // indicatorColor at 20% alpha (BA navy)
   navigationBarTheme: const NavigationBarThemeData(
     backgroundColor: Colors.white,
     indicatorColor: Color(0x330E1A2B),
@@ -57,10 +80,11 @@ final lightTheme = ThemeData(
   ),
 );
 
-final darkTheme = ThemeData(
+final ThemeData darkTheme = ThemeData(
   useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(
     seedColor: baNavy,
     brightness: Brightness.dark,
   ),
+  textTheme: nextBidTextTheme,
 );
