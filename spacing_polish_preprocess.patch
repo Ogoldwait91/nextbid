@@ -1,0 +1,21 @@
+﻿*** Begin Patch
+*** Update File: lib/shared/widgets/credit_range_selector.dart
+@@
+-    return Card(
+-      child: Padding(
+-        padding: const EdgeInsets.all(12),
++    return Card(
++      child: Padding(
++        padding: const EdgeInsets.all(16),
+         child: Column(
+           crossAxisAlignment: CrossAxisAlignment.start,
+           children: [
+-            const Text('Credit Preference'),
++            Text(
++              'Credit Preference',
++              style: Theme.of(context).textTheme.titleMedium,
++            ),
+             const SizedBox(height: 8),
+             SegmentedButton<CreditPref>(
+               segments: const [
+*** End Patch

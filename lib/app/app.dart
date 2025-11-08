@@ -10,8 +10,13 @@ class NextBidApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'NextBid',
       debugShowCheckedModeBanner: false,
+
+      // Use the unified themes we defined in theme.dart
       theme: lightTheme,
       darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
+
+      // Router
       routerConfig: router,
     );
   }

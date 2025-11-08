@@ -1,0 +1,11 @@
+﻿*** Begin Patch
+*** Update File: lib/app/app.dart
+@@
+-      // Use the unified themes we defined in theme.dart
+       theme: lightTheme,
+       darkTheme: darkTheme,
+-      themeMode: ThemeMode.system,
+ 
+       // Router
+       routerConfig: router,
+*** End Patch
