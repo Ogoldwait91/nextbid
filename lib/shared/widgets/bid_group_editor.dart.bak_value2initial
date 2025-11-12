@@ -587,7 +587,7 @@ class BidGroupEditor extends StatelessWidget {
                         v.errors
                             .map(
                               (e) => Text(
-                                'Ã¢â‚¬Â¢ $e',
+                                'â€¢ $e',
                                 style: const TextStyle(color: Colors.red),
                               ),
                             )

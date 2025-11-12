@@ -1,0 +1,9 @@
+﻿{
+  "month": "2025-11",
+  "groups": [
+    { "name": "Global", "rows": [
+      {"type":"SET","text":"SET: DAYS OFF > 8"},
+      {"type":"AWARD","text":"AWARD: JFK 3-day"}
+    ]}
+  ]
+}

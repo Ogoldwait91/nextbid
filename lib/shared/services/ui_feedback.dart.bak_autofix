@@ -1,0 +1,20 @@
+﻿import "dart:async";`r`nimport "package:flutter/material.dart";
+
+class UiFeedback {
+  static void toast(BuildContext context, String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating, duration: const Duration(seconds: 2)),
+    );
+  }
+
+  static Future<T> withSpinner<T>(BuildContext context, Future<T> Function() task) async {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    try { return await task(); }
+    finally { Navigator.of(context, rootNavigator: true).pop(); }
+  }
+}
+

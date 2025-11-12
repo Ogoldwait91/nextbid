@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+
+/// Placeholder BidGroupEditor until the full editor lands.
+/// Swap for the real implementation later.
+class BidGroupEditor extends StatelessWidget {
+  final void Function()? onChanged;
+  final dynamic initialValue;
+
+  const BidGroupEditor({super.key, this.onChanged, this.initialValue});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Bid Group Editor (Placeholder)",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text("initialValue: ${initialValue ?? '(none)'}"),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: onChanged,
+                child: const Text("Update"),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

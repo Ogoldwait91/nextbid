@@ -1,3 +1,11 @@
-﻿# Keep JSS exports as text with Windows CRLF endings
+﻿# Make .jss exports Windows-style CRLF in the working tree
 *.jss text eol=crlf
-*.jss text eol=crlf
+
+# Keep PowerShell scripts CRLF (dev ergonomics on Windows)
+*.ps1 text eol=crlf
+
+# Keep shell scripts LF (for CI/macOS/Linux)
+*.sh  text eol=lf
+
+# Normalise text by default
+* text=auto
